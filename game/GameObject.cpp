@@ -9,7 +9,7 @@
 #include "Camera.h"
 
 GameObject::GameObject() {
-    constuct();
+    construct();
 
 }
 
@@ -17,9 +17,11 @@ GameObject::~GameObject() {
 
 }
 
-void GameObject::constuct() {
-
+void GameObject::construct() {
+    box = Rect(0, 0, 0, 0);
+    pos = Vec2(0,0);
     rotation = 0.0;
+    center_LT_displacement = Vec2(0,0);
 
 }
 

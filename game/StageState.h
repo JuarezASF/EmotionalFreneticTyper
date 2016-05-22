@@ -21,10 +21,6 @@
 class StageState : public State {
 protected:
     Sprite bg;
-    TileSet tileSet;
-    TileMap tileMap;
-
-    Music gameBackroundMusic;
 
 public:
     StageState();

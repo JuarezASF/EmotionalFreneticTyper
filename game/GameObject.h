@@ -19,9 +19,7 @@ protected:
     // pos + LT_center_displacemente = LEFT_TOP corner
     Vec2 center_LT_displacement;
 
-    void constuct();
-
-    Sound dyingSound;
+    void construct();
 
 public:
     GameObject();

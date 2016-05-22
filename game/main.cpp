@@ -12,6 +12,7 @@
 #include "Logger.h"
 #include "StageState.h"
 #include "TitleState.h"
+#include "TyperInput.h"
 
 using namespace std;
 
@@ -30,9 +31,13 @@ int main(int argc, char **argv) {
 
     try {
 
-        Game g = Game("Juarez Aires 11/0032829", 1024, 600);
+        TyperInput &im = TyperInput::getInstance();
+        im.loadDictionary("txt/commandsDict.txt");
+        im.printDictionary();
 
-        g.push(new TitleState());
+        Game g = Game("Emotional Typing", 1024, 600);
+
+        g.push(new StageState());
         g.run();
 
     }catch(GameException e){

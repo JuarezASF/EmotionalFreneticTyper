@@ -16,6 +16,7 @@
 #include "InputManager.h"
 #include "Camera.h"
 #include "Logger.h"
+#include "TyperInput.h"
 
 
 Game *Game::instance = nullptr;
@@ -161,7 +162,7 @@ void Game::run() {
         return;
     }
 
-    InputManager &im = InputManager::getInstance();
+    TyperInput &im = TyperInput::getInstance();
 
     calculateDeltaTime();
 

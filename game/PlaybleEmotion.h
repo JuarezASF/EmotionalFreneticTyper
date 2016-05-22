@@ -6,8 +6,28 @@
 #define IDJ201601T1_PLAYBLEEMOTION_H
 
 
-class PlaybleEmotion {
+#include "GameObject.h"
+#include "Sprite.h"
 
+class PlaybleEmotion : public GameObject{
+
+    Sprite sp;
+    int lifePoints;
+
+public:
+
+    PlaybleEmotion();
+
+
+    virtual void update(float dt);
+
+    virtual bool isDead();
+
+    virtual void notifyCollision(GameObject &other);
+
+    virtual bool is(std::string type);
+
+    virtual void render();
 };
 
 
