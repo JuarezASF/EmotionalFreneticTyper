@@ -26,7 +26,7 @@ void GameObject::construct() {
 
 }
 
-void GameObject::render(bool forceDraw) {
+void GameObject::render() {
     if (GameConfig::printHitBox && collisionVolume != nullptr) {
         collisionVolume->render();
     }

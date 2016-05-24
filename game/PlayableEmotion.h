@@ -23,12 +23,15 @@ private:
     Vec2 speed, acceleration;
     float speedAngle, speedMagnitude;
     float accelerationAngle, accelerationMagnitude;
+    vector<pair<Vec2, Vec2>> restrictingLineSegments;
 
     int lifePoints;
 
     Timer dashTimer;
 
 public:
+
+    virtual void clearCollisionState();
 
     PlayableEmotion();
 
@@ -41,7 +44,7 @@ public:
 
     virtual bool is(std::string type);
 
-    void render(bool forceDraw=false);
+    void render();
 };
 
 

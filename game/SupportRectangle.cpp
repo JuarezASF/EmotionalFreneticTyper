@@ -41,6 +41,9 @@ bool SupportRectangle::is(std::string type) {
 }
 
 void SupportRectangle::render() {
-    GameObject::render(true);
+    GameObject::render();
 }
 
+void SupportRectangle::clearCollisionState() {
+
+}

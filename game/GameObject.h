@@ -29,7 +29,7 @@ public:
 
     virtual void update(float dt) = 0;
 
-    virtual void render(bool forceDraw= false);
+    virtual void render();
 
     virtual bool isDead() = 0;
 
@@ -42,6 +42,8 @@ public:
     virtual void notifyCollision(GameObject &other) = 0;
 
     virtual bool is(std::string type) = 0;
+
+    virtual void clearCollisionState() = 0;
 
 
 

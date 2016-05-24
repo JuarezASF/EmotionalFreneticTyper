@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "TyperInput.h"
 #include "CollidableBox.h"
+#include "jasf_math.h"
 
 void PlayableEmotion::update(float dt) {
 
@@ -103,6 +104,23 @@ void PlayableEmotion::update(float dt) {
 
     ((CollidableBox *)collisionVolume)->setLT(pos + center_LT_displacement);
 
+    for(auto line : restrictingLineSegments){
+        Vec2 a = line.first;
+        Vec2 b = line.second;
+
+
+        Vec2 directionOfLine = (b-a).getNormalizedVector().rotated(M_PI_2);
+
+        float mag = speed.dot(directionOfLine);
+
+        Vec2 newSpeed = speed + Vec2::getVec2FromPolar(mag, directionOfLine.ang_rad());
+
+        if (newSpeed.magnitude() > speed.magnitude())
+            speed = speed - Vec2::getVec2FromPolar(mag, directionOfLine.ang_rad());
+        else
+            speed = newSpeed;
+    }
+
 }
 
 bool PlayableEmotion::isDead() {
@@ -111,9 +129,31 @@ bool PlayableEmotion::isDead() {
 
 void PlayableEmotion::notifyCollision(GameObject &other) {
 
+    vector<pair<Vec2, Vec2>> collidingSegments;
+
     if (other.is("SupportRectangle")){
-        speedMagnitude = 0;
+
+        //colide every line segment with every line segment composing both boxes to find the support line segement that
+        // is effectively being colided with
+        auto corners = ((CollidableBox*)other.getCollisionVolume())->box.getCorners();
+        auto selfCorners = ((CollidableBox*)this->getCollisionVolume())->box.getCorners();
+        Vec2 a, b, c, d;
+        for(uint k = 0; k < corners.size(); k++){
+            a = corners[k];
+            b = corners[(k + 1) % corners.size()];
+            for(uint j = 0; j < selfCorners.size(); j++) {
+                c = selfCorners[j];
+                d = selfCorners[(j+1)%selfCorners.size()];
+
+                if(lineIntersect(a, b, c, d)){
+                    collidingSegments.push_back(std::make_pair(a, b));
+                    break;
+                }
+            }
+        }
     }
+
+    restrictingLineSegments.insert(restrictingLineSegments.end(), collidingSegments.begin(), collidingSegments.end());
 
 }
 
@@ -147,10 +187,15 @@ PlayableEmotion::PlayableEmotion() : GameObject(), sp("img/dummyCharSprite.png",
 
 }
 
-void PlayableEmotion::render(bool forceDrawn) {
-    GameObject::render(forceDrawn);
+void PlayableEmotion::render() {
+    GameObject::render();
 
     Vec2 pos = getCenterPos() + center_LT_displacement - Camera::getPos(1);
 
     sp.render(pos.x, pos.y, rotation, (currentlyFacing == PlayableFacing::LEFT)? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+}
+
+void PlayableEmotion::clearCollisionState() {
+    restrictingLineSegments.clear();
+
 }

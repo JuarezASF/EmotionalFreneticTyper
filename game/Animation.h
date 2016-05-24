@@ -15,6 +15,9 @@ private:
     Timer endTimer;
     float timeLimit;
     bool oneTimeOnly;
+public:
+    virtual void clearCollisionState();
+
     Sprite sp;
 
 public:

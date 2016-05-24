@@ -59,3 +59,7 @@ void Animation::notifyCollision(GameObject &other) {
     //do not react to collision
 
 }
+
+void Animation::clearCollisionState() {
+
+}

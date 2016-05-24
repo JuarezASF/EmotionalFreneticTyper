@@ -23,9 +23,6 @@ StageState::StageState() : bg("img/farBackground.jpg") {
     addObject(new SupportRectangle(Vec2(150, 150), Vec2(600, 400)));
 
 
-//    Camera::follow(mainPlayer);
-
-
 }
 
 StageState::~StageState() {
@@ -46,7 +43,9 @@ void StageState::update(float dt) {
 
     Camera::update(dt);
 
-    updateArray(dt);
+    //clear collision
+    for (uint obj_idx = 0; obj_idx < objectArray.size(); obj_idx++)
+        objectArray[obj_idx]->clearCollisionState();
 
     //test for collision
     for (int i = objectArray.size() - 1; i >= 0; i--) {
@@ -65,6 +64,8 @@ void StageState::update(float dt) {
         }
 
     }
+
+    updateArray(dt);
 
 
     std::vector<int> toBeDeleted;

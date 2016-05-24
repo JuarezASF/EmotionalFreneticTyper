@@ -7,6 +7,7 @@
 
 
 #include "GameObject.h"
+#include "SupportLineSegment.h"
 
 class SupportRectangle : public GameObject{
 
@@ -15,6 +16,12 @@ private:
     void construct(Vec2 leftTop, Vec2 bottomRight);
 
 public:
+    SupportRectangle(Vec2 leftTop, Vec2 bottomRight);
+
+    SupportRectangle(Vec2 leftTop, int width, int height);
+
+    virtual void clearCollisionState();
+
     virtual void update(float dt);
 
     virtual bool isDead();
@@ -23,8 +30,6 @@ public:
 
     virtual bool is(std::string type);
 
-    SupportRectangle(Vec2 leftTop, Vec2 bottomRight);
-    SupportRectangle(Vec2 leftTop, int width, int height);
 
     virtual void render();
 
