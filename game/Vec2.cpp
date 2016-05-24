@@ -117,3 +117,7 @@ Vec2 Vec2::rotated(double theta_rad){
 Vec2 Vec2::rotatedAroundCenter(const Vec2 & c, double theta_rad){
     return c + ((*this) - c).rotated(theta_rad);
 }
+
+float Vec2::dot(const Vec2 &arg) const {
+    return this->x * arg.x + this->y*arg.y;
+}

@@ -1,6 +1,6 @@
 project(game02)
 
-add_executable(game02 main.cpp Game.cpp GameException.cpp StageState.cpp Sprite.cpp Vec2.cpp  Rect.cpp  GameObject.cpp StateInput.cpp TileSet.cpp  GameException.cpp  TileMap.cpp CommandLineParser.cpp GameConfig.cpp Resources.cpp InputManager.cpp Logger.cpp Camera.cpp Timer.cpp Animation.cpp State.cpp TitleState.cpp TitleState.h Music.cpp Music.h Sound.cpp Sound.h Text.cpp Text.h EndState.cpp StateData.cpp PlaybleEmotion.cpp PlaybleEmotion.h TyperInput.cpp TyperInput.h)
+add_executable(game02 main.cpp Game.cpp GameException.cpp StageState.cpp Sprite.cpp Vec2.cpp  Rect.cpp  GameObject.cpp StateInput.cpp TileSet.cpp  GameException.cpp  TileMap.cpp CommandLineParser.cpp GameConfig.cpp Resources.cpp InputManager.cpp Logger.cpp Camera.cpp Timer.cpp Animation.cpp State.cpp TitleState.cpp TitleState.h Music.cpp Music.h Sound.cpp Sound.h Text.cpp Text.h EndState.cpp StateData.cpp PlayableEmotion.cpp PlayableEmotion.h TyperInput.cpp TyperInput.h SupportRectangle.cpp SupportRectangle.h jasf_math.cpp SupportLineSegment.cpp SupportLineSegment.h Collidable.cpp Collidable.h CollidableBox.cpp CollidableBox.h)
 
 include_directories(include ${SDL2_IMAGE_INCLUDE_DIR})
 

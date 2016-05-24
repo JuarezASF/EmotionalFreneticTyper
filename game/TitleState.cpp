@@ -45,7 +45,7 @@ void TitleState::update(float d) {
 
 void TitleState::render() {
 
-    bg.render(0, 0, 0);
+    bg.render(0, 0, 0, (SDL_FLIP_NONE));
 
     if(shouldDisplayInfoText)
         infoText.render();

@@ -20,8 +20,6 @@ Animation::Animation(float x, float y, float rotation, string sprite, float time
 
     center_LT_displacement = -1 * Vec2(width * 0.5, height * 0.5);
 
-    box = Rect(pos + center_LT_displacement, height, width);
-
 }
 
 void Animation::update(float dt) {
@@ -33,9 +31,9 @@ void Animation::update(float dt) {
 void Animation::render() {
     GameObject::render();
 
-    Vec2 pos = box.getTopLeft() - Camera::getPos(Camera::PLAYER_GROUND_VIEW);
+    Vec2 pos = pos + center_LT_displacement - Camera::getPos(Camera::PLAYER_GROUND_VIEW);
 
-    sp.render(pos.x, pos.y, rotation);
+    sp.render(pos.x, pos.y, rotation, (SDL_FLIP_NONE));
 }
 
 bool Animation::isDead() {

@@ -65,22 +65,23 @@ void Sprite::setClip(int x, int y, int w, int h) {
     clipRect.h = h;
 }
 
-void Sprite::render(int x, int y, float angle) {
+void Sprite::render(int x, int y, float angle, SDL_RendererFlip flip) {
     dst_rect.x = x;
     dst_rect.y = y;
     dst_rect.w = clipRect.w * scaleX;
     dst_rect.h = clipRect.h * scaleY;
+
 
     if (center) {
         SDL_Point c;
         c.x = center->x * scaleX;
         c.y = center->y * scaleY;
         SDL_RenderCopyEx(Game::getInstance().getRenderer(), texture, &clipRect, &dst_rect, angle * 180.0 / M_PI, &c,
-                         SDL_FLIP_NONE);
+                         flip);
     } else {
         SDL_RenderCopyEx(Game::getInstance().getRenderer(), texture, &clipRect, &dst_rect, angle * 180.0 / M_PI,
                          nullptr,
-                         SDL_FLIP_NONE);
+                         flip);
 
     }
 

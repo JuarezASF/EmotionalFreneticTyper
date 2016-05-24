@@ -58,6 +58,8 @@ public:
 
     std::string toString();
 
+    float dot(const Vec2 &arg) const;
+
 
 
 

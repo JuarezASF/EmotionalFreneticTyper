@@ -14,27 +14,20 @@ GameObject::GameObject() {
 }
 
 GameObject::~GameObject() {
-
+    if(collisionVolume)
+        delete collisionVolume;
 }
 
 void GameObject::construct() {
-    box = Rect(0, 0, 0, 0);
     pos = Vec2(0,0);
     rotation = 0.0;
     center_LT_displacement = Vec2(0,0);
+    collisionVolume = nullptr;
 
 }
 
-void GameObject::render() {
-    if (GameConfig::printHitBox) {
-        auto corners = box.getCorners();
-        for (uint i = 0; i < corners.size(); i++) {
-            Vec2 a = corners[i] - Camera::getPos(Camera::PLAYER_GROUND_VIEW);
-            Vec2 b = corners[(i + 1) % corners.size()] - Camera::getPos(Camera::PLAYER_GROUND_VIEW);
-            SDL_RenderDrawLine(Game::getInstance().getRenderer(), a.x, a.y, b.x, b.y);
-
-        }
-
-
+void GameObject::render(bool forceDraw) {
+    if (GameConfig::printHitBox && collisionVolume != nullptr) {
+        collisionVolume->render();
     }
 }

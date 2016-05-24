@@ -27,7 +27,7 @@ void TileSet::render(unsigned int index, float x, float y) {
         Vec2 tileLT = Vec2(tileWidth * col, tileHeight * row);
 
         tileSet.setClip(tileLT.x, tileLT.y, tileWidth, tileHeight);
-        tileSet.render(x, y, 0);
+        tileSet.render(x, y, 0, (SDL_FLIP_NONE));
 
     }
     else {

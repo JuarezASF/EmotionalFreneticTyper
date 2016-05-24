@@ -5,20 +5,25 @@
 #include <Game.h>
 #include "Util.h"
 #include "InputManager.h"
-#include "defines.h"
 #include "Camera.h"
 #include "Collision.h"
 #include "StageState.h"
-#include "EndState.h"
-#include "PlaybleEmotion.h"
+#include "PlayableEmotion.h"
 #include "TyperInput.h"
+#include "SupportRectangle.h"
 
 #define TILE_HEIGHT 64
 #define TILE_WIDTH 64
 
-StageState::StageState() : bg("img/farBackground.jpg"){
+StageState::StageState() : bg("img/farBackground.jpg") {
 
-    addObject(new PlaybleEmotion());
+    GameObject *mainPlayer = new PlayableEmotion();
+
+    addObject(mainPlayer);
+    addObject(new SupportRectangle(Vec2(150, 150), Vec2(600, 400)));
+
+
+//    Camera::follow(mainPlayer);
 
 
 }
@@ -36,7 +41,7 @@ Sprite StageState::getBg() {
 void StageState::update(float dt) {
     TyperInput &im = TyperInput::getInstance();
 
-    if ( im.getQuitRequested())
+    if (im.getQuitRequested())
         popRequested = true;
 
     Camera::update(dt);
@@ -50,8 +55,8 @@ void StageState::update(float dt) {
         for (int j = 0; j < i; j++) {
             if (objectArray[j]->is("Animation"))
                 continue;
-            if (Collision::IsColliding(objectArray[i]->getBox(), objectArray[j]->getBox(),
-                                       objectArray[i]->getRotation(), objectArray[j]->getRotation())) {
+            if (Collision::IsColliding(objectArray[i]->getCollisionVolume(), objectArray[j]->getCollisionVolume()
+            )) {
                 objectArray[i]->notifyCollision(*objectArray[j]);
                 objectArray[j]->notifyCollision(*objectArray[i]);
 
@@ -74,7 +79,7 @@ void StageState::update(float dt) {
 }
 
 void StageState::render() {
-    bg.render(0, 0, 0);
+    bg.render(0, 0, 0, (SDL_FLIP_NONE));
 
     renderArray();
 }

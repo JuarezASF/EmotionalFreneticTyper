@@ -7,10 +7,11 @@
 
 #include "Rect.h"
 #include "Sound.h"
+#include "Collidable.h"
 
 class GameObject {
 protected:
-    Rect box;
+    Collidable* collisionVolume;
 
     //center pos
     Vec2 pos;
@@ -28,11 +29,11 @@ public:
 
     virtual void update(float dt) = 0;
 
-    virtual void render();
+    virtual void render(bool forceDraw= false);
 
     virtual bool isDead() = 0;
 
-    inline Rect &getBox() { return box; }
+    inline Collidable *getCollisionVolume() { return collisionVolume; }
 
     inline Vec2 getCenterPos() { return pos; }
 

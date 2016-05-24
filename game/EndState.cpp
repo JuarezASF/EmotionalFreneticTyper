@@ -40,7 +40,7 @@ void EndState::update(float dt) {
 
 void EndState::render() {
 
-    bg.render(0, 0, 0);
+    bg.render(0, 0, 0, (SDL_FLIP_NONE));
 
     instruction.render();
 }

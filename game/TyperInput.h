@@ -18,7 +18,7 @@
 class TyperInput {
 public:
     typedef enum TypingEvent {
-        MOVE, TURN, RUN, STOP, JUMP, DASH
+        MOVE, TURN, RUN, STOP, JUMP, DASH, UP, DOWN
     } TypingEvent;
 
     static std::map <std::string, TypingEvent> eventStringMap;
@@ -60,6 +60,10 @@ public:
     void clearBuffer();
 
     void checkForKnownWord();
+
+    inline bool hasTypintEvent(){return !typedCommands.empty();}
+
+    TypingEvent getTypingEvent();
 
 
 };
