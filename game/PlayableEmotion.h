@@ -32,6 +32,8 @@ private:
 
     Timer activeActionTimer;
 
+    bool defeated;
+
 public:
 
     PlayableEmotion(int x, int y);

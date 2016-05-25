@@ -1,0 +1,9 @@
+A ser feito:
+
+    * [JASF] melhorar solução de colisão
+    * [JASF] ajustar velocidade de pulo e de run
+    * tela de início
+    * tela de vitória
+    * tela de derrota
+    * [Marcos] painel direito e esquerdo mostrando meta-dados sobre o estado do jogo
+    * condição de vitória e derrota

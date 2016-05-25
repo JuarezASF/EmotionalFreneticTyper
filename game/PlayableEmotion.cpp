@@ -17,9 +17,11 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  idleSp("img/Sprite_Idle.png", 5, 0.15),
                                                  idleStartJump("img/idleJump_start.png", 4, 0.15),
                                                  idleJump("img/idleJump_Jump.png", 3, 0.15),
-                                                 runningJumpSp("img/moveJump_Jump.png", 3, 0.15),
+                                                 runningJumpSp("img/moveJump_Jump.png", 3, 0.6),
                                                  runningStartJumpSp("img/moveJump_Start.png", 4, 0.15),
                                                  jumpEndSp("img/Jump_End.png", 7, 0.15) {
+
+    defeated = false;
 
     currentState = PlayableState::IDLE;
     currentlyFacing = PlayableFacing::RIGHT;
@@ -133,7 +135,7 @@ void PlayableEmotion::update(float dt) {
             if (idleStartJump.isThistLastFrame()) {
                 currentState = PlayableState::IDLE_JUMP_JUMPING;
                 idleStartJump.setFrame(0);
-                speed += Vec2(0, -40);
+                speed += Vec2(0, -120);
             }
             break;
         case PlayableState::IDLE_JUMP_JUMPING:
@@ -164,7 +166,7 @@ void PlayableEmotion::update(float dt) {
             if(runningStartJumpSp.isThistLastFrame()){
                 currentState = PlayableState::RUNNING_JUMP_JUMPING;
                 runningJumpSp.setFrame(0);
-                speed += Vec2(0, -80);
+                speed += Vec2(0, -150);
             }
             break;
         case PlayableState::RUNNING_JUMP_JUMPING:
@@ -212,14 +214,20 @@ void PlayableEmotion::toogleDirection() {
 }
 
 bool PlayableEmotion::isDead() {
-    return false;
+    return defeated;
 }
 
 void PlayableEmotion::notifyCollision(GameObject &other) {
 
     vector<pair<Vec2, Vec2>> collidingSegments;
 
-    if (other.is("SupportRectangle")) {
+    if (other.is("KillingRectangle")) {
+        defeated = true;
+
+
+
+    }
+    else if (other.is("SupportRectangle")) {
 
         Vec2 testPoint = pos;
 
@@ -233,9 +241,12 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
                 break;
         }
 
+        speed.y = 0;
         pos = testPoint;
         ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
 
+
+    }else{
 
     }
 

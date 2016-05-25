@@ -49,3 +49,8 @@ void SupportRectangle::render() {
 void SupportRectangle::clearCollisionState() {
 
 }
+
+SupportRectangle::SupportRectangle() {
+    construct(Vec2(0,0), Vec2(1,1));
+
+}

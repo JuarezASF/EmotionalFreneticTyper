@@ -11,6 +11,7 @@
 #include "PlayableEmotion.h"
 #include "TyperInput.h"
 #include "SupportRectangle.h"
+#include "KillingRectangle.h"
 
 #define TILE_HEIGHT 170
 #define TILE_WIDTH 170
@@ -22,6 +23,7 @@ StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_
 
     addObject(mainPlayer);
     addObject(new SupportRectangle(Vec2(0, 500), 800, 80));
+    addObject(new KillingRectangle(Vec2(0, 500), 80, 80, Vec2(0, -20)));
 
 
 }
@@ -93,4 +95,8 @@ void StageState::pause() {
 
 void StageState::resume() {
 
+}
+
+StageState::StateInfo StageState::getStateInfo() {
+    return StageState::StateInfo();
 }

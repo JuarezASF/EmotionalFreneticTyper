@@ -36,6 +36,16 @@ public:
 
     Sprite getBg();
 
+    class StateInfo{
+    public:
+        vector<string> recentlyUsedWords;
+        string usedEmotion;
+    };
+
+    StateInfo getStateInfo();
+
+
+
 
 };
 

@@ -16,6 +16,7 @@ private:
     void construct(Vec2 leftTop, Vec2 bottomRight);
 
 public:
+    SupportRectangle();
     SupportRectangle(Vec2 leftTop, Vec2 bottomRight);
 
     SupportRectangle(Vec2 leftTop, int width, int height);
