@@ -12,15 +12,16 @@
 #include "TyperInput.h"
 #include "SupportRectangle.h"
 
-#define TILE_HEIGHT 64
-#define TILE_WIDTH 64
+#define TILE_HEIGHT 170
+#define TILE_WIDTH 170
 
-StageState::StageState() : bg("img/farBackground.jpg") {
+StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
+                           tileMap("map/tileMap.txt", &tileSet) {
 
-    GameObject *mainPlayer = new PlayableEmotion();
+    GameObject *mainPlayer = new PlayableEmotion(100, 200);
 
     addObject(mainPlayer);
-    addObject(new SupportRectangle(Vec2(150, 150), Vec2(600, 400)));
+    addObject(new SupportRectangle(Vec2(0, 500), 800, 80));
 
 
 }
@@ -43,9 +44,8 @@ void StageState::update(float dt) {
 
     Camera::update(dt);
 
-    //clear collision
-    for (uint obj_idx = 0; obj_idx < objectArray.size(); obj_idx++)
-        objectArray[obj_idx]->clearCollisionState();
+
+    updateArray(dt);
 
     //test for collision
     for (int i = objectArray.size() - 1; i >= 0; i--) {
@@ -65,8 +65,6 @@ void StageState::update(float dt) {
 
     }
 
-    updateArray(dt);
-
 
     std::vector<int> toBeDeleted;
     //collect index to all objects that need to be deleted
@@ -82,7 +80,11 @@ void StageState::update(float dt) {
 void StageState::render() {
     bg.render(0, 0, 0, (SDL_FLIP_NONE));
 
+    tileMap.renderLayer(0, Camera::getPos(Camera::PLAYER_GROUND_VIEW));
+
     renderArray();
+
+
 }
 
 void StageState::pause() {

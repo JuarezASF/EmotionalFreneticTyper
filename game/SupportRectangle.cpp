@@ -12,7 +12,9 @@ void SupportRectangle::construct(Vec2 leftTop, Vec2 bottomRight) {
     size.x = abs(size.x);
     size.y = abs(size.y);
 
-    collisionVolume = new CollidableBox(leftTop, size.y, size.x);
+    collisionVolume = new CollidableBox(leftTop, size.x, size.y);
+
+    rotation = 0;
 }
 
 SupportRectangle::SupportRectangle(Vec2 leftTop, Vec2 bottomRight) {

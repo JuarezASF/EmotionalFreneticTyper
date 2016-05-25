@@ -191,3 +191,7 @@ Sprite::Sprite(const Sprite &sp) {
     setClip(0, 0, frameWidth, height);
 
 }
+
+bool Sprite::isThistLastFrame() {
+    return currentFrame == (frameCount - 1);
+}

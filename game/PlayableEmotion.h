@@ -12,29 +12,31 @@
 
 class PlayableEmotion : public GameObject{
 public:
-    enum PlayableState{IDLE, WALKING, JUMPING, FALLING, RUNNING, GRABBING, DASHING};
+    enum PlayableState{IDLE, RUNNING, TURNING, GETTING_TO_RUN, STOPING_RUN, RUNNING_JUMP_START, RUNNING_JUMP_JUMPING,
+        RUNNING_JUMP_END, IDLE_JUMP_START, IDLE_JUMP_JUMPING, JUMP_END};
+
     enum PlayableFacing{LEFT, RIGHT};
 
 private:
 
-    Sprite sp;
+    Sprite runnigSp, gettingToRunSp, stopingToRunSp, turningSp, idleSp;
+    Sprite idleStartJump, idleJump, runningJumpSp, runningStartJumpSp, jumpEndSp;
     PlayableState currentState;
     PlayableFacing currentlyFacing;
-    Vec2 speed, acceleration;
+    Vec2 speed, acceleration, previousPos;
     float speedAngle, speedMagnitude;
     float accelerationAngle, accelerationMagnitude;
     vector<pair<Vec2, Vec2>> restrictingLineSegments;
 
     int lifePoints;
 
-    Timer dashTimer;
+    Timer activeActionTimer;
 
 public:
 
+    PlayableEmotion(int x, int y);
+
     virtual void clearCollisionState();
-
-    PlayableEmotion();
-
 
     virtual void update(float dt);
 
@@ -45,6 +47,8 @@ public:
     virtual bool is(std::string type);
 
     void render();
+
+    void toogleDirection();
 };
 
 

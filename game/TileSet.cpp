@@ -5,6 +5,7 @@
 #include "TileSet.h"
 #include "Vec2.h"
 #include <iostream>
+#include <unistd.h>
 
 TileSet::TileSet(int tileWidth, int tileHeight, std::string file) : tileWidth(tileWidth), tileHeight(tileHeight) {
     tileSet.open(file);
@@ -16,6 +17,7 @@ TileSet::TileSet(int tileWidth, int tileHeight, std::string file) : tileWidth(ti
     columns = totalWidth / tileWidth;
     rows = totalHeight / tileHeight;
 
+    cout << "Loading tileset with " << columns << " columns and " << rows << "rows" << endl;
 
 }
 

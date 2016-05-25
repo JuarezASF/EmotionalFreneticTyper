@@ -6,162 +6,20 @@
 #include "Camera.h"
 #include "TyperInput.h"
 #include "CollidableBox.h"
-#include "jasf_math.h"
+#include "ForceField.h"
+#include "Collision.h"
 
-void PlayableEmotion::update(float dt) {
-
-    sp.update(dt);
-
-    TyperInput &im = TyperInput::getInstance();
-
-    if (im.hasTypintEvent()) {
-        TyperInput::TypingEvent e = im.getTypingEvent();
-
-        switch (e) {
-            case TyperInput::TypingEvent::TURN :
-                if (currentState == PlayableState::DASHING)
-                    break;
-
-                this->currentlyFacing = (currentlyFacing == PlayableFacing::RIGHT) ? PlayableFacing::LEFT
-                                                                                   : PlayableFacing::RIGHT;
-                speedAngle = (currentlyFacing == PlayableFacing::RIGHT) ? 0: M_PI;
-
-                break;
-            case TyperInput::TypingEvent::MOVE :
-                currentState = PlayableState::WALKING;
-                speedMagnitude = 50;
-                speedAngle = (currentlyFacing == PlayableFacing::RIGHT) ? 0: M_PI;
-                break;
-            case TyperInput::TypingEvent::UP :
-                currentState = PlayableState::JUMPING;
-                speedMagnitude = 50;
-                speedAngle = - 1*M_PI_2;
-                break;
-            case TyperInput::TypingEvent::DOWN :
-                currentState = PlayableState::FALLING;
-                speedMagnitude = 50;
-                speedAngle = 1*M_PI_2;
-                break;
-            case TyperInput::TypingEvent::RUN :
-                currentState = PlayableState::RUNNING;
-                speedMagnitude = 80;
-
-                break;
-            case TyperInput::TypingEvent::STOP :
-                currentState = PlayableState::IDLE;
-                speedMagnitude = 0;
-                accelerationMagnitude = 0;
-
-                break;
-            case TyperInput::TypingEvent::DASH :
-                currentState = PlayableState::DASHING;
-                speedMagnitude = 100;
-                accelerationMagnitude = 0;
-                dashTimer.restart();
-
-                break;
-            case TyperInput::TypingEvent::JUMP :
-                //TODO
-
-                break;
-            default:
-
-                break;
-        }
-    }
-
-
-    switch (currentState) {
-        case PlayableState::IDLE:
-            break;
-        case PlayableState::WALKING:
-            break;
-        case PlayableState::RUNNING:
-            break;
-        case PlayableState::DASHING:
-            dashTimer.update(dt);
-            if (dashTimer.get() > 2) {
-                currentState = PlayableState::WALKING;
-                speedMagnitude = 50;
-            }
-            break;
-        case PlayableState::JUMPING:
-            break;
-        case PlayableState::FALLING:
-            break;
-        case PlayableState::GRABBING:
-            break;
-        default:
-            break;
-    }
-
-    speed = Vec2::getVec2FromPolar(speedMagnitude, speedAngle);
-
-    if (speed.magnitude() < 0.1)
-        speed = Vec2(0,0);
-
-    pos += dt * speed;
-
-    ((CollidableBox *)collisionVolume)->setLT(pos + center_LT_displacement);
-
-    for(auto line : restrictingLineSegments){
-        Vec2 a = line.first;
-        Vec2 b = line.second;
-
-
-        Vec2 directionOfLine = (b-a).getNormalizedVector().rotated(M_PI_2);
-
-        float mag = speed.dot(directionOfLine);
-
-        Vec2 newSpeed = speed + Vec2::getVec2FromPolar(mag, directionOfLine.ang_rad());
-
-        if (newSpeed.magnitude() > speed.magnitude())
-            speed = speed - Vec2::getVec2FromPolar(mag, directionOfLine.ang_rad());
-        else
-            speed = newSpeed;
-    }
-
-}
-
-bool PlayableEmotion::isDead() {
-    return false;
-}
-
-void PlayableEmotion::notifyCollision(GameObject &other) {
-
-    vector<pair<Vec2, Vec2>> collidingSegments;
-
-    if (other.is("SupportRectangle")){
-
-        //colide every line segment with every line segment composing both boxes to find the support line segement that
-        // is effectively being colided with
-        auto corners = ((CollidableBox*)other.getCollisionVolume())->box.getCorners();
-        auto selfCorners = ((CollidableBox*)this->getCollisionVolume())->box.getCorners();
-        Vec2 a, b, c, d;
-        for(uint k = 0; k < corners.size(); k++){
-            a = corners[k];
-            b = corners[(k + 1) % corners.size()];
-            for(uint j = 0; j < selfCorners.size(); j++) {
-                c = selfCorners[j];
-                d = selfCorners[(j+1)%selfCorners.size()];
-
-                if(lineIntersect(a, b, c, d)){
-                    collidingSegments.push_back(std::make_pair(a, b));
-                    break;
-                }
-            }
-        }
-    }
-
-    restrictingLineSegments.insert(restrictingLineSegments.end(), collidingSegments.begin(), collidingSegments.end());
-
-}
-
-bool PlayableEmotion::is(std::string type) {
-    return type == "PlayableEmotion";
-}
-
-PlayableEmotion::PlayableEmotion() : GameObject(), sp("img/dummyCharSprite.png", 8, 0.25) {
+PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
+                                                 runnigSp("img/Sprite_Run.png", 15, 0.15),
+                                                 gettingToRunSp("img/sprite_StartRun.png", 8, 0.15),
+                                                 stopingToRunSp("img/sprite_EndRun.png", 6, 0.15),
+                                                 turningSp("img/Sprite_Turn.png", 11, 0.15),
+                                                 idleSp("img/Sprite_Idle.png", 5, 0.15),
+                                                 idleStartJump("img/idleJump_start.png", 4, 0.15),
+                                                 idleJump("img/idleJump_Jump.png", 3, 0.15),
+                                                 runningJumpSp("img/moveJump_Jump.png", 3, 0.15),
+                                                 runningStartJumpSp("img/moveJump_Start.png", 4, 0.15),
+                                                 jumpEndSp("img/Jump_End.png", 7, 0.15) {
 
     currentState = PlayableState::IDLE;
     currentlyFacing = PlayableFacing::RIGHT;
@@ -176,23 +34,270 @@ PlayableEmotion::PlayableEmotion() : GameObject(), sp("img/dummyCharSprite.png",
     speed = Vec2::getVec2FromPolar(speedMagnitude, speedAngle);
     acceleration = Vec2::getVec2FromPolar(accelerationMagnitude, accelerationAngle);
 
-    int width = sp.getWidth()/8;
-    int height = sp.getHeight();
+    int width = runnigSp.getWidth() / 15;
+    int height = runnigSp.getHeight();
 
     center_LT_displacement = -0.5 * Vec2(width, height);
 
-    pos = 0.5 * Vec2(width, height);
+    pos = Vec2(x, y);
+    speed = Vec2(0, 0);
+    acceleration = Vec2(0, 0);
+    previousPos = pos;
+
 
     collisionVolume = new CollidableBox(pos + center_LT_displacement, width, height);
 
+    activeActionTimer.restart();
+
 }
+
+void PlayableEmotion::update(float dt) {
+
+    activeActionTimer.update(dt);
+
+    TyperInput &im = TyperInput::getInstance();
+
+    //get typing input and decide state transition
+    if (im.hasTypintEvent()) {
+        TyperInput::TypingEvent e = im.getTypingEvent();
+
+        switch (currentState) {
+            case PlayableState::IDLE:
+                switch (e) {
+                    case TyperInput::TypingEvent::TURN :
+                        currentState = PlayableState::TURNING;
+                        idleSp.setFrame(0);
+                        activeActionTimer.restart();
+                        break;
+                    case TyperInput::TypingEvent::RUN :
+                        currentState = PlayableState::GETTING_TO_RUN;
+                        gettingToRunSp.setFrame(0);
+                        activeActionTimer.restart();
+                        break;
+                    case TyperInput::TypingEvent::JUMP :
+                        currentState = PlayableState::IDLE_JUMP_START;
+                        idleStartJump.setFrame(0);
+                        activeActionTimer.restart();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case PlayableState::GETTING_TO_RUN:
+                break;
+            case PlayableState::RUNNING:
+                switch (e) {
+                    case TyperInput::TypingEvent::STOP :
+                        currentState = PlayableState::STOPING_RUN;
+                        stopingToRunSp.setFrame(0);
+                        activeActionTimer.restart();
+                        break;
+                    case TyperInput::TypingEvent::JUMP :
+                        currentState = PlayableState::RUNNING_JUMP_START;
+                        runningStartJumpSp.setFrame(0);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case PlayableState::STOPING_RUN:
+                break;
+            case PlayableState::TURNING:
+                break;
+            default:
+                break;
+
+        }
+
+    }
+    //update forces accorging to state
+    switch (currentState) {
+        case PlayableState::IDLE:
+            idleSp.update(dt);
+            break;
+        case PlayableState::GETTING_TO_RUN:
+            acceleration = Vec2(5, 0);
+            gettingToRunSp.update(dt);
+            if (gettingToRunSp.isThistLastFrame()) {
+                currentState = PlayableState::RUNNING;
+                runnigSp.setFrame(0);
+            }
+            break;
+        case PlayableState::RUNNING:
+            runnigSp.update(dt);
+            acceleration = Vec2(0, 0);
+            speed.x = 20;
+            break;
+        case PlayableState::IDLE_JUMP_START:
+            idleStartJump.update(dt);
+            if (idleStartJump.isThistLastFrame()) {
+                currentState = PlayableState::IDLE_JUMP_JUMPING;
+                idleStartJump.setFrame(0);
+                speed += Vec2(0, -40);
+            }
+            break;
+        case PlayableState::IDLE_JUMP_JUMPING:
+            idleJump.update(dt);
+            if (idleJump.isThistLastFrame()) {
+                currentState = PlayableState::JUMP_END;
+                jumpEndSp.setFrame(0);
+            }
+            break;
+        case PlayableState::JUMP_END:
+            jumpEndSp.update(dt);
+            if (jumpEndSp.isThistLastFrame()) {
+                currentState = PlayableState::IDLE;
+                idleSp.setFrame(0);
+            }
+            break;
+        case PlayableState::STOPING_RUN:
+            stopingToRunSp.update(dt);
+            acceleration = Vec2(-5, 0);
+            if (stopingToRunSp.isThistLastFrame()) {
+                currentState = PlayableState::IDLE;
+                idleSp.setFrame(0);
+
+            }
+            break;
+        case PlayableState::RUNNING_JUMP_START:
+            runningStartJumpSp.update(dt);
+            if(runningStartJumpSp.isThistLastFrame()){
+                currentState = PlayableState::RUNNING_JUMP_JUMPING;
+                runningJumpSp.setFrame(0);
+                speed += Vec2(0, -80);
+            }
+            break;
+        case PlayableState::RUNNING_JUMP_JUMPING:
+            runningJumpSp.update(dt);
+            if(runningJumpSp.isThistLastFrame()){
+                currentState = PlayableState::RUNNING_JUMP_END;
+                jumpEndSp.setFrame(0);
+            }
+            break;
+        case PlayableState::RUNNING_JUMP_END:
+            jumpEndSp.update(dt);
+            if(jumpEndSp.isThistLastFrame()){
+                currentState = PlayableState::RUNNING;
+                runnigSp.setFrame(0);
+            }
+            break;
+        case PlayableState::TURNING:
+            acceleration = Vec2(0, 0);
+            turningSp.update(dt);
+            if (turningSp.isThistLastFrame()) {
+                currentState = PlayableState::IDLE;
+                toogleDirection();
+                idleSp.setFrame(0);
+
+            }
+            break;
+        default:
+            break;
+
+    }
+
+    acceleration += ForceField::getInstance()->getForceAt(pos);
+
+    //integrate time equation
+    speed += dt * acceleration;
+    previousPos = pos;
+    pos += dt * speed;
+
+    ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
+
+}
+
+void PlayableEmotion::toogleDirection() {
+    currentlyFacing = (currentlyFacing == RIGHT) ? LEFT : RIGHT;
+}
+
+bool PlayableEmotion::isDead() {
+    return false;
+}
+
+void PlayableEmotion::notifyCollision(GameObject &other) {
+
+    vector<pair<Vec2, Vec2>> collidingSegments;
+
+    if (other.is("SupportRectangle")) {
+
+        Vec2 testPoint = pos;
+
+        Vec2 directionToEscape = (previousPos - pos).getNormalizedVector();
+        float step = 10;
+
+        while (true) {
+            testPoint = testPoint + Vec2(0, -1 * step);
+            ((CollidableBox *) collisionVolume)->setLT(testPoint + center_LT_displacement);
+            if (!Collision::IsColliding(getCollisionVolume(), other.getCollisionVolume()))
+                break;
+        }
+
+        pos = testPoint;
+        ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
+
+
+    }
+
+}
+
+bool PlayableEmotion::is(std::string type) {
+    return type == "PlayableEmotion";
+}
+
 
 void PlayableEmotion::render() {
     GameObject::render();
 
     Vec2 pos = getCenterPos() + center_LT_displacement - Camera::getPos(1);
 
-    sp.render(pos.x, pos.y, rotation, (currentlyFacing == PlayableFacing::LEFT)? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+    switch (currentState) {
+        case PlayableState::RUNNING:
+            runnigSp.render(pos.x, pos.y, rotation,
+                            (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::GETTING_TO_RUN:
+            gettingToRunSp.render(pos.x, pos.y, rotation,
+                                  (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::IDLE:
+            idleSp.render(pos.x, pos.y, rotation,
+                          (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::IDLE_JUMP_START:
+            idleStartJump.render(pos.x, pos.y, rotation,
+                            (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::IDLE_JUMP_JUMPING:
+            idleJump.render(pos.x, pos.y, rotation,
+                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::JUMP_END:
+            jumpEndSp.render(pos.x, pos.y, rotation,
+                            (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::RUNNING_JUMP_START:
+            runningStartJumpSp.render(pos.x, pos.y, rotation,
+                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::RUNNING_JUMP_JUMPING:
+            runningJumpSp.render(pos.x, pos.y, rotation,
+                                      (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::RUNNING_JUMP_END:
+            jumpEndSp.render(pos.x, pos.y, rotation,
+                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::STOPING_RUN:
+            stopingToRunSp.render(pos.x, pos.y, rotation,
+                                  (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::TURNING:
+            turningSp.render(pos.x, pos.y, rotation,
+                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+
+    }
 }
 
 void PlayableEmotion::clearCollisionState() {

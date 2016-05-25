@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
         im.loadDictionary("txt/commandsDict.txt");
         im.printDictionary();
 
-        Game g = Game("Emotional Typing", 1024, 600);
+        Game g = Game("Emotional Typing", 1366, 768);
 
         g.push(new StageState());
         g.run();

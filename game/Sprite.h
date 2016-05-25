@@ -78,6 +78,8 @@ public:
 
     int getFrameWidth();
 
+    bool isThistLastFrame();
+
 
 
 };
