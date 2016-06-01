@@ -31,6 +31,10 @@ public:
 
     Vec2 getTopLeft();
 
+    /**
+     * Order of corners is: TL, BL, BR, TR
+     * Note that this order is based on rotation 0. If they are rotated, the first will no be the actual TL.
+     */
     std::vector<Vec2> getCorners();
 
     Vec2 getCenter() const;

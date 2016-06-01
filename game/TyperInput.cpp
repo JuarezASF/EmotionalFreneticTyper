@@ -202,7 +202,7 @@ void TyperInput::clearBuffer() {
 
     if (stringEventMap.find(buffer) != stringEventMap.end()) {
         std::cout << "recognized:" << buffer << std::endl;
-        typedCommands.push(stringEventMap[buffer]);
+        typedCommands.push_back(stringEventMap[buffer]);
     }
 
     std::cout << "buffer cleared. Content was:" << buffer << std::endl;
@@ -215,8 +215,12 @@ std::string TyperInput::getBuffer() { return buffer; }
 void TyperInput::checkForKnownWord() {
     if (stringEventMap.find(buffer) != stringEventMap.end()) {
         std::cout << "recognized:" << buffer << std::endl;
+<<<<<<< HEAD
         typedCommands.push(stringEventMap[buffer]);
         ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords.push_back(buffer);
+=======
+        typedCommands.push_back(stringEventMap[buffer]);
+>>>>>>> origin/master
         buffer.clear();
     }
 
@@ -224,7 +228,7 @@ void TyperInput::checkForKnownWord() {
 
 TyperInput::TypingEvent TyperInput::getTypingEvent() {
     TypingEvent out(typedCommands.front());
-    typedCommands.pop();
+    typedCommands.pop_front();
     return out;
 
 

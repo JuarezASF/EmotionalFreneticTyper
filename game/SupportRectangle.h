@@ -13,13 +13,13 @@ class SupportRectangle : public GameObject{
 
 private:
 
-    void construct(Vec2 leftTop, Vec2 bottomRight);
+    void construct(Vec2 leftTop, Vec2 bottomRight, float r=0.0);
 
 public:
     SupportRectangle();
     SupportRectangle(Vec2 leftTop, Vec2 bottomRight);
 
-    SupportRectangle(Vec2 leftTop, int width, int height);
+    SupportRectangle(Vec2 leftTop, int width, int height, float rotation = 0.0);
 
     virtual void clearCollisionState();
 

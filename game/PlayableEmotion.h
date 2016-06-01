@@ -13,7 +13,7 @@
 class PlayableEmotion : public GameObject{
 public:
     enum PlayableState{IDLE, RUNNING, TURNING, GETTING_TO_RUN, STOPING_RUN, RUNNING_JUMP_START, RUNNING_JUMP_JUMPING,
-        RUNNING_JUMP_END, IDLE_JUMP_START, IDLE_JUMP_JUMPING, JUMP_END};
+        RUNNING_JUMP_END, IDLE_JUMP_START, IDLE_JUMP_JUMPING, JUMP_END, TURN_RUN, DASHING, FALLING};
 
     enum PlayableFacing{LEFT, RIGHT};
 
@@ -21,6 +21,7 @@ private:
 
     Sprite runnigSp, gettingToRunSp, stopingToRunSp, turningSp, idleSp;
     Sprite idleStartJump, idleJump, runningJumpSp, runningStartJumpSp, jumpEndSp;
+    Sprite turnRunSp, dashSp, fallingSp;
     PlayableState currentState;
     PlayableFacing currentlyFacing;
     Vec2 speed, acceleration, previousPos;
@@ -33,6 +34,8 @@ private:
     Timer activeActionTimer;
 
     bool defeated;
+
+    bool wasRunning;
 
 public:
 
@@ -51,6 +54,8 @@ public:
     void render();
 
     void toogleDirection();
+
+    int getDirectionHorizontalMultiplier() const;
 };
 
 
