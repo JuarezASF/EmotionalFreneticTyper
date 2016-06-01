@@ -37,5 +37,18 @@ public:
 
 };
 
+class VictoryRectangle : public SupportRectangle {
+public:
+    VictoryRectangle(Vec2 leftTop, Vec2 bottomRight);
+
+    VictoryRectangle(Vec2 leftTop, int width, int height, float rotation = 0.0);
+
+    virtual bool is(std::string type);
+
+
+    virtual void render();
+
+};
+
 
 #endif //IDJ201601T1_COLLIDABLERECTANGLE_H

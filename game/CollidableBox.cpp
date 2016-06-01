@@ -13,6 +13,8 @@ bool CollidableBox::is(string className) {
 CollidableBox::CollidableBox(Vec2 topLeft, int width, int heigth, float r) : box(topLeft, heigth, width) {
     setRotation(r);
 
+    setColor(255, 0, 0, 255);
+
 
 }
 
@@ -27,7 +29,7 @@ void CollidableBox::render() {
     for (uint i = 0; i < corners.size(); i++) {
         Vec2 a = corners[i] - cameraDisplacement;
         Vec2 b = corners[(i + 1) % corners.size()] - cameraDisplacement;
-        SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 255, 0, 0, 255);
+        SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), colorR, colorG, colorB, colorA);
         SDL_RenderDrawLine(Game::getInstance().getRenderer(), a.x, a.y, b.x, b.y);
 
         auto normals = getNormals();
@@ -124,4 +126,12 @@ CollidableBox::CollisionAvoidanceInfo CollidableBox::getInfoToAvoidCollision(Vec
 
 
     return CollidableBox::CollisionAvoidanceInfo(normals[min_k], q);
+}
+
+void CollidableBox::setColor(int r, int g, int b, int a) {
+    colorR = r;
+    colorG = g;
+    colorB = b;
+    colorA = a;
+
 }

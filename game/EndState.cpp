@@ -11,11 +11,7 @@
 EndState::EndState(StateData stateData)  {
 
     if (stateData.playerVictory){
-        bg.open("img/win.jpg");
-        music.open("audio/endStateWin.ogg");
-    }else{
-        bg.open("img/lose.jpg");
-        music.open("audio/endStateLose.ogg");
+        bg.open("img/win.png");
     }
 
     instruction.setPos(300, 500, false, false);
@@ -25,16 +21,6 @@ EndState::EndState(StateData stateData)  {
 
 void EndState::update(float dt) {
 
-    InputManager &im = InputManager::getInstance();
-
-    if (im.keyPress(ESCAPE_KEY)){
-        popRequested = true;
-    }
-    if (im.keyPress(SPACE_BAR)){
-        popRequested = true;
-
-        Game::getInstance().push(new StageState());
-    }
 
 }
 
@@ -42,7 +28,7 @@ void EndState::render() {
 
     bg.render(0, 0, 0, (SDL_FLIP_NONE));
 
-    instruction.render();
+//    instruction.render();
 }
 
 void EndState::pause() {

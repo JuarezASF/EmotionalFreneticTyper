@@ -51,6 +51,8 @@ public:
      */
     virtual void renderArray();
 
+    void requestPop(){popRequested = true;}
+
 
 };
 

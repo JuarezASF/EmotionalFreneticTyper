@@ -15,6 +15,8 @@ public:
     Rect box;
     float rotation;
 
+    int colorR, colorG, colorB, colorA;
+
     virtual void render();
 
     virtual bool is(string className);
@@ -39,6 +41,8 @@ public:
     CollisionAvoidanceInfo getInfoToAvoidCollision(Vec2 p);
 
     vector<Vec2> getNormals();
+
+    void setColor(int r, int g, int b, int a);
 
 
 };

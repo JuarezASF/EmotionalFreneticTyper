@@ -51,6 +51,28 @@ void SupportRectangle::clearCollisionState() {
 }
 
 SupportRectangle::SupportRectangle() {
-    construct(Vec2(0,0), Vec2(1,1));
+    construct(Vec2(0, 0), Vec2(1, 1));
 
+}
+
+VictoryRectangle::VictoryRectangle(Vec2 leftTop, Vec2 bottomRight) : SupportRectangle(leftTop, bottomRight) {
+
+    ((CollidableBox *)collisionVolume)->setColor(0,255,0,255);
+
+}
+
+VictoryRectangle::VictoryRectangle(Vec2 leftTop, int width, int height, float rotation) : SupportRectangle(leftTop,
+                                                                                                           width,
+                                                                                                           height,
+                                                                                                           rotation) {
+    ((CollidableBox *)collisionVolume)->setColor(0,255,0,255);
+
+}
+
+bool VictoryRectangle::is(std::string type) {
+    return SupportRectangle::is(type) || type == "VictoryRectangle";
+}
+
+void VictoryRectangle::render() {
+    SupportRectangle::render();
 }

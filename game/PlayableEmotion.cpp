@@ -7,9 +7,11 @@
 #include "TyperInput.h"
 #include "CollidableBox.h"
 #include "ForceField.h"
+#include "Game.h"
+#include "EndState.h"
 
 PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
-                                                 runnigSp("img/Sprite_Run.png", 15, 0.15),
+                                                 runnigSp("img/Sprite_Run.png", 15, 0.0833),
                                                  gettingToRunSp("img/sprite_StartRun.png", 8, 0.15),
                                                  stopingToRunSp("img/sprite_EndRun.png", 6, 0.15),
                                                  turningSp("img/Sprite_Turn.png", 11, 0.15),
@@ -137,6 +139,7 @@ void PlayableEmotion::update(float dt) {
                         currentState = PlayableState::DASHING;
                         dashSp.setFrame(0);
                         activeActionTimer.restart();
+                        break;
                     }
                 }
                 break;
@@ -182,7 +185,7 @@ void PlayableEmotion::update(float dt) {
         case PlayableState::RUNNING:
             runnigSp.update(dt);
             acceleration = Vec2(0, 0);
-            speed.x = 20 * getDirectionHorizontalMultiplier();
+            speed.x = 40 * getDirectionHorizontalMultiplier();
             break;
         case PlayableState::IDLE_JUMP_START:
             idleStartJump.update(dt);
@@ -301,6 +304,12 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 
     if (other.is("KillingRectangle")) {
         defeated = true;
+
+
+    }
+    if (other.is("VictoryRectangle")) {
+//        Game::getInstance().getCurrentState().requestPop();
+        Game::getInstance().push(new EndState({true}));
 
 
     }
