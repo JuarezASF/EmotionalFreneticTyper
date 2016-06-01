@@ -19,10 +19,10 @@
 StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
                            tileMap("map/tileMap.txt", &tileSet) {
 
-    GameObject *mainPlayer = new PlayableEmotion(100, 200);
+    GameObject *mainPlayer = new PlayableEmotion(200, 300);
 
     addObject(mainPlayer);
-    addObject(new SupportRectangle(Vec2(0, 500), 800, 80));
+    addObject(new SupportRectangle(Vec2(0, 500), 800, 80 , 0));
     addObject(new KillingRectangle(Vec2(0, 500), 80, 80, Vec2(0, -20)));
 
 

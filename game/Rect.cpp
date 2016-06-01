@@ -28,6 +28,7 @@ std::vector<Vec2> Rect::getCorners() {
     }
     if(corners.empty()) {
         auto c = getCenter();
+        //TL
         corners.push_back((c + Vec2(-0.5*w, -0.5*h)).rotatedAroundCenter(c, rotation));
         //BL
         corners.push_back((c + Vec2(-0.5*w, +0.5*h)).rotatedAroundCenter(c, rotation));

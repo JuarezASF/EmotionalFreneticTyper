@@ -5,24 +5,24 @@
 #include "SupportRectangle.h"
 #include "CollidableBox.h"
 
-void SupportRectangle::construct(Vec2 leftTop, Vec2 bottomRight) {
+void SupportRectangle::construct(Vec2 leftTop, Vec2 bottomRight, float r) {
     this->pos = (leftTop + bottomRight) * 0.5;
 
     Vec2 size = bottomRight - leftTop;
     size.x = abs(size.x);
     size.y = abs(size.y);
 
-    collisionVolume = new CollidableBox(leftTop, size.x, size.y);
+    collisionVolume = new CollidableBox(leftTop, size.x, size.y, r);
 
-    rotation = 0;
+    rotation = r;
 }
 
 SupportRectangle::SupportRectangle(Vec2 leftTop, Vec2 bottomRight) {
     construct(leftTop, bottomRight);
 }
 
-SupportRectangle::SupportRectangle(Vec2 leftTop, int width, int height) {
-    construct(leftTop, leftTop + Vec2(width, height));
+SupportRectangle::SupportRectangle(Vec2 leftTop, int width, int height, float r) {
+    construct(leftTop, leftTop + Vec2(width, height), r);
 
 }
 

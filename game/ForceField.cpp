@@ -5,7 +5,7 @@
 #include "ForceField.h"
 
 Vec2 ForceField::getForceAt(Vec2 pos) {
-    return Vec2(0, 2);
+    return Vec2(0, 8);
 }
 
 ForceField *ForceField::getInstance() {
