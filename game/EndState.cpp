@@ -2,9 +2,9 @@
 // Created by jasf on 5/22/16.
 //
 
-#include <InputManager.h>
-#include <Game.h>
-#include <StageState.h>
+#include "InputManager.h"
+#include "Game.h"
+#include "StageState.h"
 #include "EndState.h"
 #include "defines.h"
 

@@ -86,7 +86,7 @@ Vec2 operator* (const float &c, const Vec2 &rhs) {
 }
 
 float Vec2::magnitude(){
-    return std::sqrt(x*x + y*y);
+    return sqrt(x*x + y*y);
 }
 Vec2 Vec2::getNormalizedVector(){
     Vec2 out(*this);
