@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "InputManager.h"
 #include "Logger.h"
+#include "StageState.h"
 
 GameObject *Camera::focus = nullptr;
 
@@ -94,7 +95,7 @@ Vec2 Camera::getPos(unsigned int k) {
     if (k > paralax_pos.size())
         Logger::err("Invalid paralax lv!");
 
-    return paralax_pos[k];
+    return paralax_pos[k] + Vec2(-1 * ((StageState&) Game::getInstance().getCurrentState()).getPanel().GetLeftWidth(),0);
 }
 
 GameObject *Camera::getPlayer() {

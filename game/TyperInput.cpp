@@ -6,6 +6,8 @@
 #include <SDL_events.h>
 #include "TyperInput.h"
 #include "defines.h"
+#include "Game.h"
+#include "StageState.h"
 
 std::map<std::string, TyperInput::TypingEvent> TyperInput::eventStringMap =
         {
@@ -208,10 +210,17 @@ void TyperInput::clearBuffer() {
 
 }
 
+std::string TyperInput::getBuffer() { return buffer; }
+
 void TyperInput::checkForKnownWord() {
     if (stringEventMap.find(buffer) != stringEventMap.end()) {
         std::cout << "recognized:" << buffer << std::endl;
+<<<<<<< HEAD
+        typedCommands.push(stringEventMap[buffer]);
+        ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords.push_back(buffer);
+=======
         typedCommands.push_back(stringEventMap[buffer]);
+>>>>>>> origin/master
         buffer.clear();
     }
 
