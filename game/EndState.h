@@ -6,9 +6,9 @@
 #define IDJ201601T1_ENDSTATE_H
 
 
-#include <Sprite.h>
-#include <Music.h>
-#include <Text.h>
+#include "Sprite.h"
+#include "Music.h"
+#include "Text.h"
 #include "State.h"
 #include "StateData.h"
 

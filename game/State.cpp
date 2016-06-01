@@ -27,7 +27,7 @@ bool State::getQuitRequested() {
 }
 
 void State::updateArray(float dt) {
-    for (uint obj_idx = 0; obj_idx < objectArray.size(); obj_idx++)
+    for (unsigned obj_idx = 0; obj_idx < objectArray.size(); obj_idx++)
         objectArray[obj_idx]->update(dt);
 }
 

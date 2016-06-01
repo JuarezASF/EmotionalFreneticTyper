@@ -7,7 +7,7 @@
 #include "Resources.h"
 #include "Logger.h"
 #include "Sprite.h"
-#include <GameConfig.h>
+#include "GameConfig.h"
 
 int Sprite::getWidth() const {
     return width * scaleX;

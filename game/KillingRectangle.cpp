@@ -35,7 +35,7 @@ void KillingRectangle::render() {
     static SDL_Rect sdl_rect;
     Rect &box = ((CollidableBox *)getCollisionVolume())->box;
     auto corners = box.getCorners();
-    for (uint i = 0; i < corners.size(); i++) {
+    for (unsigned i = 0; i < corners.size(); i++) {
         SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0,0,255,100);
         sdl_rect.x = box.x;
         sdl_rect.y = box.y;

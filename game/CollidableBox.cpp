@@ -18,7 +18,7 @@ CollidableBox::CollidableBox(Vec2 topLeft, int width, int heigth) : box(topLeft,
 void CollidableBox::render() {
     auto corners = box.getCorners();
     static SDL_Rect sdl_rect;
-    for (uint i = 0; i < corners.size(); i++) {
+    for (unsigned i = 0; i < corners.size(); i++) {
         Vec2 a = corners[i] - Camera::getPos(Camera::PLAYER_GROUND_VIEW);
         Vec2 b = corners[(i + 1) % corners.size()] - Camera::getPos(Camera::PLAYER_GROUND_VIEW);
         SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 255,0,0,255);
