@@ -59,6 +59,8 @@ public:
 
     void clearBuffer();
 
+    std::string getBuffer();
+
     void checkForKnownWord();
 
     inline bool hasTypintEvent(){return !typedCommands.empty();}

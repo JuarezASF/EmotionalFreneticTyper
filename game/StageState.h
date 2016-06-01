@@ -17,12 +17,14 @@
 #include "TileMap.h"
 #include "State.h"
 #include "Music.h"
+#include "Panel.h"
 
 class StageState : public State {
 protected:
     Sprite bg;
     TileSet tileSet;
     TileMap tileMap;
+    Panel stagePanel;
 
 public:
     StageState();
@@ -36,17 +38,12 @@ public:
 
     Sprite getBg();
 
-    class StateInfo{
-    public:
-        vector<string> recentlyUsedWords;
-        string usedEmotion;
-    };
+    //StateInfo getStateInfo();
 
-    StateInfo getStateInfo();
+    Panel getPanel();
 
-
-
-
+    vector<string> recentlyUsedWords;
+    string usedEmotion;
 };
 
 

@@ -17,7 +17,7 @@
 #define TILE_WIDTH 170
 
 StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
-                           tileMap("map/tileMap.txt", &tileSet) {
+                           tileMap("map/tileMap.txt", &tileSet), stagePanel(250, 250), usedEmotion() {
 
     GameObject *mainPlayer = new PlayableEmotion(100, 200);
 
@@ -42,7 +42,8 @@ void StageState::update(float dt) {
     TyperInput &im = TyperInput::getInstance();
 
     if (im.getQuitRequested())
-        popRequested = true;
+    	quitRequested = true;
+        //popRequested = true;
 
     Camera::update(dt);
 
@@ -77,6 +78,8 @@ void StageState::update(float dt) {
     auto objArrayBegin = objectArray.begin();
     for (auto it = toBeDeleted.rbegin(); it != toBeDeleted.rend(); ++it)
         objectArray.erase(objArrayBegin + *it);
+
+    stagePanel.update(dt);
 }
 
 void StageState::render() {
@@ -86,7 +89,7 @@ void StageState::render() {
 
     renderArray();
 
-
+    stagePanel.render();
 }
 
 void StageState::pause() {
@@ -97,6 +100,8 @@ void StageState::resume() {
 
 }
 
-StageState::StateInfo StageState::getStateInfo() {
-    return StageState::StateInfo();
-}
+//StageState::StateInfo StageState::getStateInfo() {
+//    return StageState::StateInfo();
+//}
+
+Panel StageState::getPanel() { return stagePanel; }

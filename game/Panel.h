@@ -5,21 +5,21 @@
 #ifndef IDJ201601T1_PANEL_H
 #define IDJ201601T1_PANEL_H
 
-
-#include "StageState.h"
+#include "Sprite.h"
+#include "Text.h"
 
 class Panel {
-
-    StageState* stage;
-
 public:
-
-    Panel(StageState *stateState);
-
+    Panel(int leftWidth, int rightWidth);
     void update(float dt);
-
     void render();
-
+    int GetLeftWidth();
+    int GetRightWidth();
+private:
+    Sprite bg;
+    int leftWidth, rightWidth;
+    Text worda, wordb, wordc;
+    bool printa, printb, printc;
 };
 
 

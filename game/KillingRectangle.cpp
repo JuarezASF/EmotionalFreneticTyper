@@ -6,6 +6,7 @@
 #include "CollidableBox.h"
 #include "Camera.h"
 #include "Game.h"
+#include "StageState.h"
 
 
 void KillingRectangle::update(float dt) {
@@ -37,7 +38,7 @@ void KillingRectangle::render() {
     auto corners = box.getCorners();
     for (unsigned i = 0; i < corners.size(); i++) {
         SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0,0,255,100);
-        sdl_rect.x = box.x;
+        sdl_rect.x = box.x + ((StageState&) Game::getInstance().getCurrentState()).getPanel().GetLeftWidth();
         sdl_rect.y = box.y;
         sdl_rect.w = box.w;
         sdl_rect.h = box.h;
