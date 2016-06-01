@@ -18,7 +18,7 @@
 class TyperInput {
 public:
     typedef enum TypingEvent {
-        MOVE, TURN, RUN, STOP, JUMP, DASH, UP, DOWN
+        MOVE, TURN, RUN, STOP, JUMP, DASH, UP, DOWN, COLIDED
     } TypingEvent;
 
     static std::map <std::string, TypingEvent> eventStringMap;
@@ -36,7 +36,7 @@ private:
 
     std::unordered_map<int, bool> keyState;
 
-    std::queue<TypingEvent> typedCommands;
+    std::deque<TypingEvent> typedCommands;
 
     bool quitRequested;
 
@@ -64,6 +64,8 @@ public:
     inline bool hasTypintEvent(){return !typedCommands.empty();}
 
     TypingEvent getTypingEvent();
+
+    inline void addEventOnFront(TypingEvent e){typedCommands.push_front(e);}
 
 
 };

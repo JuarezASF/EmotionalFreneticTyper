@@ -19,11 +19,13 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  runningJumpSp("img/moveJump_Jump.png", 3, 0.6),
                                                  runningStartJumpSp("img/moveJump_Start.png", 4, 0.15),
                                                  jumpEndSp("img/Jump_End.png", 7, 0.15),
-                                                 turnRunSp("img/sprite_MoveTurn.png", 11, 0.15), dashSp("img/sprite_Dash.png", 4, 0.15){
+                                                 turnRunSp("img/sprite_MoveTurn.png", 11, 0.15),
+                                                 dashSp("img/sprite_Dash.png", 4, 0.15),
+                                                 fallingSp("img/sprites_falling.png", 2, 0.15) {
 
     defeated = false;
 
-    currentState = PlayableState::IDLE;
+    currentState = PlayableState::FALLING;
     currentlyFacing = PlayableFacing::RIGHT;
     rotation = 0;
 
@@ -50,6 +52,7 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     collisionVolume = new CollidableBox(pos + center_LT_displacement, width, height);
 
     activeActionTimer.restart();
+    wasRunning = false;
 
 }
 
@@ -75,6 +78,7 @@ void PlayableEmotion::update(float dt) {
                         currentState = PlayableState::GETTING_TO_RUN;
                         gettingToRunSp.setFrame(0);
                         activeActionTimer.restart();
+                        wasRunning = true;
                         break;
                     case TyperInput::TypingEvent::JUMP :
                         currentState = PlayableState::IDLE_JUMP_START;
@@ -93,12 +97,13 @@ void PlayableEmotion::update(float dt) {
                         currentState = PlayableState::TURN_RUN;
                         turnRunSp.setFrame(0);
                         activeActionTimer.restart();
-                        speed.x  = 0.0;
+                        speed.x = 0.0;
                         break;
                     case TyperInput::TypingEvent::STOP :
                         currentState = PlayableState::STOPING_RUN;
                         stopingToRunSp.setFrame(0);
                         activeActionTimer.restart();
+                        wasRunning = false;
                         break;
                     case TyperInput::TypingEvent::JUMP :
                         currentState = PlayableState::RUNNING_JUMP_START;
@@ -111,6 +116,47 @@ void PlayableEmotion::update(float dt) {
             case PlayableState::STOPING_RUN:
                 break;
             case PlayableState::TURNING:
+                break;
+            case PlayableState::FALLING:
+                switch (e){
+                    case TyperInput::TypingEvent::COLIDED:
+                        if(wasRunning){
+                            currentState = PlayableState::RUNNING_JUMP_END;
+                            jumpEndSp.setFrame(0);
+                            activeActionTimer.restart();
+
+                        }
+                        else{
+                            currentState = PlayableState::JUMP_END;
+                            jumpEndSp.setFrame(0);
+                            activeActionTimer.restart();
+                        }
+
+                        break;
+                    case  TyperInput::TypingEvent::DASH:{
+                        currentState = PlayableState::DASHING;
+                        dashSp.setFrame(0);
+                        activeActionTimer.restart();
+                    }
+                }
+                break;
+            case PlayableState::DASHING:
+                switch (e){
+                    case TyperInput::TypingEvent::COLIDED:
+                        if(wasRunning){
+                            currentState = PlayableState::RUNNING_JUMP_END;
+                            jumpEndSp.setFrame(0);
+                            activeActionTimer.restart();
+
+                        }
+                        else{
+                            currentState = PlayableState::JUMP_END;
+                            jumpEndSp.setFrame(0);
+                            activeActionTimer.restart();
+                        }
+
+                        break;
+                }
                 break;
             default:
                 break;
@@ -172,11 +218,13 @@ void PlayableEmotion::update(float dt) {
         case PlayableState::RUNNING_JUMP_START:
             runningStartJumpSp.update(dt);
             if (runningStartJumpSp.isThistLastFrame()) {
-                currentState = PlayableState::RUNNING_JUMP_JUMPING;
-                runningJumpSp.setFrame(0);
+                currentState = PlayableState::FALLING;
+                fallingSp.setFrame(0);
                 speed += Vec2(0, -150 * getDirectionHorizontalMultiplier());
             }
             break;
+        case PlayableState::FALLING:
+            fallingSp.update(dt);
         case PlayableState::RUNNING_JUMP_JUMPING:
             runningJumpSp.update(dt);
             if (runningJumpSp.isThistLastFrame()) {
@@ -209,6 +257,15 @@ void PlayableEmotion::update(float dt) {
                 runnigSp.setFrame(0);
             }
             break;
+        case PlayableState::DASHING :
+            dashSp.update(dt);
+            acceleration -= ForceField::getInstance()->getForceAt(pos);
+            speed.x = 20;
+            if(activeActionTimer.get() > 2.0){
+                currentState = PlayableState::FALLING;
+                fallingSp.setFrame(0);
+
+            }
         default:
             break;
 
@@ -239,6 +296,9 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 
     vector<pair<Vec2, Vec2>> collidingSegments;
 
+    if(currentState == PlayableState::FALLING || currentState == PlayableState::DASHING)
+        TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::COLIDED);
+
     if (other.is("KillingRectangle")) {
         defeated = true;
 
@@ -248,7 +308,7 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
         CollidableBox::CollisionAvoidanceInfo i = ((CollidableBox *) other.getCollisionVolume())->getInfoToAvoidCollision(
                 pos);
         float d = abs(((CollidableBox *) collisionVolume)->getCenter().y -
-                  ((CollidableBox *) other.getCollisionVolume())->getCenter().y);
+                      ((CollidableBox *) other.getCollisionVolume())->getCenter().y);
         pos.y -= ((CollidableBox *) collisionVolume)->box.h * 0.5 +
                  i.qtd - d;
 
@@ -321,6 +381,14 @@ void PlayableEmotion::render() {
             break;
         case PlayableState::TURN_RUN:
             turnRunSp.render(pos.x, pos.y, rotation,
+                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::FALLING:
+            fallingSp.render(pos.x, pos.y, rotation,
+                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::DASHING:
+            dashSp.render(pos.x, pos.y, rotation,
                              (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
 

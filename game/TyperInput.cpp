@@ -200,7 +200,7 @@ void TyperInput::clearBuffer() {
 
     if (stringEventMap.find(buffer) != stringEventMap.end()) {
         std::cout << "recognized:" << buffer << std::endl;
-        typedCommands.push(stringEventMap[buffer]);
+        typedCommands.push_back(stringEventMap[buffer]);
     }
 
     std::cout << "buffer cleared. Content was:" << buffer << std::endl;
@@ -211,7 +211,7 @@ void TyperInput::clearBuffer() {
 void TyperInput::checkForKnownWord() {
     if (stringEventMap.find(buffer) != stringEventMap.end()) {
         std::cout << "recognized:" << buffer << std::endl;
-        typedCommands.push(stringEventMap[buffer]);
+        typedCommands.push_back(stringEventMap[buffer]);
         buffer.clear();
     }
 
@@ -219,7 +219,7 @@ void TyperInput::checkForKnownWord() {
 
 TyperInput::TypingEvent TyperInput::getTypingEvent() {
     TypingEvent out(typedCommands.front());
-    typedCommands.pop();
+    typedCommands.pop_front();
     return out;
 
 
