@@ -120,22 +120,22 @@ void PlayableEmotion::update(float dt) {
             case PlayableState::TURNING:
                 break;
             case PlayableState::FALLING:
-                switch (e){
+                switch (e) {
                     case TyperInput::TypingEvent::COLIDED:
-                        if(wasRunning){
+                        if (wasRunning) {
                             currentState = PlayableState::RUNNING_JUMP_END;
                             jumpEndSp.setFrame(0);
                             activeActionTimer.restart();
 
                         }
-                        else{
+                        else {
                             currentState = PlayableState::JUMP_END;
                             jumpEndSp.setFrame(0);
                             activeActionTimer.restart();
                         }
 
                         break;
-                    case  TyperInput::TypingEvent::DASH:{
+                    case TyperInput::TypingEvent::DASH: {
                         currentState = PlayableState::DASHING;
                         dashSp.setFrame(0);
                         activeActionTimer.restart();
@@ -144,15 +144,15 @@ void PlayableEmotion::update(float dt) {
                 }
                 break;
             case PlayableState::DASHING:
-                switch (e){
+                switch (e) {
                     case TyperInput::TypingEvent::COLIDED:
-                        if(wasRunning){
+                        if (wasRunning) {
                             currentState = PlayableState::RUNNING_JUMP_END;
                             jumpEndSp.setFrame(0);
                             activeActionTimer.restart();
 
                         }
-                        else{
+                        else {
                             currentState = PlayableState::JUMP_END;
                             jumpEndSp.setFrame(0);
                             activeActionTimer.restart();
@@ -264,7 +264,7 @@ void PlayableEmotion::update(float dt) {
             dashSp.update(dt);
             acceleration -= ForceField::getInstance()->getForceAt(pos);
             speed.x = 20;
-            if(activeActionTimer.get() > 2.0){
+            if (activeActionTimer.get() > 2.0) {
                 currentState = PlayableState::FALLING;
                 fallingSp.setFrame(0);
 
@@ -299,7 +299,7 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 
     vector<pair<Vec2, Vec2>> collidingSegments;
 
-    if(currentState == PlayableState::FALLING || currentState == PlayableState::DASHING)
+    if (currentState == PlayableState::FALLING || currentState == PlayableState::DASHING)
         TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::COLIDED);
 
     if (other.is("KillingRectangle")) {
@@ -316,13 +316,19 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
     else if (other.is("SupportRectangle")) {
         CollidableBox::CollisionAvoidanceInfo i = ((CollidableBox *) other.getCollisionVolume())->getInfoToAvoidCollision(
                 pos);
-        float d = abs(((CollidableBox *) collisionVolume)->getCenter().y -
-                      ((CollidableBox *) other.getCollisionVolume())->getCenter().y);
-        pos.y -= ((CollidableBox *) collisionVolume)->box.h * 0.5 +
-                 i.qtd - d;
+
+        bool horizontalSupport = (abs(i.direction.y) > abs(i.direction.x));
+
+        float myInterferingDimension = (horizontalSupport) ? ((CollidableBox *) collisionVolume)->box.h * 0.5f :
+                                       ((CollidableBox *) collisionVolume)->box.w * 0.5f;
+
+        Vec2 dv = ((CollidableBox *) collisionVolume)->getCenter() -
+                   ((CollidableBox *) other.getCollisionVolume())->getCenter();
+
+        float d = i.qtd + myInterferingDimension - abs((horizontalSupport)? dv.y : dv.x);
 
 
-//        pos = pos + i.direction * (((CollidableBox *) collisionVolume)->box.y - i.qtd);
+        pos = pos + d * i.direction;
         speed.y = 0;
         ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
 
@@ -398,7 +404,7 @@ void PlayableEmotion::render() {
             break;
         case PlayableState::DASHING:
             dashSp.render(pos.x, pos.y, rotation,
-                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+                          (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
 
     }

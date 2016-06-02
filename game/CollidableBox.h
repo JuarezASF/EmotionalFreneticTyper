@@ -35,7 +35,8 @@ public:
     public:
         Vec2 direction;
         float qtd;
-        CollisionAvoidanceInfo(Vec2 d, float q) : direction(d), qtd(q){}
+        int dirIdx;
+        CollisionAvoidanceInfo(Vec2 d, float q, int i) : direction(d), qtd(q), dirIdx(i){}
     };
 
     CollisionAvoidanceInfo getInfoToAvoidCollision(Vec2 p);

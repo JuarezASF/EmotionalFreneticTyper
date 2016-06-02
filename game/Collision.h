@@ -89,18 +89,3 @@ private:
     }
 };
 
-// Aqui estão três operadores que sua classe Vec2 deve precisar, se já não tiver. 
-// Se sua classe tiver métodos para Mag, Norm, Dot e/ou Rotate, você pode substituir
-// os usos desses métodos por usos dos seus, mas garanta que deem resultados corretos.
-
-// Vec2 operator+(const Vec2& rhs) const {
-//    return Vec2(x + rhs.x, y + rhs.y);
-// }
-
-// Vec2 operator-(const Vec2& rhs) const {
-//    return Vec2(x - rhs.x, y - rhs.y);
-// }
-
-// Vec2 operator*(const float rhs) const {
-//    return Vec2(x * rhs, y * rhs);
-// }

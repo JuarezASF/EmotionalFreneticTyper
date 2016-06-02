@@ -37,7 +37,7 @@ void CollidableBox::render() {
         uint k = 0;
         for (auto v : normals) {
             a = center - cameraDisplacement;
-            float q = 0.5f * ((((k++) %2) == 0) ? box.w : box.h);
+            float q = 0.5f * ((((k++) % 2) == 0) ? box.w : box.h);
             b = center + v * q - cameraDisplacement;
             SDL_RenderDrawLine(Game::getInstance().getRenderer(), a.x, a.y, b.x, b.y);
         }
@@ -98,34 +98,33 @@ vector<Vec2> CollidableBox::getNormals() {
 
 CollidableBox::CollisionAvoidanceInfo CollidableBox::getInfoToAvoidCollision(Vec2 p) {
     auto normals = getNormals();
+    auto corners = box.getCorners();
 
-    vector<float> normalDirections;
+    Vec2 vx = (corners[3] - corners[0]).getNormalizedVector();
+    Vec2 vy = (corners[1] - corners[0]).getNormalizedVector();
 
-    for (auto v : normals)
-        normalDirections.push_back(v.ang_rad());
+    p = p - box.getTopLeft();
 
-    float connectingLineAngle = (p - box.getCenter()).ang_rad();
+    float x = p.dot(vx);
+    float y = p.dot(vy);
 
-    //find min dif
-    int min_k = -1;
-    float min = numeric_limits<float>::infinity();
+    if (x <= box.w && x >= 0 && y <= 0) {
+        return {normals[3], box.h / 2, 3};
+    } else if (x <= 0 && y >= 0 && y <= box.h) {
+        return {normals[0], box.w / 2, 0};
+    }
+    else if (x >= 0 && x <= box.w && y >= box.h) {
+        return {normals[1], box.h / 2, 1};
+    }
+    else if (x >= box.w && y >= 0 && y <= box.h) {
+        return {normals[2], box.w / 2, 2};
+    }
+    else{
+        //TODO more 4 cases
+        return CollidableBox::CollisionAvoidanceInfo(Vec2(1,0), 20,2 );
 
-    for (uint k = 0; k < normalDirections.size(); k++) {
-        float distance = abs(normalDirections[k] - connectingLineAngle);
-        if (distance < min) {
-            min = distance;
-            min_k = k;
-        }
     }
 
-    if (min_k < 0) {
-        cerr << "Cannot find min! FIX ME!" << endl;
-    }
-
-    float q = 0.5f * (((min_k %2) == 0) ? box.w : box.h);
-
-
-    return CollidableBox::CollisionAvoidanceInfo(normals[min_k], q);
 }
 
 void CollidableBox::setColor(int r, int g, int b, int a) {
