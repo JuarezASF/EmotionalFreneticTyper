@@ -9,9 +9,9 @@
 
 Panel::Panel(int leftWidth, int rightWidth)
 : bg("img/panel.png"), leftWidth(leftWidth), rightWidth(rightWidth),
-  worda("font/Call me maybe.ttf", 25, Text::TextStyle::BLENDED, "inicioA", SDL_Color{255, 255, 0, 255}, 0, 0),
-  wordb("font/Call me maybe.ttf", 25, Text::TextStyle::BLENDED, "inicioB", SDL_Color{255, 255, 0, 255}, 0, 0),
-  wordc("font/Call me maybe.ttf", 25, Text::TextStyle::BLENDED, "inicioC", SDL_Color{0, 0, 0, 255}, 0, 0),
+  worda("font/Call me maybe.ttf", 40, Text::TextStyle::BLENDED, "inicioA", SDL_Color{255, 0, 0, 255}, 0, 0),
+  wordb("font/Call me maybe.ttf", 40, Text::TextStyle::BLENDED, "inicioB", SDL_Color{255, 0, 0, 255}, 0, 0),
+  wordc("font/Call me maybe.ttf", 40, Text::TextStyle::BLENDED, "inicioC", SDL_Color{0, 0, 0, 255}, 0, 0),
   printa(true), printb(true), printc(true){
 	Vec2 windowSize = Game::getInstance().getScreenDimensions();
 	worda.setPos(windowSize.x - rightWidth + 20, windowSize.y/2 - 300, false, false);
@@ -25,7 +25,6 @@ void Panel::update(float dt) {
 	if(!inputBuf.empty()) {
 		wordc.setText(TyperInput::getInstance().getBuffer());
 		printc = true;
-		std::cout << "TesteBuffer: " << TyperInput::getInstance().getBuffer() << std::endl;
 	}
 	vector<string> recentlyUsedWords = ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords;
 	if(!recentlyUsedWords.empty()) {
@@ -33,13 +32,11 @@ void Panel::update(float dt) {
     	if(!recentlyUsedWords[i-1].empty()) {
 			wordb.setText(recentlyUsedWords[i-1]);
 			printb = true;
-			std::cout << "TesteVectorUltimo: " << recentlyUsedWords[i-1] << std::endl;
     	}
     	if(i > 1) {
     		if(!recentlyUsedWords[i-2].empty()) {
     			worda.setText(recentlyUsedWords[i-2]);
 				printa = true;
-				std::cout << "TesteVectorPenultimo: " << recentlyUsedWords[i-2] << std::endl;
     		}
     	}
     }

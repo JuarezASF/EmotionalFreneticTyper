@@ -40,7 +40,7 @@ public:
 
     //StateInfo getStateInfo();
 
-    Panel getPanel();
+    Panel& getPanel();
 
     vector<string> recentlyUsedWords;
     string usedEmotion;
