@@ -24,7 +24,7 @@ StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_
     addObject(mainPlayer);
     addObject(new SupportRectangle(Vec2(0, 500), 800, 80 , 0));
     addObject(new KillingRectangle(Vec2(0, 500), 80, 80, Vec2(0, -20)));
-    addObject(new VictoryRectangle(Vec2(500, 400), 80, 80, 0));
+//    addObject(new VictoryRectangle(Vec2(500, 400), 80, 80, 0));
 
 
 }

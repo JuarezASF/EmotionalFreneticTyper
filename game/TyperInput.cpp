@@ -215,12 +215,8 @@ std::string TyperInput::getBuffer() { return buffer; }
 void TyperInput::checkForKnownWord() {
     if (stringEventMap.find(buffer) != stringEventMap.end()) {
         std::cout << "recognized:" << buffer << std::endl;
-<<<<<<< HEAD
-        typedCommands.push(stringEventMap[buffer]);
-        ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords.push_back(buffer);
-=======
         typedCommands.push_back(stringEventMap[buffer]);
->>>>>>> origin/master
+        ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords.push_back(buffer);
         buffer.clear();
     }
 
