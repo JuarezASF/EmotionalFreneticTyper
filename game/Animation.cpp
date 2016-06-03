@@ -4,11 +4,10 @@
 
 #include "Animation.h"
 #include "Camera.h"
-#include "Logger.h"
 
 Animation::Animation(float x, float y, float rotation, string sprite, float timeLimit, bool ends, int frameCount,
                      float frameTime)
-        :   timeLimit(timeLimit), oneTimeOnly(ends), sp(sprite, frameCount, frameTime){
+        : timeLimit(timeLimit), oneTimeOnly(ends), sp(sprite, frameCount, frameTime) {
 
     this->rotation = rotation;
     endTimer.restart();
@@ -18,7 +17,7 @@ Animation::Animation(float x, float y, float rotation, string sprite, float time
     int width = sp.getWidth() / frameCount;
     int height = sp.getHeight();
 
-    center_LT_displacement = -1 * Vec2(width * 0.5, height * 0.5);
+    center_LT_displacement = -1 * Vec2(width * 0.5f, height * 0.5f);
 
 }
 
@@ -33,17 +32,12 @@ void Animation::render() {
 
     Vec2 pos = pos + center_LT_displacement - Camera::getPos(Camera::PLAYER_GROUND_VIEW);
 
-    sp.render(pos.x, pos.y, rotation, (SDL_FLIP_NONE));
+    sp.render((int) pos.x, (int) pos.y, rotation, (SDL_FLIP_NONE));
 }
 
 bool Animation::isDead() {
 
-
-    if (oneTimeOnly && (endTimer.get() > timeLimit)) {
-        return true;
-    }
-    else
-        return false;
+    return oneTimeOnly && (endTimer.get() > timeLimit);
 }
 
 void Animation::notifyCollision(GameObject *other) {

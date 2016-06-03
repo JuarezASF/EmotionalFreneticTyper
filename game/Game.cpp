@@ -105,6 +105,8 @@ Game::Game(string name, int width, int height) {
 
     window = SDL_CreateWindow(name.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0);
 
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+
     if (!window)
         throw GameException("Could not load window!");
 
