@@ -16,9 +16,9 @@ std::vector<Vec2> Camera::paralax_pos;
 bool Camera::hasBenInitialized;
 std::vector<float> Camera::paralax_sinsitivity;
 
-int Camera::BACKGROUND_VIEW = 0;
-int Camera::PLAYER_GROUND_VIEW = 1;
-int Camera::TOPGROUND_VIEW = 2;
+uint Camera::BACKGROUND_VIEW = 0;
+uint Camera::PLAYER_GROUND_VIEW = 1;
+uint Camera::TOPGROUND_VIEW = 2;
 
 void Camera::follow(GameObject *newFocus) {
     focus = newFocus;

@@ -9,6 +9,8 @@
 #include "GameObject.h"
 #include "Sprite.h"
 #include "Timer.h"
+#include "CollidableCircle.h"
+
 
 class PlayableEmotion : public GameObject{
 public:
@@ -37,11 +39,11 @@ private:
 
     bool wasRunning;
 
+    CollidableCircle auxCollisionVolume[3];
+
 public:
 
     PlayableEmotion(int x, int y);
-
-    virtual void clearCollisionState();
 
     virtual void update(float dt);
 
@@ -56,6 +58,8 @@ public:
     void toogleDirection();
 
     int getDirectionHorizontalMultiplier() const;
+
+    void updatePos(Vec2 center);
 };
 
 

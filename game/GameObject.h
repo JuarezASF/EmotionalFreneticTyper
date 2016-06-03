@@ -43,10 +43,6 @@ public:
 
     virtual bool is(std::string type) = 0;
 
-    virtual void clearCollisionState() = 0;
-
-
-
 };
 
 

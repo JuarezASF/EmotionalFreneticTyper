@@ -16,7 +16,6 @@ private:
     float timeLimit;
     bool oneTimeOnly;
 public:
-    virtual void clearCollisionState();
 
     Sprite sp;
 

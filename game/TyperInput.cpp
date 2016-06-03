@@ -50,7 +50,7 @@ void TyperInput::loadDictionary(std::string filename) {
     std::string value;
     int qtd;
 
-    for (unsigned k = 0; k < qtdKeyWords; k++) {
+    for (int k = 0; k < qtdKeyWords; k++) {
         is >> key;
 
         if (TyperInput::eventStringMap.find(key) == TyperInput::eventStringMap.end()) {
@@ -63,7 +63,7 @@ void TyperInput::loadDictionary(std::string filename) {
 
         is >> qtd;
 
-        for (unsigned i = 0; i < qtd; i++) {
+        for (int i = 0; i < qtd; i++) {
             is >> value;
 
             if (eventStringMap.find(value) != eventStringMap.end()) {
@@ -182,7 +182,7 @@ void TyperInput::printDictionary() {
     std::cout << "-----------------------------------------------" << std::endl;
     for (auto it : eventPossibleStringsMap) {
         std::cout << eventToStringMap[it.first] << ":|";
-        for (int k = 0; k < it.second.size(); k++) {
+        for (uint k = 0; k < it.second.size(); k++) {
             std::cout << it.second[k] << "|";
         }
         std::cout << std::endl;

@@ -13,6 +13,7 @@ Sound::Sound() {
 }
 
 Sound::Sound(std::string file) {
+    open(file);
 
 }
 

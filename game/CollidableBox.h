@@ -9,13 +9,15 @@
 #include "Collidable.h"
 #include "Rect.h"
 
+typedef unsigned char uchar;
+
 class CollidableBox : public Collidable {
 
 public:
     Rect box;
     float rotation;
 
-    int colorR, colorG, colorB, colorA;
+    uchar colorR, colorG, colorB, colorA;
 
     virtual void render();
 
@@ -39,7 +41,7 @@ public:
         CollisionAvoidanceInfo(Vec2 d, float q, int i) : direction(d), qtd(q), dirIdx(i){}
     };
 
-    CollisionAvoidanceInfo getInfoToAvoidCollision(Vec2 p);
+    CollidableBox::CollisionAvoidanceInfo getInfoToAvoidCollision(Vec2 p, float r);
 
     vector<Vec2> getNormals();
 

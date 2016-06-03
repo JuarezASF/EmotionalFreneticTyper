@@ -8,7 +8,7 @@
 
 Animation::Animation(float x, float y, float rotation, string sprite, float timeLimit, bool ends, int frameCount,
                      float frameTime)
-        : sp(sprite, frameCount, frameTime), oneTimeOnly(ends),  timeLimit(timeLimit) {
+        :   timeLimit(timeLimit), oneTimeOnly(ends), sp(sprite, frameCount, frameTime){
 
     this->rotation = rotation;
     endTimer.restart();
@@ -60,6 +60,3 @@ void Animation::notifyCollision(GameObject &other) {
 
 }
 
-void Animation::clearCollisionState() {
-
-}

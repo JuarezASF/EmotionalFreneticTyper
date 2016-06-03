@@ -25,6 +25,7 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  dashSp("img/sprite_Dash.png", 4, 0.15),
                                                  fallingSp("img/sprites_falling.png", 2, 0.15) {
 
+
     defeated = false;
 
     currentState = PlayableState::FALLING;
@@ -50,6 +51,13 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     acceleration = Vec2(0, 0);
     previousPos = pos;
 
+    auxCollisionVolume[0].setCenter(pos + Vec2::getVec2FromPolar(height / 4, M_PI_2));
+    auxCollisionVolume[1].setCenter(pos + Vec2::getVec2FromPolar(0, -1 * M_PI_2));
+    auxCollisionVolume[2].setCenter(pos + Vec2::getVec2FromPolar(height / 4, -1 * M_PI_2));
+
+    auxCollisionVolume[0].setRadius(4.0 / 4.0 * min(width / 2, height / 2));
+    auxCollisionVolume[1].setRadius(4.0 / 4.0 * min(width / 2, height / 2));
+    auxCollisionVolume[2].setRadius(4.0 / 4.0 * min(width / 2, height / 2));
 
     collisionVolume = new CollidableBox(pos + center_LT_displacement, width, height);
 
@@ -141,6 +149,8 @@ void PlayableEmotion::update(float dt) {
                         activeActionTimer.restart();
                         break;
                     }
+                    default:
+                        break;
                 }
                 break;
             case PlayableState::DASHING:
@@ -158,6 +168,8 @@ void PlayableEmotion::update(float dt) {
                             activeActionTimer.restart();
                         }
 
+                        break;
+                    default:
                         break;
                 }
                 break;
@@ -279,9 +291,9 @@ void PlayableEmotion::update(float dt) {
     //integrate time equation
     speed += dt * acceleration;
     previousPos = pos;
-    pos += dt * speed;
 
-    ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
+    updatePos(pos + dt * speed);
+
 
 }
 
@@ -299,9 +311,6 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 
     vector<pair<Vec2, Vec2>> collidingSegments;
 
-    if (currentState == PlayableState::FALLING || currentState == PlayableState::DASHING)
-        TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::COLIDED);
-
     if (other.is("KillingRectangle")) {
         defeated = true;
 
@@ -314,24 +323,45 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 
     }
     else if (other.is("SupportRectangle")) {
+        Vec2 rectCenter = ((CollidableBox *) other.getCollisionVolume())->getCenter();
+
+        int min_k = -1;
+        double min_d = numeric_limits<float>::infinity();
+
+        for (int k = 0; k < 3; k++) {
+            double dd = Vec2::distanceBetweenPoints(auxCollisionVolume[k].getCenter(), rectCenter);
+            if (dd < min_d) {
+                min_k = k;
+                min_d = dd;
+            }
+        }
+
+
         CollidableBox::CollisionAvoidanceInfo i = ((CollidableBox *) other.getCollisionVolume())->getInfoToAvoidCollision(
-                pos);
+                auxCollisionVolume[min_k].getCenter(), auxCollisionVolume[min_k].getRadius());
 
-        bool horizontalSupport = (abs(i.direction.y) > abs(i.direction.x));
+        if(i.qtd > 0){
+            i = ((CollidableBox *) other.getCollisionVolume())->getInfoToAvoidCollision(
+                    auxCollisionVolume[min_k].getCenter(), auxCollisionVolume[min_k].getRadius());
+            bool horizontalSupport = (abs(i.direction.y) > abs(i.direction.x));
 
-        float myInterferingDimension = (horizontalSupport) ? ((CollidableBox *) collisionVolume)->box.h * 0.5f :
-                                       ((CollidableBox *) collisionVolume)->box.w * 0.5f;
+            float myInterferingDimension = auxCollisionVolume[min_k].getRadius();
 
-        Vec2 dv = ((CollidableBox *) collisionVolume)->getCenter() -
-                   ((CollidableBox *) other.getCollisionVolume())->getCenter();
+            Vec2 dv = auxCollisionVolume[min_k].getCenter() -
+                      ((CollidableBox *) other.getCollisionVolume())->getCenter();
 
-        float d = i.qtd + myInterferingDimension - abs((horizontalSupport)? dv.y : dv.x);
+            float d = i.qtd + myInterferingDimension - abs((horizontalSupport) ? dv.y : dv.x);
 
 
-        pos = pos + d * i.direction;
-        speed.y = 0;
-        ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
+            speed.y = 0;
+            updatePos(pos + d * i.direction);
 
+            if (currentState == PlayableState::FALLING || currentState == PlayableState::DASHING)
+                TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::COLIDED);
+
+
+
+        }
 
     } else {
 
@@ -408,9 +438,16 @@ void PlayableEmotion::render() {
             break;
 
     }
+
+    for (uint k = 0; k < 3; k++)
+        auxCollisionVolume[k].render();
 }
 
-void PlayableEmotion::clearCollisionState() {
-    restrictingLineSegments.clear();
+void PlayableEmotion::updatePos(Vec2 center) {
+    for (uint k = 0; k < 3; k++)
+        auxCollisionVolume[k].moveCenter(center - pos);
+
+    pos = center;
+    ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
 
 }

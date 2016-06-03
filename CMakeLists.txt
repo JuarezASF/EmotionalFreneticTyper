@@ -38,6 +38,9 @@ include_directories(${SDLMIXER_INCLUDE_DIR})
 find_package(SDL2_ttf REQUIRED)
 include_directories(${SDL2_TTF_INCLUDE_DIR})
 
+find_package(SDL2GFX REQUIRED)
+include_directories(${SDL2GFX_INCLUDE_DIR})
+
 include_directories(game)
 
 add_subdirectory(game)

@@ -23,14 +23,13 @@ typedef unsigned int uint;
 
 void CollidableBox::render() {
     auto corners = box.getCorners();
-    static SDL_Rect sdl_rect;
     auto center = box.getCenter();
     const Vec2 &cameraDisplacement = Camera::getPos(Camera::PLAYER_GROUND_VIEW);
     for (uint i = 0; i < corners.size(); i++) {
         Vec2 a = corners[i] - cameraDisplacement;
         Vec2 b = corners[(i + 1) % corners.size()] - cameraDisplacement;
         SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), colorR, colorG, colorB, colorA);
-        SDL_RenderDrawLine(Game::getInstance().getRenderer(), a.x, a.y, b.x, b.y);
+        SDL_RenderDrawLine(Game::getInstance().getRenderer(), (int)a.x, (int)a.y, (int)b.x, (int)b.y);
 
         auto normals = getNormals();
 
@@ -39,7 +38,7 @@ void CollidableBox::render() {
             a = center - cameraDisplacement;
             float q = 0.5f * ((((k++) % 2) == 0) ? box.w : box.h);
             b = center + v * q - cameraDisplacement;
-            SDL_RenderDrawLine(Game::getInstance().getRenderer(), a.x, a.y, b.x, b.y);
+            SDL_RenderDrawLine(Game::getInstance().getRenderer(), (int)a.x, (int)a.y, (int)b.x, (int)b.y);
         }
 
     }
@@ -67,7 +66,7 @@ Vec2 CollidableBox::getClosestNormalToPoint(Vec2 p) {
 
     //find min dif
     int min_k = -1;
-    int min = numeric_limits<float>::infinity();
+    float min = numeric_limits<float>::infinity();
 
     for (uint k = 0; k < normalDirections.size(); k++) {
         float distance = abs(normalDirections[k] - connectingLineAngle);
@@ -96,30 +95,47 @@ vector<Vec2> CollidableBox::getNormals() {
     return normals;
 }
 
-CollidableBox::CollisionAvoidanceInfo CollidableBox::getInfoToAvoidCollision(Vec2 p) {
+CollidableBox::CollisionAvoidanceInfo CollidableBox::getInfoToAvoidCollision(Vec2 center, float r) {
     auto normals = getNormals();
     auto corners = box.getCorners();
 
     Vec2 vx = (corners[3] - corners[0]).getNormalizedVector();
     Vec2 vy = (corners[1] - corners[0]).getNormalizedVector();
 
-    p = p - box.getTopLeft();
+    Vec2 p = center - box.getTopLeft();
 
     float x = p.dot(vx);
     float y = p.dot(vy);
 
     if (x <= box.w && x >= 0 && y <= 0) {
-        return {normals[3], box.h / 2, 3};
+        //top of box
+        if(p.y < -1*r)
+            return {normals[3], -1, 3};
+        else
+            return {normals[3], box.h / 2, 3};
     } else if (x <= 0 && y >= 0 && y <= box.h) {
-        return {normals[0], box.w / 2, 0};
+        //left of box
+        if(p.x < -1*r)
+            return {normals[0], -1, 0};
+        else
+            return {normals[0], box.w / 2, 0};
     }
-    else if (x >= 0 && x <= box.w && y >= box.h) {
-        return {normals[1], box.h / 2, 1};
+    else if (x >= 0 && x <= box.w && y >= box.h ) {
+        //bottom of box
+        if(p.y > box.h + r)
+            return {normals[1], -1, 1};
+        else
+            return {normals[1], box.h / 2, 1};
     }
     else if (x >= box.w && y >= 0 && y <= box.h) {
-        return {normals[2], box.w / 2, 2};
+        //right of box
+        if(p.x > box.w + r)
+            return {normals[2], -1, 2};
+        else
+            return {normals[2], box.w / 2, 2};
     }
     else{
+        //corner cases
         //TODO more 4 cases
         return CollidableBox::CollisionAvoidanceInfo(Vec2(1,0), 20,2 );
 

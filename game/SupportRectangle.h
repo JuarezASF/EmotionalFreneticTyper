@@ -21,8 +21,6 @@ public:
 
     SupportRectangle(Vec2 center, int width, int height, float rotation = 0.0);
 
-    virtual void clearCollisionState();
-
     virtual void update(float dt);
 
     virtual bool isDead();

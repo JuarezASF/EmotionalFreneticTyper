@@ -29,8 +29,8 @@ Text::~Text() {
 
 void Text::render(int cameraX, int cameraY) {
     SDL_Rect dst_rect;
-    dst_rect.x = (int) box.x;
-    dst_rect.y = (int) box.y;
+    dst_rect.x = (int) box.x - cameraX;
+    dst_rect.y = (int) box.y - cameraY;
     dst_rect.w = (int) box.w;
     dst_rect.h = (int) box.h;
 
