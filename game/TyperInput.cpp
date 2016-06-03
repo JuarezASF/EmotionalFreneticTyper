@@ -3,6 +3,7 @@
 //
 
 #include <fstream>
+#include <string.h>
 #include <SDL_events.h>
 #include "TyperInput.h"
 #include "defines.h"
@@ -213,11 +214,16 @@ void TyperInput::clearBuffer() {
 std::string TyperInput::getBuffer() { return buffer; }
 
 void TyperInput::checkForKnownWord() {
-    if (stringEventMap.find(buffer) != stringEventMap.end()) {
-        std::cout << "recognized:" << buffer << std::endl;
-        typedCommands.push_back(stringEventMap[buffer]);
-        ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords.push_back(buffer);
-        buffer.clear();
+
+    for(auto it : stringEventMap ){
+
+        size_t pos = buffer.find(it.first);
+        if (pos != string::npos){
+            std::cout << "recognized:" << it.first << std::endl;
+            typedCommands.push_back(it.second);
+            ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords.push_back(it.first);
+            buffer.erase(0, pos + it.first.length());
+        }
     }
 
 }
