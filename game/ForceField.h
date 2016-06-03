@@ -11,6 +11,7 @@ class ForceField {
 private:
 
     ForceField();
+    static int GRAVITY_ACCELERATION;
 
 public:
     Vec2 getForceAt(Vec2 pos);

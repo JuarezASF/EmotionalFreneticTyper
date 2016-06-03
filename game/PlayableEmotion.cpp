@@ -9,21 +9,24 @@
 #include "ForceField.h"
 #include "Game.h"
 #include "EndState.h"
+int PlayableEmotion::RUNNING_VELOCITY = 80;
+int PlayableEmotion::IDLE_JUMP_INITIAL_UPWARD_VELOCITY = 150;
+int PlayableEmotion::RUNNING_JUPMP_UPWARD_INITIAL_VELOCITY = 180;
 
 PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
-                                                 runnigSp("img/Sprite_Run.png", 15, 0.0833),
-                                                 gettingToRunSp("img/sprite_StartRun.png", 8, 0.15),
-                                                 stopingToRunSp("img/sprite_EndRun.png", 6, 0.15),
-                                                 turningSp("img/Sprite_Turn.png", 11, 0.15),
-                                                 idleSp("img/Sprite_Idle.png", 5, 0.15),
-                                                 idleStartJump("img/idleJump_start.png", 4, 0.15),
-                                                 idleJump("img/idleJump_Jump.png", 3, 0.15),
-                                                 runningJumpSp("img/moveJump_Jump.png", 3, 0.6),
-                                                 runningStartJumpSp("img/moveJump_Start.png", 4, 0.15),
-                                                 jumpEndSp("img/Jump_End.png", 7, 0.15),
-                                                 turnRunSp("img/sprite_MoveTurn.png", 11, 0.15),
-                                                 dashSp("img/sprite_Dash.png", 4, 0.15),
-                                                 fallingSp("img/sprites_falling.png", 2, 0.15) {
+                                                 runnigSp("img/Sprite_Run.png", 15, SECONDS_PER_FRAME),
+                                                 gettingToRunSp("img/sprite_StartRun.png", 8, SECONDS_PER_FRAME),
+                                                 stopingToRunSp("img/sprite_EndRun.png", 6, SECONDS_PER_FRAME),
+                                                 turningSp("img/Sprite_Turn.png", 11, SECONDS_PER_FRAME),
+                                                 idleSp("img/Sprite_Idle.png", 5, SECONDS_PER_FRAME),
+                                                 idleStartJump("img/idleJump_start.png", 4, SECONDS_PER_FRAME),
+                                                 idleJump("img/idleJump_Jump.png", 3, SECONDS_PER_FRAME),
+                                                 runningJumpSp("img/moveJump_Jump.png", 3, SECONDS_PER_FRAME),
+                                                 runningStartJumpSp("img/moveJump_Start.png", 4, SECONDS_PER_FRAME),
+                                                 jumpEndSp("img/Jump_End.png", 7, SECONDS_PER_FRAME),
+                                                 turnRunSp("img/sprite_MoveTurn.png", 11, SECONDS_PER_FRAME),
+                                                 dashSp("img/sprite_Dash.png", 4, SECONDS_PER_FRAME),
+                                                 fallingSp("img/sprites_falling.png", 2, SECONDS_PER_FRAME) {
 
 
     defeated = false;
@@ -131,6 +134,7 @@ void PlayableEmotion::update(float dt) {
             case PlayableState::FALLING:
                 switch (e) {
                     case TyperInput::TypingEvent::HORIZONTAL_BOTTOM_SUPPORT_FOUND:
+                        speed.x = 0;
                         if (wasRunning) {
                             currentState = PlayableState::RUNNING_JUMP_END;
                             jumpEndSp.setFrame(0);
@@ -157,7 +161,7 @@ void PlayableEmotion::update(float dt) {
             case PlayableState::DASHING:
                 switch (e) {
                     case TyperInput::TypingEvent::COLIDED:
-                        if (wasRunning) {
+                        if (!wasRunning) {
                             currentState = PlayableState::RUNNING_JUMP_END;
                             jumpEndSp.setFrame(0);
                             activeActionTimer.restart();
@@ -198,21 +202,21 @@ void PlayableEmotion::update(float dt) {
         case PlayableState::RUNNING:
             runnigSp.update(dt);
             acceleration = Vec2(0, 0);
-            speed.x = 40 * getDirectionHorizontalMultiplier();
+            speed.x = RUNNING_VELOCITY * getDirectionHorizontalMultiplier();
             break;
         case PlayableState::IDLE_JUMP_START:
             idleStartJump.update(dt);
             if (idleStartJump.isThistLastFrame()) {
                 currentState = PlayableState::IDLE_JUMP_JUMPING;
                 idleStartJump.setFrame(0);
-                speed += Vec2(0, -120);
+                speed += Vec2(0, -IDLE_JUMP_INITIAL_UPWARD_VELOCITY);
             }
             break;
         case PlayableState::IDLE_JUMP_JUMPING:
             idleJump.update(dt);
             if (idleJump.isThistLastFrame()) {
-                currentState = PlayableState::JUMP_END;
-                jumpEndSp.setFrame(0);
+                currentState = PlayableState::FALLING;
+                fallingSp.setFrame(0);
             }
             break;
         case PlayableState::JUMP_END:
@@ -234,9 +238,9 @@ void PlayableEmotion::update(float dt) {
         case PlayableState::RUNNING_JUMP_START:
             runningStartJumpSp.update(dt);
             if (runningStartJumpSp.isThistLastFrame()) {
-                currentState = PlayableState::FALLING;
-                fallingSp.setFrame(0);
-                speed += Vec2(0, -150);
+                currentState = PlayableState::RUNNING_JUMP_JUMPING;
+                runningJumpSp.setFrame(0);
+                speed += Vec2(0, -RUNNING_JUPMP_UPWARD_INITIAL_VELOCITY);
             }
             break;
         case PlayableState::FALLING:
@@ -244,8 +248,8 @@ void PlayableEmotion::update(float dt) {
         case PlayableState::RUNNING_JUMP_JUMPING:
             runningJumpSp.update(dt);
             if (runningJumpSp.isThistLastFrame()) {
-                currentState = PlayableState::RUNNING_JUMP_END;
-                jumpEndSp.setFrame(0);
+                currentState = PlayableState::FALLING;
+                fallingSp.setFrame(0);
             }
             break;
         case PlayableState::RUNNING_JUMP_END:

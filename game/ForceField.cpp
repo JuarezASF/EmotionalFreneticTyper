@@ -4,8 +4,9 @@
 
 #include "ForceField.h"
 
+int ForceField::GRAVITY_ACCELERATION = 20;
 Vec2 ForceField::getForceAt(Vec2 pos) {
-    return Vec2(0, 8);
+    return Vec2(0, GRAVITY_ACCELERATION);
 }
 
 ForceField *ForceField::getInstance() {

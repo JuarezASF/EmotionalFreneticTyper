@@ -6,6 +6,8 @@
 #define IDJ201601T1_PLAYBLEEMOTION_H
 
 
+#define SECONDS_PER_FRAME 0.0833f
+
 #include "GameObject.h"
 #include "Sprite.h"
 #include "Timer.h"
@@ -20,6 +22,9 @@ public:
     enum PlayableFacing{LEFT, RIGHT};
 
 private:
+    static int RUNNING_VELOCITY;
+    static int IDLE_JUMP_INITIAL_UPWARD_VELOCITY;
+    static int RUNNING_JUPMP_UPWARD_INITIAL_VELOCITY;
 
     Sprite runnigSp, gettingToRunSp, stopingToRunSp, turningSp, idleSp;
     Sprite idleStartJump, idleJump, runningJumpSp, runningStartJumpSp, jumpEndSp;

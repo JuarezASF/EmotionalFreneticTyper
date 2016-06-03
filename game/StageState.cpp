@@ -25,13 +25,11 @@ StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_
     addObject(new SupportRectangle(Vec2(300, 350), 200, 80 , 0));
     addObject(new SupportRectangle(Vec2(210, 280), 40, 40 , 0));
 
-    addObject(new SupportRectangle(Vec2(650, 500), 200, 80 , 0));
+    addObject(new SupportRectangle(Vec2(570, 500), 200, 80 , 0));
     addObject(new SupportRectangle(Vec2(680, 420), 40, 40 , 0));
 
     addObject(new KillingRectangle(Vec2(0, 500), 80, 80, Vec2(0, -20)));
 
-
-//    addObject(new VictoryRectangle(Vec2(500, 400), 80, 80, 0));
 
 
 }
