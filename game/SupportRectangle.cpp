@@ -21,8 +21,8 @@ SupportRectangle::SupportRectangle(Vec2 leftTop, Vec2 bottomRight) {
     construct(leftTop, bottomRight);
 }
 
-SupportRectangle::SupportRectangle(Vec2 leftTop, int width, int height, float r) {
-    construct(leftTop, leftTop + Vec2(width, height), r);
+SupportRectangle::SupportRectangle(Vec2 center, int width, int height, float r) {
+    construct(center - 0.5 * Vec2(width, height), center + 0.5*Vec2(width, height), r);
 
 }
 

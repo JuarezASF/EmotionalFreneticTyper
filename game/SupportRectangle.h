@@ -19,7 +19,7 @@ public:
     SupportRectangle();
     SupportRectangle(Vec2 leftTop, Vec2 bottomRight);
 
-    SupportRectangle(Vec2 leftTop, int width, int height, float rotation = 0.0);
+    SupportRectangle(Vec2 center, int width, int height, float rotation = 0.0);
 
     virtual void clearCollisionState();
 
