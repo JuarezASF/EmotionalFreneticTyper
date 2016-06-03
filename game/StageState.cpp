@@ -107,4 +107,4 @@ void StageState::resume() {
 //    return StageState::StateInfo();
 //}
 
-Panel StageState::getPanel() { return stagePanel; }
+Panel& StageState::getPanel() { return stagePanel; }
