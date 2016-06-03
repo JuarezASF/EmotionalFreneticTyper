@@ -23,6 +23,7 @@ void GameObject::construct() {
     rotation = 0.0;
     center_LT_displacement = Vec2(0,0);
     collisionVolume = nullptr;
+    supported = false;
 
 }
 
@@ -30,4 +31,13 @@ void GameObject::render() {
     if (GameConfig::printHitBox && collisionVolume != nullptr) {
         collisionVolume->render();
     }
+}
+
+void GameObject::notifySupported() {
+    supported = true;
+
+}
+
+void GameObject::clearSupported() {
+    supported = false;
 }

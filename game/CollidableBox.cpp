@@ -136,8 +136,7 @@ CollidableBox::CollisionAvoidanceInfo CollidableBox::getInfoToAvoidCollision(Vec
     }
     else{
         //corner cases
-        //TODO more 4 cases
-        return CollidableBox::CollisionAvoidanceInfo(Vec2(1,0), 20,2 );
+        return CollidableBox::CollisionAvoidanceInfo(Vec2(1,0), -1, 2 );
 
     }
 

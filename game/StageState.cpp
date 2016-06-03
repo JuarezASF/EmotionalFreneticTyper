@@ -19,13 +19,18 @@
 StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
                            tileMap("map/tileMap.txt", &tileSet), stagePanel(250, 250), usedEmotion() {
 
-    GameObject *mainPlayer = new PlayableEmotion(400, 300);
+    GameObject *mainPlayer = new PlayableEmotion(300, 200);
 
     addObject(mainPlayer);
-    addObject(new SupportRectangle(Vec2(500, 500), 800, 80 , 0));
-    addObject(new SupportRectangle(Vec2(550, 420), 40, 40 , 0));
-    addObject(new SupportRectangle(Vec2(320, 420), 40, 40 , 0));
+    addObject(new SupportRectangle(Vec2(300, 350), 200, 80 , 0));
+    addObject(new SupportRectangle(Vec2(210, 280), 40, 40 , 0));
+
+    addObject(new SupportRectangle(Vec2(650, 500), 200, 80 , 0));
+    addObject(new SupportRectangle(Vec2(680, 420), 40, 40 , 0));
+
     addObject(new KillingRectangle(Vec2(0, 500), 80, 80, Vec2(0, -20)));
+
+
 //    addObject(new VictoryRectangle(Vec2(500, 400), 80, 80, 0));
 
 
@@ -50,26 +55,19 @@ void StageState::update(float dt) {
 
     Camera::update(dt);
 
+    // unless told the opposite, no one is supported
+    for(uint k = 0; k < objectArray.size(); k++)
+        objectArray[k]->clearSupported();
+
+    auto collidingPairs = checkForCollision();
 
     updateArray(dt);
 
-    //test for collision
-    for (int i = objectArray.size() - 1; i >= 0; i--) {
-        if (objectArray[i]->is("Animation"))
-            continue;
-        for (int j = 0; j < i; j++) {
-            if (objectArray[j]->is("Animation"))
-                continue;
-            if (Collision::IsColliding(objectArray[i]->getCollisionVolume(), objectArray[j]->getCollisionVolume()
-            )) {
-                objectArray[i]->notifyCollision(*objectArray[j]);
-                objectArray[j]->notifyCollision(*objectArray[i]);
-
-            }
-
-        }
-
+    for(auto it : collidingPairs){
+        objectArray[it.first]->notifyCollision(*objectArray[it.second]);
+        objectArray[it.second]->notifyCollision(*objectArray[it.first]);
     }
+
 
 
     std::vector<int> toBeDeleted;
@@ -83,6 +81,30 @@ void StageState::update(float dt) {
         objectArray.erase(objArrayBegin + *it);
 
     stagePanel.update(dt);
+}
+
+typedef unsigned long ulong;
+
+vector<pair<uint, uint>> StageState::checkForCollision() const {//test for collision
+    vector<pair<uint, uint>> collidingPairs;
+
+    for (long i = objectArray.size() - 1; i >= 0; i--) {
+        if (objectArray[i]->is("Animation"))
+            continue;
+        for (int j = 0; j < i; j++) {
+            if (objectArray[j]->is("Animation"))
+                continue;
+            if (Collision::IsColliding(objectArray[i]->getCollisionVolume(), objectArray[j]->getCollisionVolume()
+            )) {
+                collidingPairs.push_back(make_pair(i, j));
+
+            }
+
+        }
+
+    }
+
+    return collidingPairs;
 }
 
 void StageState::render() {

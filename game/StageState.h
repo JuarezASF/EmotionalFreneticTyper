@@ -44,6 +44,8 @@ public:
 
     vector<string> recentlyUsedWords;
     string usedEmotion;
+
+    vector<pair<uint, uint>> checkForCollision() const;
 };
 
 

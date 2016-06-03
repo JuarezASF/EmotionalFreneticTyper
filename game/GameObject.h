@@ -16,6 +16,7 @@ protected:
     //center pos
     Vec2 pos;
     float rotation;
+    bool supported;
 
     // pos + LT_center_displacemente = LEFT_TOP corner
     Vec2 center_LT_displacement;
@@ -40,6 +41,10 @@ public:
     inline float getRotation() { return rotation; }
 
     virtual void notifyCollision(GameObject &other) = 0;
+
+    virtual void notifySupported();
+
+    virtual void clearSupported();
 
     virtual bool is(std::string type) = 0;
 

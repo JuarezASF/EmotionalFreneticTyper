@@ -55,9 +55,9 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     auxCollisionVolume[1].setCenter(pos + Vec2::getVec2FromPolar(0, -1 * M_PI_2));
     auxCollisionVolume[2].setCenter(pos + Vec2::getVec2FromPolar(height / 4, -1 * M_PI_2));
 
-    auxCollisionVolume[0].setRadius(4.0 / 4.0 * min(width / 2, height / 2));
-    auxCollisionVolume[1].setRadius(4.0 / 4.0 * min(width / 2, height / 2));
-    auxCollisionVolume[2].setRadius(4.0 / 4.0 * min(width / 2, height / 2));
+    auxCollisionVolume[0].setRadius(4.0 / 5.0 * min(width / 2, height / 2));
+    auxCollisionVolume[1].setRadius(4.0 / 5.0 * min(width / 2, height / 2));
+    auxCollisionVolume[2].setRadius(4.0 / 5.0 * min(width / 2, height / 2));
 
     collisionVolume = new CollidableBox(pos + center_LT_displacement, width, height);
 
@@ -117,6 +117,7 @@ void PlayableEmotion::update(float dt) {
                         break;
                     case TyperInput::TypingEvent::JUMP :
                         currentState = PlayableState::RUNNING_JUMP_START;
+                        pos += Vec2(0, -2);
                         runningStartJumpSp.setFrame(0);
                         break;
                     default:
@@ -129,7 +130,7 @@ void PlayableEmotion::update(float dt) {
                 break;
             case PlayableState::FALLING:
                 switch (e) {
-                    case TyperInput::TypingEvent::COLIDED:
+                    case TyperInput::TypingEvent::HORIZONTAL_BOTTOM_SUPPORT_FOUND:
                         if (wasRunning) {
                             currentState = PlayableState::RUNNING_JUMP_END;
                             jumpEndSp.setFrame(0);
@@ -235,7 +236,7 @@ void PlayableEmotion::update(float dt) {
             if (runningStartJumpSp.isThistLastFrame()) {
                 currentState = PlayableState::FALLING;
                 fallingSp.setFrame(0);
-                speed += Vec2(0, -150 * getDirectionHorizontalMultiplier());
+                speed += Vec2(0, -150);
             }
             break;
         case PlayableState::FALLING:
@@ -341,8 +342,6 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
                 auxCollisionVolume[min_k].getCenter(), auxCollisionVolume[min_k].getRadius());
 
         if(i.qtd > 0){
-            i = ((CollidableBox *) other.getCollisionVolume())->getInfoToAvoidCollision(
-                    auxCollisionVolume[min_k].getCenter(), auxCollisionVolume[min_k].getRadius());
             bool horizontalSupport = (abs(i.direction.y) > abs(i.direction.x));
 
             float myInterferingDimension = auxCollisionVolume[min_k].getRadius();
@@ -357,7 +356,17 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
             updatePos(pos + d * i.direction);
 
             if (currentState == PlayableState::FALLING || currentState == PlayableState::DASHING)
-                TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::COLIDED);
+                switch (i.dirIdx){
+                    case 1:
+                        TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::HORIZONTAL_TOP_SUPPORT_FOUND);
+                        break;
+                    case 3:
+                        TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::HORIZONTAL_BOTTOM_SUPPORT_FOUND);
+                        break;
+                    default:
+                        break;
+
+                }
 
 
 
