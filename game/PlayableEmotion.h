@@ -24,7 +24,7 @@ public:
 private:
     static int RUNNING_VELOCITY;
     static int IDLE_JUMP_INITIAL_UPWARD_VELOCITY;
-    static int RUNNING_JUPMP_UPWARD_INITIAL_VELOCITY;
+    static int RUNNING_JUMP_UPWARD_INITIAL_VELOCITY;
 
     Sprite runnigSp, gettingToRunSp, stopingToRunSp, turningSp, idleSp;
     Sprite idleStartJump, idleJump, runningJumpSp, runningStartJumpSp, jumpEndSp;
@@ -65,6 +65,8 @@ public:
     int getDirectionHorizontalMultiplier() const;
 
     void updatePos(Vec2 center);
+
+    void loadSettings();
 };
 
 

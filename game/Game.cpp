@@ -17,6 +17,7 @@
 #include "Camera.h"
 #include "Logger.h"
 #include "TyperInput.h"
+#include "SettingsLoad.h"
 
 
 Game *Game::instance = nullptr;
@@ -163,7 +164,6 @@ void Game::run() {
         Logger::err("Invalid initial state!");
         return;
     }
-
     TyperInput &im = TyperInput::getInstance();
 
     calculateDeltaTime();

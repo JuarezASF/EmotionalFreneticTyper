@@ -9,9 +9,11 @@
 #include "ForceField.h"
 #include "Game.h"
 #include "EndState.h"
+#include "SettingsLoad.h"
+
 int PlayableEmotion::RUNNING_VELOCITY = 80;
 int PlayableEmotion::IDLE_JUMP_INITIAL_UPWARD_VELOCITY = 150;
-int PlayableEmotion::RUNNING_JUPMP_UPWARD_INITIAL_VELOCITY = 180;
+int PlayableEmotion::RUNNING_JUMP_UPWARD_INITIAL_VELOCITY = 180;
 
 PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  runnigSp("img/Sprite_Run.png", 15, SECONDS_PER_FRAME),
@@ -28,6 +30,7 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  dashSp("img/sprite_Dash.png", 4, SECONDS_PER_FRAME),
                                                  fallingSp("img/sprites_falling.png", 2, SECONDS_PER_FRAME) {
 
+    loadSettings();
 
     defeated = false;
 
@@ -240,7 +243,7 @@ void PlayableEmotion::update(float dt) {
             if (runningStartJumpSp.isThistLastFrame()) {
                 currentState = PlayableState::RUNNING_JUMP_JUMPING;
                 runningJumpSp.setFrame(0);
-                speed += Vec2(0, -RUNNING_JUPMP_UPWARD_INITIAL_VELOCITY);
+                speed += Vec2(0, -RUNNING_JUMP_UPWARD_INITIAL_VELOCITY);
             }
             break;
         case PlayableState::FALLING:
@@ -345,7 +348,7 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
         CollidableBox::CollisionAvoidanceInfo i = ((CollidableBox *) other.getCollisionVolume())->getInfoToAvoidCollision(
                 auxCollisionVolume[min_k].getCenter(), auxCollisionVolume[min_k].getRadius());
 
-        if(i.qtd > 0){
+        if (i.qtd > 0) {
             bool horizontalSupport = (abs(i.direction.y) > abs(i.direction.x));
 
             float myInterferingDimension = auxCollisionVolume[min_k].getRadius();
@@ -360,18 +363,19 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
             updatePos(pos + d * i.direction);
 
             if (currentState == PlayableState::FALLING || currentState == PlayableState::DASHING)
-                switch (i.dirIdx){
+                switch (i.dirIdx) {
                     case 1:
-                        TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::HORIZONTAL_TOP_SUPPORT_FOUND);
+                        TyperInput::getInstance().addEventOnFront(
+                                TyperInput::TypingEvent::HORIZONTAL_TOP_SUPPORT_FOUND);
                         break;
                     case 3:
-                        TyperInput::getInstance().addEventOnFront(TyperInput::TypingEvent::HORIZONTAL_BOTTOM_SUPPORT_FOUND);
+                        TyperInput::getInstance().addEventOnFront(
+                                TyperInput::TypingEvent::HORIZONTAL_BOTTOM_SUPPORT_FOUND);
                         break;
                     default:
                         break;
 
                 }
-
 
 
         }
@@ -462,5 +466,14 @@ void PlayableEmotion::updatePos(Vec2 center) {
 
     pos = center;
     ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
+
+}
+
+void PlayableEmotion::loadSettings() {
+
+    SettingsLoad *settings = SettingsLoad::getInstance();
+    RUNNING_VELOCITY = (int) settings->get("RUNNING_VELOCITY", 80);
+    IDLE_JUMP_INITIAL_UPWARD_VELOCITY = (int) settings->get("IDLE_JUMP_INITIAL_UPWARD_VELOCITY", 150);
+    RUNNING_JUMP_UPWARD_INITIAL_VELOCITY = (int) settings->get("RUNNING_JUMP_UPWARD_INITIAL_VELOCITY", 180);
 
 }

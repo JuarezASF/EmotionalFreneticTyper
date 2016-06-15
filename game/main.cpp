@@ -13,6 +13,7 @@
 #include "StageState.h"
 #include "TitleState.h"
 #include "TyperInput.h"
+#include "SettingsLoad.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ int main(int argc, char **argv) {
 
     GameConfig::setDebugMode(clp.getBoolVal("debug"));
     GameConfig::setPrintHitBot(clp.getBoolVal("printHitBox"));
+    SettingsLoad::getInstance()->load("txt/settings.txt");
 
     try {
 
