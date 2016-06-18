@@ -46,7 +46,11 @@ public:
 
     void setLT(Vec2 lt);
 
+    void setCenter(Vec2 c);
+
     void setRotation(float rot);
+
+    Vec2 getClosestPointTo(const Vec2 &testPoint);
 
 };
 

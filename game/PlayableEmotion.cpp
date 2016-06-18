@@ -5,7 +5,7 @@
 #include "PlayableEmotion.h"
 #include "Camera.h"
 #include "TyperInput.h"
-#include "CollidableBox.h"
+#include "AxisAlignedBoundingBox.h"
 #include "ForceField.h"
 #include "Game.h"
 #include "EndState.h"
@@ -53,9 +53,8 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     center_LT_displacement = -0.5 * Vec2(width, height);
 
     pos = Vec2(x, y);
-    speed = Vec2(0, 0);
+    speed = Vec2(0, 1);
     acceleration = Vec2(0, 0);
-    previousPos = pos;
 
     auxCollisionVolume[0].setCenter(pos + Vec2::getVec2FromPolar(height / 4, M_PI_2));
     auxCollisionVolume[1].setCenter(pos + Vec2::getVec2FromPolar(0, -1 * M_PI_2));
@@ -65,10 +64,17 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     auxCollisionVolume[1].setRadius(4.0 / 5.0 * min(width / 2, height / 2));
     auxCollisionVolume[2].setRadius(4.0 / 5.0 * min(width / 2, height / 2));
 
-    collisionVolume = new CollidableBox(pos + center_LT_displacement, width, height);
+    collisionVolume = new AxisAlignedBoundingBox(pos + center_LT_displacement, width, height);
 
     activeActionTimer.restart();
     wasRunning = false;
+
+    supported = false;
+    iterationsSinceContactWithSupport = 0;
+
+    iterationsSinceLastHorizontalSupportNodification = 0;
+    iterationsSinceLastVerticalSupportNodification = 0;
+
 
 }
 
@@ -77,6 +83,28 @@ void PlayableEmotion::update(float dt) {
     activeActionTimer.update(dt);
 
     TyperInput &im = TyperInput::getInstance();
+
+    iterationsSinceContactWithSupport--;
+    iterationsSinceLastHorizontalSupportNodification++;
+    iterationsSinceLastVerticalSupportNodification++;
+
+    //update due to lack of contact with support
+    switch (currentState) {
+        case PlayableState::RUNNING:
+            if (iterationsSinceLastHorizontalSupportNodification > 15) {
+                cout << "was running, now falling!" << endl;
+                currentState = PlayableState::FALLING;
+                fallingSp.setFrame(0);
+                wasRunning = true;
+                break;
+            }
+            break;
+        default:
+            break;
+    }
+
+
+    acceleration = Vec2(0, 0);
 
     //get typing input and decide state transition
     if (im.hasTypintEvent()) {
@@ -109,6 +137,11 @@ void PlayableEmotion::update(float dt) {
                 break;
             case PlayableState::RUNNING:
                 switch (e) {
+                    case TyperInput::TypingEvent::VERTICAL_SUPPORT_FOUND:
+                        currentState = PlayableState::STOPING_RUN;
+                        speed.x = 0.0;
+                        stopingToRunSp.setFrame(0);
+                        break;
                     case TyperInput::TypingEvent::TURN :
                         currentState = PlayableState::TURN_RUN;
                         turnRunSp.setFrame(0);
@@ -123,12 +156,14 @@ void PlayableEmotion::update(float dt) {
                         break;
                     case TyperInput::TypingEvent::JUMP :
                         currentState = PlayableState::RUNNING_JUMP_START;
-                        pos += Vec2(0, -2);
+
+                        //untach from ground
                         runningStartJumpSp.setFrame(0);
                         break;
                     default:
                         break;
                 }
+
                 break;
             case PlayableState::STOPING_RUN:
                 break;
@@ -136,8 +171,8 @@ void PlayableEmotion::update(float dt) {
                 break;
             case PlayableState::FALLING:
                 switch (e) {
-                    case TyperInput::TypingEvent::HORIZONTAL_BOTTOM_SUPPORT_FOUND:
-                        speed.x = 0;
+                    case TyperInput::TypingEvent::HORIZONTAL_SUPPORT_FOUND:
+                        speed.y = 0;
                         if (wasRunning) {
                             currentState = PlayableState::RUNNING_JUMP_END;
                             jumpEndSp.setFrame(0);
@@ -195,7 +230,7 @@ void PlayableEmotion::update(float dt) {
             idleSp.update(dt);
             break;
         case PlayableState::GETTING_TO_RUN:
-            acceleration = Vec2(5 * getDirectionHorizontalMultiplier(), 0);
+            acceleration += Vec2(5 * getDirectionHorizontalMultiplier(), 0);
             gettingToRunSp.update(dt);
             if (gettingToRunSp.isThistLastFrame()) {
                 currentState = PlayableState::RUNNING;
@@ -204,7 +239,6 @@ void PlayableEmotion::update(float dt) {
             break;
         case PlayableState::RUNNING:
             runnigSp.update(dt);
-            acceleration = Vec2(0, 0);
             speed.x = RUNNING_VELOCITY * getDirectionHorizontalMultiplier();
             break;
         case PlayableState::IDLE_JUMP_START:
@@ -243,11 +277,13 @@ void PlayableEmotion::update(float dt) {
             if (runningStartJumpSp.isThistLastFrame()) {
                 currentState = PlayableState::RUNNING_JUMP_JUMPING;
                 runningJumpSp.setFrame(0);
+                pos += Vec2(0, -5);
                 speed += Vec2(0, -RUNNING_JUMP_UPWARD_INITIAL_VELOCITY);
             }
             break;
         case PlayableState::FALLING:
             fallingSp.update(dt);
+            break;
         case PlayableState::RUNNING_JUMP_JUMPING:
             runningJumpSp.update(dt);
             if (runningJumpSp.isThistLastFrame()) {
@@ -298,7 +334,6 @@ void PlayableEmotion::update(float dt) {
 
     //integrate time equation
     speed += dt * acceleration;
-    previousPos = pos;
 
     updatePos(pos + dt * speed);
 
@@ -321,70 +356,70 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 
     if (other.is("KillingRectangle")) {
         defeated = true;
-
-
     }
     if (other.is("VictoryRectangle")) {
 //        Game::getInstance().getCurrentState().requestPop();
         Game::getInstance().push(new EndState({true}));
 
-
     }
-    else if (other.is("SupportRectangle")) {
-        Vec2 rectCenter = ((CollidableBox *) other.getCollisionVolume())->getCenter();
+    else if (other.is("CollidableAABBGameObject")) {
+        Rect collidingRect = ((AxisAlignedBoundingBox *) other.getCollisionVolume())->axisAlignedRectangle;
 
+        //among intermal circles, find the one that is closes to the axis aligned rectangle
         int min_k = -1;
-        double min_d = numeric_limits<float>::infinity();
+        double distanceBetweenCircleAndRectangle = numeric_limits<float>::infinity();
 
         for (int k = 0; k < 3; k++) {
-            double dd = Vec2::distanceBetweenPoints(auxCollisionVolume[k].getCenter(), rectCenter);
-            if (dd < min_d) {
+            const Vec2 &currentCenter = auxCollisionVolume[k].getCenter();
+            double dd = Vec2::distanceBetweenPoints(currentCenter, collidingRect.getClosestPointTo(currentCenter));
+            if (dd < distanceBetweenCircleAndRectangle) {
                 min_k = k;
-                min_d = dd;
+                distanceBetweenCircleAndRectangle = dd;
             }
         }
 
+        const Vec2 closestInnerCircle = auxCollisionVolume[min_k].getCenter();
+        const Vec2 closestPointOnRectagle = collidingRect.getClosestPointTo(closestInnerCircle);
 
-        CollidableBox::CollisionAvoidanceInfo i = ((CollidableBox *) other.getCollisionVolume())->getInfoToAvoidCollision(
-                auxCollisionVolume[min_k].getCenter(), auxCollisionVolume[min_k].getRadius());
+        double overlap = auxCollisionVolume[min_k].getRadius() - distanceBetweenCircleAndRectangle;
 
-        if (i.qtd > 0) {
-            bool horizontalSupport = (abs(i.direction.y) > abs(i.direction.x));
+        static double TOLERANCE = M_PI / 20.0;
 
-            float myInterferingDimension = auxCollisionVolume[min_k].getRadius();
+        if (overlap >= 0.0) {
+            Vec2 directionToEscape = (closestInnerCircle - closestPointOnRectagle).getNormalizedVector();
+            updatePos(pos + overlap * directionToEscape);
 
-            Vec2 dv = auxCollisionVolume[min_k].getCenter() -
-                      ((CollidableBox *) other.getCollisionVolume())->getCenter();
+            double angleToEscape = directionToEscape.ang_rad();
 
-            float d = i.qtd + myInterferingDimension - abs((horizontalSupport) ? dv.y : dv.x);
-
-
-            speed.y = 0;
-            updatePos(pos + d * i.direction);
-
-            if (currentState == PlayableState::FALLING || currentState == PlayableState::DASHING)
-                switch (i.dirIdx) {
-                    case 1:
-                        TyperInput::getInstance().addEventOnFront(
-                                TyperInput::TypingEvent::HORIZONTAL_TOP_SUPPORT_FOUND);
-                        break;
-                    case 3:
-                        TyperInput::getInstance().addEventOnFront(
-                                TyperInput::TypingEvent::HORIZONTAL_BOTTOM_SUPPORT_FOUND);
-                        break;
-                    default:
-                        break;
+            if (abs(angleToEscape) < TOLERANCE || abs(angleToEscape - M_PI) < TOLERANCE) {
+                if (iterationsSinceLastVerticalSupportNodification > 10) {
+                    TyperInput::getInstance().addEventOnFront(
+                            TyperInput::TypingEvent::VERTICAL_SUPPORT_FOUND);
+                    iterationsSinceLastVerticalSupportNodification = 0;
 
                 }
+                speed.x = 0;
+            } else if (abs(angleToEscape - M_PI_2) < TOLERANCE || abs(angleToEscape + M_PI_2) < TOLERANCE) {
+                if (iterationsSinceLastHorizontalSupportNodification > 10) {
+                    TyperInput::getInstance().addEventOnFront(
+                            TyperInput::TypingEvent::HORIZONTAL_SUPPORT_FOUND);
+                    iterationsSinceLastHorizontalSupportNodification = 0;
+
+                }
+                speed.y = 0;
+            }
+            else {
+
+            }
 
 
         }
 
-    } else {
 
     }
 
 }
+
 
 bool PlayableEmotion::is(std::string type) {
     return type == "PlayableEmotion";
@@ -423,7 +458,8 @@ void PlayableEmotion::render() {
             break;
         case PlayableState::RUNNING_JUMP_START:
             runningStartJumpSp.render(pos.x, pos.y, rotation,
-                                      (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+                                      (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
+                                                                                : SDL_FLIP_NONE);
             break;
         case PlayableState::RUNNING_JUMP_JUMPING:
             runningJumpSp.render(pos.x, pos.y, rotation,
@@ -465,7 +501,7 @@ void PlayableEmotion::updatePos(Vec2 center) {
         auxCollisionVolume[k].moveCenter(center - pos);
 
     pos = center;
-    ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
+    ((AxisAlignedBoundingBox *) collisionVolume)->setLeftTopCorner(pos + center_LT_displacement);
 
 }
 

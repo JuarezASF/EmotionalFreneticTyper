@@ -18,6 +18,8 @@ public:
 
     static ForceField *getInstance();
 
+    static void setGravity(int gravityConstant);
+
 };
 
 

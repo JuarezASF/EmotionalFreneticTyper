@@ -2,21 +2,20 @@
 #include <algorithm>
 
 #include "Rect.h"
-#include "CollidableBox.h"
+#include "AxisAlignedBoundingBox.h"
 #include "Collidable.h"
-#include "SupportLineSegment.h"
 
 class Collision {
 
 public:
     static bool IsColliding(Collidable *a, Collidable *b) {
 
-        if(!a || !b)
+        if (!a || !b)
             return false;
-        if (a->is("CollidableBox") && b->is("CollidableBox")) {
-            return Collision::IsColliding(((CollidableBox *) a)->box, ((CollidableBox *) b)->box,
-                                          ((CollidableBox *) a)->rotation, ((CollidableBox *) b)->rotation);
-
+        if (a->is("AxisAlignedBoundingBox") && b->is("AxisAlignedBoundingBox")) {
+            return Collision::IsColliding(((AxisAlignedBoundingBox *) a)->axisAlignedRectangle,
+                                          ((AxisAlignedBoundingBox *) b)->axisAlignedRectangle,
+                                          0, 0);
         }
         else {
             cerr << "Collision not supported!" << endl;

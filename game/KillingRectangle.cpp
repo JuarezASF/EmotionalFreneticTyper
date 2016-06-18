@@ -3,38 +3,38 @@
 //
 
 #include "KillingRectangle.h"
-#include "CollidableBox.h"
+#include "AxisAlignedBoundingBox.h"
 #include "Camera.h"
 #include "Game.h"
 #include "StageState.h"
 
 
 void KillingRectangle::update(float dt) {
-    SupportRectangle::update(dt);
+    CollidableAABBGameObject::update(dt);
 
     pos += dt*constSpeed;
 
-    ((CollidableBox *) collisionVolume)->setLT(pos + center_LT_displacement);
+    ((AxisAlignedBoundingBox *) collisionVolume)->setLeftTopCorner(pos + center_LT_displacement);
 
 
 }
 
 bool KillingRectangle::isDead() {
-    return SupportRectangle::isDead();
+    return CollidableAABBGameObject::isDead();
 }
 
 void KillingRectangle::notifyCollision(GameObject &other) {
-    SupportRectangle::notifyCollision(other);
+    CollidableAABBGameObject::notifyCollision(other);
 }
 
 bool KillingRectangle::is(std::string type) {
-    return SupportRectangle::is(type) || type == "KillingRectangle";
+    return CollidableAABBGameObject::is(type) || type == "KillingRectangle";
 }
 
 void KillingRectangle::render() {
-    SupportRectangle::render();
+    CollidableAABBGameObject::render();
     static SDL_Rect sdl_rect;
-    Rect &box = ((CollidableBox *)getCollisionVolume())->box;
+    Rect &box = ((AxisAlignedBoundingBox *)getCollisionVolume())->axisAlignedRectangle;
     auto corners = box.getCorners();
     for (unsigned i = 0; i < corners.size(); i++) {
         SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0,0,255,100);
@@ -48,8 +48,3 @@ void KillingRectangle::render() {
     }
 }
 
-KillingRectangle::KillingRectangle(Vec2 cPos, int w, int h, Vec2 speed) : SupportRectangle(cPos - Vec2(w*0.5, h*0.5), w, h),
-constSpeed(speed){
-
-
-}

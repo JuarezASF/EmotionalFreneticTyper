@@ -10,7 +10,7 @@
 #include "StageState.h"
 #include "PlayableEmotion.h"
 #include "TyperInput.h"
-#include "SupportRectangle.h"
+#include "CollidableAABBGameObject.h"
 #include "KillingRectangle.h"
 
 #define TILE_HEIGHT 170
@@ -22,13 +22,11 @@ StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_
     GameObject *mainPlayer = new PlayableEmotion(300, 200);
 
     addObject(mainPlayer);
-    addObject(new SupportRectangle(Vec2(300, 350), 200, 80 , 0));
-    addObject(new SupportRectangle(Vec2(210, 280), 40, 40 , 0));
+    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(300, 350), 200, 80));
+    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(210, 280), 40, 40));
 
-    addObject(new SupportRectangle(Vec2(570, 500), 200, 80 , 0));
-    addObject(new SupportRectangle(Vec2(680, 420), 40, 40 , 0));
-
-    addObject(new KillingRectangle(Vec2(0, 500), 80, 80, Vec2(0, -20)));
+    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(570, 500), 200, 80));
+    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(680, 420), 40, 40));
 
 
 

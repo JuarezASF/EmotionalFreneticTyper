@@ -31,7 +31,7 @@ private:
     Sprite turnRunSp, dashSp, fallingSp;
     PlayableState currentState;
     PlayableFacing currentlyFacing;
-    Vec2 speed, acceleration, previousPos;
+    Vec2 speed, acceleration;
     float speedAngle, speedMagnitude;
     float accelerationAngle, accelerationMagnitude;
     vector<pair<Vec2, Vec2>> restrictingLineSegments;
@@ -44,7 +44,13 @@ private:
 
     bool wasRunning;
 
+    bool supported;
+    int iterationsSinceContactWithSupport;
+
     CollidableCircle auxCollisionVolume[3];
+
+    unsigned long iterationsSinceLastHorizontalSupportNodification;
+    unsigned long iterationsSinceLastVerticalSupportNodification;
 
 public:
 
@@ -67,6 +73,7 @@ public:
     void updatePos(Vec2 center);
 
     void loadSettings();
+
 };
 
 
