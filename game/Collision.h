@@ -27,15 +27,15 @@ public:
     // Para usar graus, forneça a sua própria implementação de Rotate,
     // ou transforme os ângulos no corpo de IsColliding.
     static inline bool IsColliding(Rect &a, Rect &b, float angleOfA, float angleOfB) {
-        Vec2 A[] = {Vec2(a.x, a.y + a.h),
-                    Vec2(a.x + a.w, a.y + a.h),
-                    Vec2(a.x + a.w, a.y),
-                    Vec2(a.x, a.y)
+        Vec2 A[] = {Vec2(a.leftTopX, a.leftTopY + a.h),
+                    Vec2(a.leftTopX + a.w, a.leftTopY + a.h),
+                    Vec2(a.leftTopX + a.w, a.leftTopY),
+                    Vec2(a.leftTopX, a.leftTopY)
         };
-        Vec2 B[] = {Vec2(b.x, b.y + b.h),
-                    Vec2(b.x + b.w, b.y + b.h),
-                    Vec2(b.x + b.w, b.y),
-                    Vec2(b.x, b.y)
+        Vec2 B[] = {Vec2(b.leftTopX, b.leftTopY + b.h),
+                    Vec2(b.leftTopX + b.w, b.leftTopY + b.h),
+                    Vec2(b.leftTopX + b.w, b.leftTopY),
+                    Vec2(b.leftTopX, b.leftTopY)
         };
 
         for (auto &v : A) {

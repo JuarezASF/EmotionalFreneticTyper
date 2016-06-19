@@ -21,11 +21,11 @@ private:
     void construct();
 
 public:
-    float x,y,h,w;
+    float leftTopX, leftTopY,h,w;
 
     Rect();
 
-    Rect(float x, float y, float h, float w);
+    Rect(float leftTopX, float leftTopY, float h, float w);
 
     Rect(Vec2 LT, float h, float w);
 

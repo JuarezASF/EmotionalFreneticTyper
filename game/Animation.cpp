@@ -12,7 +12,7 @@ Animation::Animation(float x, float y, float rotation, string sprite, float time
     this->rotation = rotation;
     endTimer.restart();
 
-    pos = Vec2(x, y);
+    centerPos = Vec2(x, y);
 
     int width = sp.getWidth() / frameCount;
     int height = sp.getHeight();

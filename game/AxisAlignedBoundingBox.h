@@ -17,6 +17,7 @@ public:
     Rect axisAlignedRectangle;
 
     uchar colorR, colorG, colorB, colorA;
+    bool shouldFill;
 
     virtual void render();
 
@@ -48,6 +49,8 @@ public:
     vector<Vec2> getNormals();
 
     void setColor(uchar r, uchar g, uchar b, uchar a);
+
+    inline void setShouldFill(bool t){shouldFill = t;}
 
 
 };

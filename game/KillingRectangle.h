@@ -12,21 +12,17 @@ class KillingRectangle : public CollidableAABBGameObject {
 private:
     Vec2 constSpeed;
 
+protected:
+    KillingRectangle(Vec2 topLeft, Vec2 bottomRight, Vec2 speed);
+
 public:
-
-
+    static KillingRectangle *getTopLeftAt(Vec2 topLeft, int width, int heigth, Vec2 speed);
+    static KillingRectangle *getCenteredAt(Vec2 center, int width, int height, Vec2 speed);
     virtual void update(float dt);
-
-    virtual bool isDead();
-
-    virtual void notifyCollision(GameObject &other);
-
     virtual bool is(std::string type);
 
 
-    virtual void render();
-
-
+    virtual void render() override;
 };
 
 

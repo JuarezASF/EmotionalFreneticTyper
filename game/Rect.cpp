@@ -8,19 +8,18 @@
 
 
 
-Rect::Rect(float x, float y, float h, float w) : x(x), y(y), h(h), w(w), rotation(0) {
+Rect::Rect(float leftTopX, float leftTopY, float h, float w) : leftTopX(leftTopX), leftTopY(leftTopY), h(h), w(w), rotation(0) {
     construct();
 
 }
 
-Rect::Rect() : x(-1), y(-1), h(-1), w(-1), rotation(0) {
+Rect::Rect() : leftTopX(-1), leftTopY(-1), h(-1), w(-1), rotation(0) {
     construct();
 
 }
 
 Vec2 Rect::getTopLeft() {
-    Vec2 c = getCenter();
-    return Vec2(x, y).rotatedAroundCenter(getCenter(), rotation);
+    return Vec2(leftTopX, leftTopY);
 }
 
 std::vector<Vec2> Rect::getCorners() {
@@ -44,7 +43,7 @@ std::vector<Vec2> Rect::getCorners() {
 }
 
 Vec2 Rect::getCenter() const {
-    return Vec2(x + w / 2.0, y + h / 2.0);
+    return Vec2(leftTopX + w / 2.0, leftTopY + h / 2.0);
 }
 
 double Rect::distanceFromRectCenters(const Rect &A, const Rect &B) {
@@ -67,7 +66,7 @@ bool Rect::isPointInside(const Vec2 &p) {
 
 }
 
-Rect::Rect(Vec2 LT, float h, float w) : x(LT.x), y(LT.y), h(h), w(w), rotation(0) {
+Rect::Rect(Vec2 LT, float h, float w) : leftTopX(LT.x), leftTopY(LT.y), h(h), w(w), rotation(0) {
     construct();
 
 }
@@ -84,8 +83,8 @@ void Rect::construct() {
 
 void Rect::setLT(Vec2 lt) {
 
-    x = lt.x;
-    y = lt.y;
+    leftTopX = lt.x;
+    leftTopY = lt.y;
     hasBeenUpdated = true;
 
 }
