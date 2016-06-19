@@ -56,6 +56,7 @@ void Sprite::open(string filename) {
     frameHeight = height;
 
     setClip(0, 0, frameWidth, height);
+    setAlpha(255);
 }
 
 void Sprite::setClip(int x, int y, int w, int h) {
@@ -191,6 +192,7 @@ Sprite::Sprite(const Sprite &sp) {
     frameHeight = sp.height;
 
     setClip(0, 0, frameWidth, height);
+    setAlpha(255);
 
 }
 
