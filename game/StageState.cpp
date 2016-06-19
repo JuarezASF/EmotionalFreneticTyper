@@ -46,7 +46,7 @@ StageState::StageState() : bg("img/ParedesPreto.png"),
 
     //skip description
     is >> buffer >> x >> y;
-    cout << "main player at tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << " speed:" << Vec2(vx, vy) << endl;
+    cout << "main player at tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << endl;
     mainPlayerPtr = new PlayableEmotion(x, y);
 
     is >> buffer >> x >> y >> w >> h >> vx >> vy;

@@ -124,11 +124,14 @@ void TitleState::update(float dt) {
                 fadeTimer.restart();
 
                 currentImgIdx++;
-                if (startsMusicAt == currentImgIdx)
+                if (startsMusicAt == currentImgIdx){
                     music.play(-1);
+
+                }
 
                 if (currentImgIdx >= imageStack.size()) {
                     Game::getInstance().push(new StageState());
+                    currentFadeState = FADE_HOLDING;
                 }
             }
             break;
@@ -136,7 +139,8 @@ void TitleState::update(float dt) {
             break;
     }
 
-    imageStack[currentImgIdx]->setAlpha(alpha);
+    if(currentImgIdx < imageStack.size())
+        imageStack[currentImgIdx]->setAlpha(alpha);
 
     skipTextTimer.update(dt);
     if (skipTextTimer.get() >= PRESS_SKIP_TEST_BLINK_TIME) {
@@ -157,16 +161,18 @@ void TitleState::update(float dt) {
 }
 
 void TitleState::render() {
-    SDL_RenderClear(Game::getInstance().getRenderer());
     if (currentImgIdx < imageStack.size()) {
+        SDL_Renderer *renderer = Game::getInstance().getRenderer();
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
         unique_ptr<Sprite> &currentImgPtr = imageStack[currentImgIdx];
         const Vec2 &screenDimensions = Game::getInstance().getScreenDimensions();
         currentImgPtr->render((int) (screenDimensions.x / 2 - currentImgPtr->getWidth() / 2),
                               (int) (screenDimensions.y / 2 - currentImgPtr->getHeight() / 2),
                               0, SDL_FLIP_NONE);
+        if (showSkipText)
+            skipText.render();
     }
-    if (showSkipText)
-        skipText.render();
 }
 
 void TitleState::pause() { }
