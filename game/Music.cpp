@@ -9,10 +9,12 @@
 #include "Game.h"
 
 Music::Music() : music(nullptr) {
+    playing = false;
 
 }
 
 Music::Music(std::string file) {
+    playing = false;
 
     open(file);
 
@@ -20,8 +22,12 @@ Music::Music(std::string file) {
 
 void Music::play(int times) {
 
-    if (music)
+    if (music){
         Mix_PlayMusic(music, times);
+        playing = true;
+
+    }
+
     else {
         std::cerr << "Calling play with invalid music" << std::endl;
     }

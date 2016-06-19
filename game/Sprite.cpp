@@ -85,10 +85,6 @@ void Sprite::render(int topLeftX, int topLeftY, float angle, SDL_RendererFlip fl
 
     }
 
-
-    if (GameConfig::debugMode)
-        SDL_RenderPresent(Game::getInstance().getRenderer());
-
 }
 
 void Sprite::setScaleX(float scale) {
@@ -117,6 +113,8 @@ void Sprite::construct(int frameCount, float frameTime) {
     this->frameTime = frameTime;
 
     center = nullptr;
+
+    setAlpha(255);
 
 }
 

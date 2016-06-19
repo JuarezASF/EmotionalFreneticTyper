@@ -16,6 +16,8 @@ private:
 
     Mix_Music *music;
 
+    bool playing;
+
 public:
 
     Music();
@@ -29,6 +31,8 @@ public:
     void open(std::string fle);
 
     bool isOpen();
+
+    inline bool isPlaying(){return playing;}
 
 
 

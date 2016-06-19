@@ -1,0 +1,17 @@
+tensOfSecondsPerImage
+25
+percentageIn
+60
+percentageHold
+20
+percentageOut
+20
+beforeOpeningSong
+2
+img/Sprite_Run.png
+img/Jump_End.png
+afterOpeningSong
+3
+img/panel.png
+img/moveJump_Start.png
+img/sprites_falling.png
