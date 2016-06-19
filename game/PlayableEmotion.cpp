@@ -10,25 +10,30 @@
 #include "Game.h"
 #include "EndState.h"
 #include "SettingsLoad.h"
+#include "CollidableAABBGameObject.h"
 
 int PlayableEmotion::RUNNING_VELOCITY = 80;
 int PlayableEmotion::IDLE_JUMP_INITIAL_UPWARD_VELOCITY = 150;
 int PlayableEmotion::RUNNING_JUMP_UPWARD_INITIAL_VELOCITY = 180;
 
 PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
-                                                 runnigSp("img/Sprite_Run.png", 15, SECONDS_PER_FRAME),
-                                                 gettingToRunSp("img/sprite_StartRun.png", 8, SECONDS_PER_FRAME),
-                                                 stopingToRunSp("img/sprite_EndRun.png", 6, SECONDS_PER_FRAME),
-                                                 turningSp("img/Sprite_Turn.png", 11, SECONDS_PER_FRAME),
-                                                 idleSp("img/Sprite_Idle.png", 5, SECONDS_PER_FRAME),
-                                                 idleStartJump("img/idleJump_start.png", 4, SECONDS_PER_FRAME),
-                                                 idleJump("img/idleJump_Jump.png", 3, SECONDS_PER_FRAME),
-                                                 runningJumpSp("img/moveJump_Jump.png", 3, SECONDS_PER_FRAME),
-                                                 runningStartJumpSp("img/moveJump_Start.png", 4, SECONDS_PER_FRAME),
-                                                 jumpEndSp("img/Jump_End.png", 7, SECONDS_PER_FRAME),
-                                                 turnRunSp("img/sprite_MoveTurn.png", 11, SECONDS_PER_FRAME),
-                                                 dashSp("img/sprite_Dash.png", 4, SECONDS_PER_FRAME),
-                                                 fallingSp("img/sprites_falling.png", 2, SECONDS_PER_FRAME) {
+                                                 spriteRunning("img/Sprite_Run.png", 15, SECONDS_PER_FRAME),
+                                                 spriteGettingToRun("img/sprite_StartRun.png", 8, SECONDS_PER_FRAME),
+                                                 spriteStopingRun("img/sprite_EndRun.png", 6, SECONDS_PER_FRAME),
+                                                 spriteTurning("img/Sprite_Turn.png", 11, SECONDS_PER_FRAME),
+                                                 spriteIdle("img/Sprite_Idle.png", 5, SECONDS_PER_FRAME),
+                                                 spriteIdleJumpStart("img/idleJump_start.png", 4, SECONDS_PER_FRAME),
+                                                 spriteIdleJumpJumping("img/idleJump_Jump.png", 3, SECONDS_PER_FRAME),
+                                                 spriteRunningJumpJumping("img/moveJump_Jump.png", 3,
+                                                                          SECONDS_PER_FRAME),
+                                                 spriteRunningJumpStartJump("img/moveJump_Start.png", 4,
+                                                                            SECONDS_PER_FRAME),
+                                                 spriteJumpEnd("img/Jump_End.png", 7, SECONDS_PER_FRAME),
+                                                 spriteTurnRunning("img/sprite_MoveTurn.png", 11, SECONDS_PER_FRAME),
+                                                 spriteDashing("img/sprite_Dash.png", 4, SECONDS_PER_FRAME),
+                                                 spriteFalling("img/sprites_falling.png", 2, SECONDS_PER_FRAME),
+                                                 spriteSmashingForward("img/sprite_smash_forward.png", 4, SECONDS_PER_FRAME),
+                                                 spriteSmashingUpward("img/sprite_smash_upward.png", 4, SECONDS_PER_FRAME) {
 
     loadSettings();
 
@@ -47,8 +52,8 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     speed = Vec2::getVec2FromPolar(speedMagnitude, speedAngle);
     acceleration = Vec2::getVec2FromPolar(accelerationMagnitude, accelerationAngle);
 
-    int width = runnigSp.getWidth() / 15;
-    int height = runnigSp.getHeight();
+    int width = spriteRunning.getWidth() / 15;
+    int height = spriteRunning.getHeight();
 
     center_LT_displacement = -0.5 * Vec2(width, height);
 
@@ -56,13 +61,13 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     speed = Vec2(0, 1);
     acceleration = Vec2(0, 0);
 
-    auxCollisionVolume[0].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float)M_PI_2));
-    auxCollisionVolume[1].setCenter(centerPos + Vec2::getVec2FromPolar(0, -1.0f * (float)M_PI_2));
-    auxCollisionVolume[2].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float)(-1 * M_PI_2)));
+    auxCollisionVolume[0].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float) M_PI_2));
+    auxCollisionVolume[1].setCenter(centerPos + Vec2::getVec2FromPolar(0, -1.0f * (float) M_PI_2));
+    auxCollisionVolume[2].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float) (-1 * M_PI_2)));
 
-    auxCollisionVolume[0].setRadius((float)(4.0 / 5.0 * min(width / 2, height / 2)));
-    auxCollisionVolume[1].setRadius((float)(4.0 / 5.0 * min(width / 2, height / 2)));
-    auxCollisionVolume[2].setRadius((float)(4.0 / 5.0 * min(width / 2, height / 2)));
+    auxCollisionVolume[0].setRadius((float) (4.0 / 5.0 * min(width / 2, height / 2)));
+    auxCollisionVolume[1].setRadius((float) (4.0 / 5.0 * min(width / 2, height / 2)));
+    auxCollisionVolume[2].setRadius((float) (4.0 / 5.0 * min(width / 2, height / 2)));
 
     collisionVolume = new AxisAlignedBoundingBox(centerPos + center_LT_displacement, width, height);
 
@@ -74,6 +79,7 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
 
     iterationsSinceLastHorizontalSupportNodification = 0;
     iterationsSinceLastVerticalSupportNodification = 0;
+    isSmashing = false;
 
 
 }
@@ -95,7 +101,7 @@ void PlayableEmotion::update(float dt) {
             if (iterationsSinceLastHorizontalSupportNodification > 15) {
                 cout << "was running, now falling!" << endl;
                 currentState = PlayableState::FALLING;
-                fallingSp.setFrame(0);
+                spriteFalling.setFrame(0);
                 wasRunning = true;
                 break;
             }
@@ -116,18 +122,24 @@ void PlayableEmotion::update(float dt) {
                 switch (e) {
                     case TyperInput::TypingEvent::TURN :
                         currentState = PlayableState::TURNING;
-                        idleSp.setFrame(0);
+                        spriteIdle.setFrame(0);
                         activeActionTimer.restart();
                         break;
                     case TyperInput::TypingEvent::RUN :
                         currentState = PlayableState::GETTING_TO_RUN;
-                        gettingToRunSp.setFrame(0);
+                        spriteGettingToRun.setFrame(0);
                         activeActionTimer.restart();
                         wasRunning = true;
                         break;
                     case TyperInput::TypingEvent::JUMP :
                         currentState = PlayableState::IDLE_JUMP_START;
-                        idleStartJump.setFrame(0);
+                        spriteIdleJumpStart.setFrame(0);
+                        activeActionTimer.restart();
+                        break;
+                    case TyperInput::TypingEvent::SMASH :
+                        currentState = PlayableState::SMASHING_UPWARD;
+                        isSmashing = true;
+                        spriteSmashingForward.setFrame(0);
                         activeActionTimer.restart();
                         break;
                     default:
@@ -141,25 +153,29 @@ void PlayableEmotion::update(float dt) {
                     case TyperInput::TypingEvent::VERTICAL_SUPPORT_FOUND:
                         currentState = PlayableState::STOPING_RUN;
                         speed.x = 0.0;
-                        stopingToRunSp.setFrame(0);
+                        spriteStopingRun.setFrame(0);
                         break;
                     case TyperInput::TypingEvent::TURN :
                         currentState = PlayableState::TURN_RUN;
-                        turnRunSp.setFrame(0);
+                        spriteTurnRunning.setFrame(0);
                         activeActionTimer.restart();
                         speed.x = 0.0;
                         break;
                     case TyperInput::TypingEvent::STOP :
                         currentState = PlayableState::STOPING_RUN;
-                        stopingToRunSp.setFrame(0);
+                        spriteStopingRun.setFrame(0);
                         activeActionTimer.restart();
                         wasRunning = false;
                         break;
                     case TyperInput::TypingEvent::JUMP :
                         currentState = PlayableState::RUNNING_JUMP_START;
-
-                        //untach from ground
-                        runningStartJumpSp.setFrame(0);
+                        spriteRunningJumpStartJump.setFrame(0);
+                        break;
+                    case TyperInput::TypingEvent::SMASH :
+                        currentState = PlayableState::SMASHING_FORWARD;
+                        activeActionTimer.restart();
+                        isSmashing = true;
+                        spriteSmashingForward.setFrame(0);
                         break;
                     default:
                         break;
@@ -177,20 +193,20 @@ void PlayableEmotion::update(float dt) {
                         speed.x = 0;
                         if (wasRunning) {
                             currentState = PlayableState::RUNNING_JUMP_END;
-                            jumpEndSp.setFrame(0);
+                            spriteJumpEnd.setFrame(0);
                             activeActionTimer.restart();
 
                         }
                         else {
                             currentState = PlayableState::JUMP_END;
-                            jumpEndSp.setFrame(0);
+                            spriteJumpEnd.setFrame(0);
                             activeActionTimer.restart();
                         }
 
                         break;
                     case TyperInput::TypingEvent::DASH: {
                         currentState = PlayableState::DASHING;
-                        dashSp.setFrame(0);
+                        spriteDashing.setFrame(0);
                         activeActionTimer.restart();
                         break;
                     }
@@ -205,7 +221,29 @@ void PlayableEmotion::update(float dt) {
                 switch (e) {
                     case TyperInput::TypingEvent::VERTICAL_SUPPORT_FOUND:
                         currentState = PlayableState::FALLING;
-                        fallingSp.setFrame(0);
+                        spriteFalling.setFrame(0);
+                        activeActionTimer.restart();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case PlayableState::SMASHING_FORWARD:
+                switch (e) {
+                    case TyperInput::TypingEvent::VERTICAL_SUPPORT_FOUND:
+                        currentState = PlayableState::FALLING;
+                        spriteFalling.setFrame(0);
+                        activeActionTimer.restart();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case PlayableState::SMASHING_UPWARD:
+                switch (e) {
+                    case TyperInput::TypingEvent::HORIZONTAL_SUPPORT_FOUND:
+                        currentState = PlayableState::FALLING;
+                        spriteFalling.setFrame(0);
                         activeActionTimer.restart();
                         break;
                     default:
@@ -223,105 +261,128 @@ void PlayableEmotion::update(float dt) {
         case PlayableState::IDLE:
             acceleration = Vec2(0, 0);
             speed.x = 0;
-            idleSp.update(dt);
+            spriteIdle.update(dt);
             break;
         case PlayableState::GETTING_TO_RUN:
             acceleration += Vec2(5 * getDirectionHorizontalMultiplier(), 0);
-            gettingToRunSp.update(dt);
-            if (gettingToRunSp.isThistLastFrame()) {
+            spriteGettingToRun.update(dt);
+            if (spriteGettingToRun.isThistLastFrame()) {
                 currentState = PlayableState::RUNNING;
-                runnigSp.setFrame(0);
+                spriteRunning.setFrame(0);
             }
             break;
         case PlayableState::RUNNING:
-            runnigSp.update(dt);
+            spriteRunning.update(dt);
             speed.x = RUNNING_VELOCITY * getDirectionHorizontalMultiplier();
             break;
         case PlayableState::IDLE_JUMP_START:
-            idleStartJump.update(dt);
-            if (idleStartJump.isThistLastFrame()) {
+            spriteIdleJumpStart.update(dt);
+            if (spriteIdleJumpStart.isThistLastFrame()) {
                 currentState = PlayableState::IDLE_JUMP_JUMPING;
-                idleStartJump.setFrame(0);
+                spriteIdleJumpStart.setFrame(0);
                 speed += Vec2(0, -IDLE_JUMP_INITIAL_UPWARD_VELOCITY);
             }
             break;
         case PlayableState::IDLE_JUMP_JUMPING:
-            idleJump.update(dt);
-            if (idleJump.isThistLastFrame()) {
+            spriteIdleJumpJumping.update(dt);
+            if (spriteIdleJumpJumping.isThistLastFrame()) {
                 currentState = PlayableState::FALLING;
-                fallingSp.setFrame(0);
+                spriteFalling.setFrame(0);
             }
             break;
         case PlayableState::JUMP_END:
-            jumpEndSp.update(dt);
-            if (jumpEndSp.isThistLastFrame()) {
+            spriteJumpEnd.update(dt);
+            if (spriteJumpEnd.isThistLastFrame()) {
                 currentState = PlayableState::IDLE;
-                idleSp.setFrame(0);
+                spriteIdle.setFrame(0);
             }
             break;
         case PlayableState::STOPING_RUN:
-            stopingToRunSp.update(dt);
+            spriteStopingRun.update(dt);
             acceleration = Vec2(-5 * getDirectionHorizontalMultiplier(), 0);
-            if (stopingToRunSp.isThistLastFrame()) {
+            if (spriteStopingRun.isThistLastFrame()) {
                 currentState = PlayableState::IDLE;
-                idleSp.setFrame(0);
+                spriteIdle.setFrame(0);
 
             }
             break;
         case PlayableState::RUNNING_JUMP_START:
-            runningStartJumpSp.update(dt);
-            if (runningStartJumpSp.isThistLastFrame()) {
+            spriteRunningJumpStartJump.update(dt);
+            if (spriteRunningJumpStartJump.isThistLastFrame()) {
                 currentState = PlayableState::RUNNING_JUMP_JUMPING;
-                runningJumpSp.setFrame(0);
+                spriteRunningJumpJumping.setFrame(0);
                 centerPos += Vec2(0, -5);
                 speed += Vec2(0, -RUNNING_JUMP_UPWARD_INITIAL_VELOCITY);
             }
             break;
         case PlayableState::FALLING:
-            fallingSp.update(dt);
+            spriteFalling.update(dt);
             break;
         case PlayableState::RUNNING_JUMP_JUMPING:
-            runningJumpSp.update(dt);
-            if (runningJumpSp.isThistLastFrame()) {
+            spriteRunningJumpJumping.update(dt);
+            if (spriteRunningJumpJumping.isThistLastFrame()) {
                 currentState = PlayableState::FALLING;
-                fallingSp.setFrame(0);
+                spriteFalling.setFrame(0);
             }
             break;
         case PlayableState::RUNNING_JUMP_END:
-            jumpEndSp.update(dt);
-            if (jumpEndSp.isThistLastFrame()) {
+            spriteJumpEnd.update(dt);
+            if (spriteJumpEnd.isThistLastFrame()) {
                 currentState = PlayableState::RUNNING;
-                runnigSp.setFrame(0);
+                spriteRunning.setFrame(0);
             }
             break;
         case PlayableState::TURNING:
             acceleration = Vec2(0, 0);
-            turningSp.update(dt);
-            if (turningSp.isThistLastFrame()) {
+            spriteTurning.update(dt);
+            if (spriteTurning.isThistLastFrame()) {
                 currentState = PlayableState::IDLE;
                 toogleDirection();
-                idleSp.setFrame(0);
+                spriteIdle.setFrame(0);
 
             }
             break;
         case PlayableState::TURN_RUN:
-            turnRunSp.update(dt);
-            if (turnRunSp.isThistLastFrame()) {
+            spriteTurnRunning.update(dt);
+            if (spriteTurnRunning.isThistLastFrame()) {
                 currentState = PlayableState::RUNNING;
                 toogleDirection();
-                runnigSp.setFrame(0);
+                spriteRunning.setFrame(0);
             }
             break;
         case PlayableState::DASHING :
-            dashSp.update(dt);
+            spriteDashing.update(dt);
             acceleration -= ForceField::getInstance()->getForceAt(centerPos);
             speed.x = DASH_VELOCITY * getDirectionHorizontalMultiplier();
             speed.y = 0;
             if (activeActionTimer.get() > DASH_TIME) {
                 currentState = PlayableState::FALLING;
-                fallingSp.setFrame(0);
+                spriteFalling.setFrame(0);
 
             }
+            break;
+        case PlayableState::SMASHING_UPWARD :
+            spriteSmashingUpward.update(dt);
+            acceleration -= ForceField::getInstance()->getForceAt(centerPos);
+            speed.x = 0;
+            speed.y = -1*DASH_VELOCITY;
+            if (activeActionTimer.get() > DASH_TIME) {
+                currentState = PlayableState::FALLING;
+                spriteFalling.setFrame(0);
+                isSmashing = false;
+            }
+            break;
+        case PlayableState::SMASHING_FORWARD :
+            spriteSmashingForward.update(dt);
+            acceleration -= ForceField::getInstance()->getForceAt(centerPos);
+            speed.x = DASH_VELOCITY * getDirectionHorizontalMultiplier();
+            speed.y = 0;
+            if (activeActionTimer.get() > DASH_TIME) {
+                currentState = PlayableState::FALLING;
+                spriteFalling.setFrame(0);
+                isSmashing = false;
+            }
+            break;
         default:
             break;
 
@@ -356,6 +417,9 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 //        Game::getInstance().getCurrentState().requestPop();
         Game::getInstance().push(new EndState({true}));
 
+    }
+    if (other.is("DestroyableRectangle")) {
+        ((DestroyableRectangle&) other).smashThis();
     }
     else if (other.is("CollidableAABBGameObject")) {
         Rect collidingRect = ((AxisAlignedBoundingBox *) other.getCollisionVolume())->axisAlignedRectangle;
@@ -428,61 +492,76 @@ void PlayableEmotion::render() {
 
     switch (currentState) {
         case PlayableState::RUNNING:
-            runnigSp.render((int)pos.x, (int)pos.y, rotation,
-                            (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteRunning.render((int) pos.x, (int) pos.y, rotation,
+                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::GETTING_TO_RUN:
-            gettingToRunSp.render((int)pos.x, (int)pos.y, rotation,
-                                  (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteGettingToRun.render((int) pos.x, (int) pos.y, rotation,
+                                      (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::IDLE:
-            idleSp.render((int)pos.x, (int)pos.y, rotation,
-                          (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteIdle.render((int) pos.x, (int) pos.y, rotation,
+                              (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::IDLE_JUMP_START:
-            idleStartJump.render((int)pos.x, (int)pos.y, rotation,
-                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteIdleJumpStart.render((int) pos.x, (int) pos.y, rotation,
+                                       (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::IDLE_JUMP_JUMPING:
-            idleJump.render((int)pos.x, (int)pos.y, rotation,
-                            (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteIdleJumpJumping.render((int) pos.x, (int) pos.y, rotation,
+                                         (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
+                                                                                   : SDL_FLIP_NONE);
             break;
         case PlayableState::JUMP_END:
-            jumpEndSp.render((int)pos.x, (int)pos.y, rotation,
-                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
-            break;
-        case PlayableState::RUNNING_JUMP_START:
-            runningStartJumpSp.render((int)pos.x, (int)pos.y, rotation,
-                                      (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
-                                                                                : SDL_FLIP_NONE);
-            break;
-        case PlayableState::RUNNING_JUMP_JUMPING:
-            runningJumpSp.render((int)pos.x, (int)pos.y, rotation,
+            spriteJumpEnd.render((int) pos.x, (int) pos.y, rotation,
                                  (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
+        case PlayableState::RUNNING_JUMP_START:
+            spriteRunningJumpStartJump.render((int) pos.x, (int) pos.y, rotation,
+                                              (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
+                                                                                        : SDL_FLIP_NONE);
+            break;
+        case PlayableState::RUNNING_JUMP_JUMPING:
+            spriteRunningJumpJumping.render((int) pos.x, (int) pos.y, rotation,
+                                            (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
+                                                                                      : SDL_FLIP_NONE);
+            break;
         case PlayableState::RUNNING_JUMP_END:
-            jumpEndSp.render((int)pos.x, (int)pos.y, rotation,
-                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteJumpEnd.render((int) pos.x, (int) pos.y, rotation,
+                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::STOPING_RUN:
-            stopingToRunSp.render((int)pos.x, (int)pos.y, rotation,
-                                  (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteStopingRun.render((int) pos.x, (int) pos.y, rotation,
+                                    (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::TURNING:
-            turningSp.render((int)pos.x, (int)pos.y, rotation,
-                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteTurning.render((int) pos.x, (int) pos.y, rotation,
+                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::TURN_RUN:
-            turnRunSp.render((int)pos.x, (int)pos.y, rotation,
-                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteTurnRunning.render((int) pos.x, (int) pos.y, rotation,
+                                     (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::FALLING:
-            fallingSp.render((int)pos.x, (int)pos.y, rotation,
-                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteFalling.render((int) pos.x, (int) pos.y, rotation,
+                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::DASHING:
-            dashSp.render((int)pos.x, (int)pos.y, rotation,
-                          (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            spriteDashing.render((int) pos.x, (int) pos.y, rotation,
+                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+            break;
+        case PlayableState::SMASHING_FORWARD:
+            spriteSmashingForward.render((int) pos.x, (int) pos.y, rotation,
+                                         (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
+                                                                                   : SDL_FLIP_NONE);
+            break;
+        case PlayableState::SMASHING_UPWARD:
+            spriteSmashingUpward.render((int) pos.x, (int) pos.y, rotation,
+                                        (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
+                                                                                  : SDL_FLIP_NONE);
+            break;
+
+        default:
             break;
 
     }
@@ -500,7 +579,7 @@ void PlayableEmotion::updatePos(Vec2 center) {
     box->setLeftTopCorner(centerPos + center_LT_displacement);
 
     //update auxliar collision circles
-    const Vec2 &aux = Vec2::getVec2FromPolar(box->axisAlignedRectangle.h / 4, (float)M_PI_2);
+    const Vec2 &aux = Vec2::getVec2FromPolar(box->axisAlignedRectangle.h / 4, (float) M_PI_2);
     auxCollisionVolume[0].setCenter(centerPos + aux);
     auxCollisionVolume[1].setCenter(centerPos);
     auxCollisionVolume[2].setCenter(centerPos + aux * (-1.0));

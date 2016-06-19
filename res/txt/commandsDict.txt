@@ -1,4 +1,4 @@
-9
+10
 MOVE 1 move
 STOP 1 stop
 JUMP 1 jump
@@ -8,3 +8,4 @@ DASH 1 dash
 START 1 start
 SKIP 1 skip
 PAUSE 1 pause
+SMASH 1 smash

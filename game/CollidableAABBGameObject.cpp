@@ -16,7 +16,7 @@ void CollidableAABBGameObject::construct(Vec2 leftTop, Vec2 bottomRight) {
 
     rotation = 0;
 
-    center_LT_displacement = (-0.5)*Vec2(size.x, size.y);
+    center_LT_displacement = (-0.5) * Vec2(size.x, size.y);
 
 }
 
@@ -66,7 +66,77 @@ CollidableAABBGameObject *CollidableAABBGameObject::getTopLeftAt(Vec2 topLeft, i
     return new CollidableAABBGameObject(topLeft, topLeft + Vec2(w, h));
 }
 
-VictoryRectangle::VictoryRectangle(Vec2 leftTop, Vec2 bottomRight):CollidableAABBGameObject(leftTop, bottomRight)
-{
+VictoryRectangle::VictoryRectangle(Vec2 leftTop, Vec2 bottomRight) : CollidableAABBGameObject(leftTop, bottomRight) {
+
+}
+
+void KillingRectangle::update(float dt) {
+    CollidableAABBGameObject::update(dt);
+
+    centerPos += dt * constSpeed;
+
+    ((AxisAlignedBoundingBox *) collisionVolume)->setLeftTopCorner(centerPos + center_LT_displacement);
+
+
+}
+
+
+bool KillingRectangle::is(std::string type) {
+    return CollidableAABBGameObject::is(type) || type == "KillingRectangle";
+}
+
+
+KillingRectangle *KillingRectangle::getTopLeftAt(Vec2 topLeft, int width, int heigth, Vec2 speed) {
+    return new KillingRectangle(topLeft, topLeft + Vec2(width, heigth), speed);
+}
+
+KillingRectangle::KillingRectangle(Vec2 topLeft, Vec2 bottomRight, Vec2 speed)
+        : CollidableAABBGameObject(topLeft, bottomRight) {
+    constSpeed = speed;
+    ((AxisAlignedBoundingBox *) collisionVolume)->setShouldFill(true);
+    ((AxisAlignedBoundingBox *) collisionVolume)->setColor(0, 0, 255, 255);
+
+
+}
+
+KillingRectangle *KillingRectangle::getCenteredAt(Vec2 center, int width, int height, Vec2 speed) {
+    return new KillingRectangle(center + (-0.5) * Vec2(width, height), center + (0.5) * Vec2(width, height), speed);
+}
+
+void KillingRectangle::render() {
+    CollidableAABBGameObject::render();
+}
+
+bool DestroyableRectangle::isDead() {
+    return !this->alive;
+}
+
+DestroyableRectangle *DestroyableRectangle::getTopLeftAt(Vec2 topLeft, int width, int heigth) {
+    return new DestroyableRectangle(topLeft, topLeft + Vec2(width, heigth));
+}
+
+DestroyableRectangle *DestroyableRectangle::getCenteredAt(Vec2 center, int width, int height) {
+    return new DestroyableRectangle(center + (-0.5) * Vec2(width, height), center + (0.5) * Vec2(width, height));
+}
+
+void DestroyableRectangle::update(float dt) {
+    CollidableAABBGameObject::update(dt);
+}
+
+bool DestroyableRectangle::is(std::string type) {
+    return CollidableAABBGameObject::is(type);
+}
+
+void DestroyableRectangle::render() {
+    CollidableAABBGameObject::render();
+}
+
+DestroyableRectangle::DestroyableRectangle(Vec2 topLeft, Vec2 bottomRight) :
+        CollidableAABBGameObject(topLeft, bottomRight) {
+
+}
+
+void DestroyableRectangle::smashThis() {
+    alive = false;
 
 }

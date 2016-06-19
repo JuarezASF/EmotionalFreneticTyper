@@ -21,7 +21,8 @@ static int DASH_VELOCITY = 20;
 class PlayableEmotion : public GameObject{
 public:
     enum PlayableState{IDLE, RUNNING, TURNING, GETTING_TO_RUN, STOPING_RUN, RUNNING_JUMP_START, RUNNING_JUMP_JUMPING,
-        RUNNING_JUMP_END, IDLE_JUMP_START, IDLE_JUMP_JUMPING, JUMP_END, TURN_RUN, DASHING, FALLING};
+        RUNNING_JUMP_END, IDLE_JUMP_START, IDLE_JUMP_JUMPING, JUMP_END, TURN_RUN, DASHING, FALLING, SMASHING_FORWARD,
+        SMASHING_UPWARD};
 
     enum PlayableFacing{LEFT, RIGHT};
 
@@ -30,9 +31,9 @@ private:
     static int IDLE_JUMP_INITIAL_UPWARD_VELOCITY;
     static int RUNNING_JUMP_UPWARD_INITIAL_VELOCITY;
 
-    Sprite runnigSp, gettingToRunSp, stopingToRunSp, turningSp, idleSp;
-    Sprite idleStartJump, idleJump, runningJumpSp, runningStartJumpSp, jumpEndSp;
-    Sprite turnRunSp, dashSp, fallingSp;
+    Sprite spriteRunning, spriteGettingToRun, spriteStopingRun, spriteTurning, spriteIdle;
+    Sprite spriteIdleJumpStart, spriteIdleJumpJumping, spriteRunningJumpJumping, spriteRunningJumpStartJump, spriteJumpEnd;
+    Sprite spriteTurnRunning, spriteDashing, spriteFalling, spriteSmashingForward, spriteSmashingUpward;
     PlayableState currentState;
     PlayableFacing currentlyFacing;
     Vec2 speed, acceleration;
@@ -47,6 +48,7 @@ private:
     bool defeated;
 
     bool wasRunning;
+    bool isSmashing;
 
     bool supported;
     int iterationsSinceContactWithSupport;

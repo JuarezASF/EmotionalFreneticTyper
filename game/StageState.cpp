@@ -12,7 +12,6 @@
 #include "PlayableEmotion.h"
 #include "TyperInput.h"
 #include "CollidableAABBGameObject.h"
-#include "KillingRectangle.h"
 #include "defines.h"
 
 #define TILE_HEIGHT 170
