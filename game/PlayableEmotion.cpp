@@ -497,11 +497,18 @@ void PlayableEmotion::render() {
 }
 
 void PlayableEmotion::updatePos(Vec2 center) {
-    for (uint k = 0; k < 3; k++)
-        auxCollisionVolume[k].moveCenter(center - pos);
 
     pos = center;
-    ((AxisAlignedBoundingBox *) collisionVolume)->setLeftTopCorner(pos + center_LT_displacement);
+
+    //update axis aligned bouding box
+    AxisAlignedBoundingBox *box = (AxisAlignedBoundingBox *) collisionVolume;
+    box->setLeftTopCorner(pos + center_LT_displacement);
+
+    //update auxliar collision circles
+    const Vec2 &aux = Vec2::getVec2FromPolar(box->axisAlignedRectangle.h / 4, M_PI_2);
+    auxCollisionVolume[0].setCenter(pos + aux);
+    auxCollisionVolume[1].setCenter(pos);
+    auxCollisionVolume[2].setCenter(pos + aux * (-1.0));
 
 }
 

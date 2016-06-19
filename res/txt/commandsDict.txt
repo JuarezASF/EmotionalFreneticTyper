@@ -1,0 +1,7 @@
+7
+MOVE 1 move
+STOP 1 stop
+JUMP 1 jump
+TURN 1 turn
+RUN 1 run
+DASH 1 dash

@@ -2,6 +2,7 @@
 // Created by jasf on 3/16/16.
 //
 
+#include <fstream>
 #include "Game.h"
 #include "Util.h"
 #include "InputManager.h"
@@ -19,14 +20,51 @@
 StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
                            tileMap("map/tileMap.txt", &tileSet), stagePanel(250, 250), usedEmotion() {
 
-    GameObject *mainPlayer = new PlayableEmotion(300, 200);
+    //config file
+    string filename = "txt/stage1config.txt";
 
+    ifstream is(filename);
+
+    if(!is.is_open()){
+        cerr << "could not load file:" << filename << endl;
+    }
+    else{
+        cout << "loading stage 1 from" << filename << endl;
+    }
+
+    string buffer;
+    int x, y, w, h,q;
+
+    //skip description
+    is >> buffer;
+    is >> x;
+    is >> y;
+    GameObject *mainPlayer = new PlayableEmotion(x, y);
     addObject(mainPlayer);
-    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(300, 350), 200, 80));
-    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(210, 280), 40, 40));
 
-    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(570, 500), 200, 80));
-    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(680, 420), 40, 40));
+    Camera::follow(mainPlayer);
+
+    //skip description
+    is >> buffer;
+    //read qtd rectangles
+    is >> q;
+
+    cout << "reading: " << q << " simple rectangles" << endl;
+
+    for(int k = 0; k < q; k++){
+        is >> x;
+        is >> y;
+        is >> w;
+        is >> h;
+        cout << "adding rectanble at " << Vec2(x,y) << " w,h:" << Vec2(w,h) << endl;
+
+        addObject(CollidableAABBGameObject::getTopLeftAt(Vec2(x, y ), w, h));
+
+        cout.flush();
+
+    }
+
+
 
 
 

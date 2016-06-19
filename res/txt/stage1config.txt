@@ -1,0 +1,6 @@
+initialPos 20 400
+qtdSimpleRectangles 4
+0 600 300 60
+320 500 300 60
+640 400 300 60
+0 130 500 60
