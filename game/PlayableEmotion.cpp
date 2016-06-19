@@ -91,6 +91,7 @@ void PlayableEmotion::update(float dt) {
     //update due to lack of contact with support
     switch (currentState) {
         case PlayableState::RUNNING:
+        case PlayableState::IDLE:
             if (iterationsSinceLastHorizontalSupportNodification > 15) {
                 cout << "was running, now falling!" << endl;
                 currentState = PlayableState::FALLING;
@@ -173,6 +174,7 @@ void PlayableEmotion::update(float dt) {
                 switch (e) {
                     case TyperInput::TypingEvent::HORIZONTAL_SUPPORT_FOUND:
                         speed.y = 0;
+                        speed.x = 0;
                         if (wasRunning) {
                             currentState = PlayableState::RUNNING_JUMP_END;
                             jumpEndSp.setFrame(0);
@@ -192,25 +194,19 @@ void PlayableEmotion::update(float dt) {
                         activeActionTimer.restart();
                         break;
                     }
+                    case TyperInput::TypingEvent::TURN :
+                        toogleDirection();
+                        break;
                     default:
                         break;
                 }
                 break;
             case PlayableState::DASHING:
                 switch (e) {
-                    case TyperInput::TypingEvent::COLIDED:
-                        if (!wasRunning) {
-                            currentState = PlayableState::RUNNING_JUMP_END;
-                            jumpEndSp.setFrame(0);
-                            activeActionTimer.restart();
-
-                        }
-                        else {
-                            currentState = PlayableState::JUMP_END;
-                            jumpEndSp.setFrame(0);
-                            activeActionTimer.restart();
-                        }
-
+                    case TyperInput::TypingEvent::VERTICAL_SUPPORT_FOUND:
+                        currentState = PlayableState::FALLING;
+                        fallingSp.setFrame(0);
+                        activeActionTimer.restart();
                         break;
                     default:
                         break;
@@ -319,8 +315,9 @@ void PlayableEmotion::update(float dt) {
         case PlayableState::DASHING :
             dashSp.update(dt);
             acceleration -= ForceField::getInstance()->getForceAt(pos);
-            speed.x = 20;
-            if (activeActionTimer.get() > 2.0) {
+            speed.x = DASH_VELOCITY * getDirectionHorizontalMultiplier();
+            speed.y = 0;
+            if (activeActionTimer.get() > DASH_TIME) {
                 currentState = PlayableState::FALLING;
                 fallingSp.setFrame(0);
 
@@ -398,7 +395,7 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
                     iterationsSinceLastVerticalSupportNodification = 0;
 
                 }
-                speed.x = 0;
+//                speed.x = 0;
             } else if (abs(angleToEscape - M_PI_2) < TOLERANCE || abs(angleToEscape + M_PI_2) < TOLERANCE) {
                 if (iterationsSinceLastHorizontalSupportNodification > 10) {
                     TyperInput::getInstance().addEventOnFront(
@@ -518,5 +515,8 @@ void PlayableEmotion::loadSettings() {
     RUNNING_VELOCITY = (int) settings->get("RUNNING_VELOCITY", 80);
     IDLE_JUMP_INITIAL_UPWARD_VELOCITY = (int) settings->get("IDLE_JUMP_INITIAL_UPWARD_VELOCITY", 150);
     RUNNING_JUMP_UPWARD_INITIAL_VELOCITY = (int) settings->get("RUNNING_JUMP_UPWARD_INITIAL_VELOCITY", 180);
+    DASH_TIME = 1.0 * settings->get("DASH_TIME_TENS_OF_SECONDS", 20) / 10.0;
+    DASH_VELOCITY = (int) settings->get("DASH_VELOCITY", 200);
+
 
 }
