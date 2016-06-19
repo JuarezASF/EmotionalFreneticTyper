@@ -52,7 +52,7 @@ public:
 
     void setClip(int x, int y, int w, int h);
 
-    void render(int x, int y, float angle, SDL_RendererFlip flip = SDL_FLIP_NONE);
+    void render(int topLeftX, int topLeftY, float angle, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
     bool isOpen();
 

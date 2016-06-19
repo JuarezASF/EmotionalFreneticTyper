@@ -1,4 +1,5 @@
 initialPos 20 500
+killingBlock -2000 700 4000 50 0 -10
 qtdSimpleRectangles 6
 0 600 300 60
 320 500 300 60

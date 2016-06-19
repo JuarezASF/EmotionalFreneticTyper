@@ -14,7 +14,7 @@ protected:
     Collidable* collisionVolume;
 
     //center pos
-    Vec2 pos;
+    Vec2 centerPos;
     float rotation;
     bool supported;
 
@@ -36,7 +36,7 @@ public:
 
     inline Collidable *getCollisionVolume() { return collisionVolume; }
 
-    inline Vec2 getCenterPos() { return pos; }
+    inline Vec2 getCenterPos() { return centerPos; }
 
     inline float getRotation() { return rotation; }
 

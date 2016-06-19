@@ -12,6 +12,7 @@ bool AxisAlignedBoundingBox::is(string className) {
 
 AxisAlignedBoundingBox::AxisAlignedBoundingBox(Vec2 topLeft, int width, int heigth) : axisAlignedRectangle(topLeft, heigth, width) {
     setColor(255, 0, 0, 255);
+    shouldFill = false;
 
 
 }
@@ -23,21 +24,34 @@ void AxisAlignedBoundingBox::render() {
     auto corners = axisAlignedRectangle.getCorners();
     auto center = axisAlignedRectangle.getCenter();
     const Vec2 &cameraDisplacement = Camera::getPos(Camera::PLAYER_GROUND_VIEW);
+    Vec2 a, b;
     for (uint i = 0; i < corners.size(); i++) {
-        Vec2 a = corners[i] - cameraDisplacement;
-        Vec2 b = corners[(i + 1) % corners.size()] - cameraDisplacement;
+        a = corners[i] - cameraDisplacement;
+        b = corners[(i + 1) % corners.size()] - cameraDisplacement;
         SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), colorR, colorG, colorB, colorA);
         SDL_RenderDrawLine(Game::getInstance().getRenderer(), (int)a.x, (int)a.y, (int)b.x, (int)b.y);
 
-        auto normals = getNormals();
 
-        uint k = 0;
-        for (auto v : normals) {
-            a = center - cameraDisplacement;
-            float q = 0.5f * ((((k++) % 2) == 0) ? axisAlignedRectangle.w : axisAlignedRectangle.h);
-            b = center + v * q - cameraDisplacement;
-            SDL_RenderDrawLine(Game::getInstance().getRenderer(), (int)a.x, (int)a.y, (int)b.x, (int)b.y);
-        }
+
+    }
+    auto normals = getNormals();
+    uint k = 0;
+    for (auto v : normals) {
+        a = center - cameraDisplacement;
+        float q = 0.5f * ((((k++) % 2) == 0) ? axisAlignedRectangle.w : axisAlignedRectangle.h);
+        b = center + v * q - cameraDisplacement;
+        SDL_RenderDrawLine(Game::getInstance().getRenderer(), (int)a.x, (int)a.y, (int)b.x, (int)b.y);
+    }
+
+    if(shouldFill){
+        SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), colorR, colorG, colorB, colorA);
+        SDL_Rect sdl_rect;
+        sdl_rect.x = (int) (axisAlignedRectangle.leftTopX - cameraDisplacement.x);
+        sdl_rect.y = (int) (axisAlignedRectangle.leftTopY - cameraDisplacement.y);
+        sdl_rect.w = (int)axisAlignedRectangle.w;
+        sdl_rect.h = (int)axisAlignedRectangle.h;
+
+        SDL_RenderFillRect(Game::getInstance().getRenderer(), &sdl_rect);
 
     }
 

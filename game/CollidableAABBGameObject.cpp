@@ -6,7 +6,7 @@
 #include "AxisAlignedBoundingBox.h"
 
 void CollidableAABBGameObject::construct(Vec2 leftTop, Vec2 bottomRight) {
-    this->pos = (leftTop + bottomRight) * 0.5;
+    this->centerPos = (leftTop + bottomRight) * 0.5;
 
     Vec2 size = bottomRight - leftTop;
     size.x = abs(size.x);
@@ -15,6 +15,9 @@ void CollidableAABBGameObject::construct(Vec2 leftTop, Vec2 bottomRight) {
     collisionVolume = new AxisAlignedBoundingBox(leftTop, (int) size.x, (int) size.y);
 
     rotation = 0;
+
+    center_LT_displacement = (-0.5)*Vec2(size.x, size.y);
+
 }
 
 CollidableAABBGameObject::CollidableAABBGameObject() {

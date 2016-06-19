@@ -29,8 +29,8 @@ Text::~Text() {
 
 void Text::render(int cameraX, int cameraY) {
     SDL_Rect dst_rect;
-    dst_rect.x = (int) box.x - cameraX;
-    dst_rect.y = (int) box.y - cameraY;
+    dst_rect.x = (int) box.leftTopX - cameraX;
+    dst_rect.y = (int) box.leftTopY - cameraY;
     dst_rect.w = (int) box.w;
     dst_rect.h = (int) box.h;
 
@@ -40,8 +40,8 @@ void Text::render(int cameraX, int cameraY) {
 
 void Text::setPos(int x, int y, bool centerX, bool centerY) {
 
-    box.x = (centerX) ? Game::getInstance().getScreenDimensions().x/2 : x;
-    box.y = (centerY) ? Game::getInstance().getScreenDimensions().y/2 : y;
+    box.leftTopX = (centerX) ? Game::getInstance().getScreenDimensions().x / 2 : x;
+    box.leftTopY = (centerY) ? Game::getInstance().getScreenDimensions().y / 2 : y;
 
 }
 

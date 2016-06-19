@@ -19,7 +19,7 @@ GameObject::~GameObject() {
 }
 
 void GameObject::construct() {
-    pos = Vec2(0,0);
+    centerPos = Vec2(0, 0);
     rotation = 0.0;
     center_LT_displacement = Vec2(0,0);
     collisionVolume = nullptr;

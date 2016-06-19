@@ -52,19 +52,19 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
 
     center_LT_displacement = -0.5 * Vec2(width, height);
 
-    pos = Vec2(x, y);
+    centerPos = Vec2(x, y);
     speed = Vec2(0, 1);
     acceleration = Vec2(0, 0);
 
-    auxCollisionVolume[0].setCenter(pos + Vec2::getVec2FromPolar(height / 4, M_PI_2));
-    auxCollisionVolume[1].setCenter(pos + Vec2::getVec2FromPolar(0, -1 * M_PI_2));
-    auxCollisionVolume[2].setCenter(pos + Vec2::getVec2FromPolar(height / 4, -1 * M_PI_2));
+    auxCollisionVolume[0].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float)M_PI_2));
+    auxCollisionVolume[1].setCenter(centerPos + Vec2::getVec2FromPolar(0, -1.0f * (float)M_PI_2));
+    auxCollisionVolume[2].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float)(-1 * M_PI_2)));
 
-    auxCollisionVolume[0].setRadius(4.0 / 5.0 * min(width / 2, height / 2));
-    auxCollisionVolume[1].setRadius(4.0 / 5.0 * min(width / 2, height / 2));
-    auxCollisionVolume[2].setRadius(4.0 / 5.0 * min(width / 2, height / 2));
+    auxCollisionVolume[0].setRadius((float)(4.0 / 5.0 * min(width / 2, height / 2)));
+    auxCollisionVolume[1].setRadius((float)(4.0 / 5.0 * min(width / 2, height / 2)));
+    auxCollisionVolume[2].setRadius((float)(4.0 / 5.0 * min(width / 2, height / 2)));
 
-    collisionVolume = new AxisAlignedBoundingBox(pos + center_LT_displacement, width, height);
+    collisionVolume = new AxisAlignedBoundingBox(centerPos + center_LT_displacement, width, height);
 
     activeActionTimer.restart();
     wasRunning = false;
@@ -273,7 +273,7 @@ void PlayableEmotion::update(float dt) {
             if (runningStartJumpSp.isThistLastFrame()) {
                 currentState = PlayableState::RUNNING_JUMP_JUMPING;
                 runningJumpSp.setFrame(0);
-                pos += Vec2(0, -5);
+                centerPos += Vec2(0, -5);
                 speed += Vec2(0, -RUNNING_JUMP_UPWARD_INITIAL_VELOCITY);
             }
             break;
@@ -314,7 +314,7 @@ void PlayableEmotion::update(float dt) {
             break;
         case PlayableState::DASHING :
             dashSp.update(dt);
-            acceleration -= ForceField::getInstance()->getForceAt(pos);
+            acceleration -= ForceField::getInstance()->getForceAt(centerPos);
             speed.x = DASH_VELOCITY * getDirectionHorizontalMultiplier();
             speed.y = 0;
             if (activeActionTimer.get() > DASH_TIME) {
@@ -327,12 +327,12 @@ void PlayableEmotion::update(float dt) {
 
     }
 
-    acceleration += ForceField::getInstance()->getForceAt(pos);
+    acceleration += ForceField::getInstance()->getForceAt(centerPos);
 
     //integrate time equation
     speed += dt * acceleration;
 
-    updatePos(pos + dt * speed);
+    updatePos(centerPos + dt * speed);
 
 
 }
@@ -349,8 +349,6 @@ bool PlayableEmotion::isDead() {
 
 void PlayableEmotion::notifyCollision(GameObject &other) {
 
-    vector<pair<Vec2, Vec2>> collidingSegments;
-
     if (other.is("KillingRectangle")) {
         defeated = true;
     }
@@ -362,7 +360,7 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
     else if (other.is("CollidableAABBGameObject")) {
         Rect collidingRect = ((AxisAlignedBoundingBox *) other.getCollisionVolume())->axisAlignedRectangle;
 
-        //among intermal circles, find the one that is closes to the axis aligned rectangle
+        //among internal circles, find the one that is closes to the axis aligned rectangle
         int min_k = -1;
         double distanceBetweenCircleAndRectangle = numeric_limits<float>::infinity();
 
@@ -376,15 +374,15 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
         }
 
         const Vec2 closestInnerCircle = auxCollisionVolume[min_k].getCenter();
-        const Vec2 closestPointOnRectagle = collidingRect.getClosestPointTo(closestInnerCircle);
+        const Vec2 closestPointOnRectangle = collidingRect.getClosestPointTo(closestInnerCircle);
 
         double overlap = auxCollisionVolume[min_k].getRadius() - distanceBetweenCircleAndRectangle;
 
         static double TOLERANCE = M_PI / 20.0;
 
         if (overlap >= 0.0) {
-            Vec2 directionToEscape = (closestInnerCircle - closestPointOnRectagle).getNormalizedVector();
-            updatePos(pos + overlap * directionToEscape);
+            Vec2 directionToEscape = (closestInnerCircle - closestPointOnRectangle).getNormalizedVector();
+            updatePos(centerPos + overlap * directionToEscape);
 
             double angleToEscape = directionToEscape.ang_rad();
 
@@ -430,60 +428,60 @@ void PlayableEmotion::render() {
 
     switch (currentState) {
         case PlayableState::RUNNING:
-            runnigSp.render(pos.x, pos.y, rotation,
+            runnigSp.render((int)pos.x, (int)pos.y, rotation,
                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::GETTING_TO_RUN:
-            gettingToRunSp.render(pos.x, pos.y, rotation,
+            gettingToRunSp.render((int)pos.x, (int)pos.y, rotation,
                                   (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::IDLE:
-            idleSp.render(pos.x, pos.y, rotation,
+            idleSp.render((int)pos.x, (int)pos.y, rotation,
                           (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::IDLE_JUMP_START:
-            idleStartJump.render(pos.x, pos.y, rotation,
+            idleStartJump.render((int)pos.x, (int)pos.y, rotation,
                                  (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::IDLE_JUMP_JUMPING:
-            idleJump.render(pos.x, pos.y, rotation,
+            idleJump.render((int)pos.x, (int)pos.y, rotation,
                             (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::JUMP_END:
-            jumpEndSp.render(pos.x, pos.y, rotation,
+            jumpEndSp.render((int)pos.x, (int)pos.y, rotation,
                              (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::RUNNING_JUMP_START:
-            runningStartJumpSp.render(pos.x, pos.y, rotation,
+            runningStartJumpSp.render((int)pos.x, (int)pos.y, rotation,
                                       (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
                                                                                 : SDL_FLIP_NONE);
             break;
         case PlayableState::RUNNING_JUMP_JUMPING:
-            runningJumpSp.render(pos.x, pos.y, rotation,
+            runningJumpSp.render((int)pos.x, (int)pos.y, rotation,
                                  (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::RUNNING_JUMP_END:
-            jumpEndSp.render(pos.x, pos.y, rotation,
+            jumpEndSp.render((int)pos.x, (int)pos.y, rotation,
                              (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::STOPING_RUN:
-            stopingToRunSp.render(pos.x, pos.y, rotation,
+            stopingToRunSp.render((int)pos.x, (int)pos.y, rotation,
                                   (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::TURNING:
-            turningSp.render(pos.x, pos.y, rotation,
+            turningSp.render((int)pos.x, (int)pos.y, rotation,
                              (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::TURN_RUN:
-            turnRunSp.render(pos.x, pos.y, rotation,
+            turnRunSp.render((int)pos.x, (int)pos.y, rotation,
                              (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::FALLING:
-            fallingSp.render(pos.x, pos.y, rotation,
+            fallingSp.render((int)pos.x, (int)pos.y, rotation,
                              (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
         case PlayableState::DASHING:
-            dashSp.render(pos.x, pos.y, rotation,
+            dashSp.render((int)pos.x, (int)pos.y, rotation,
                           (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
             break;
 
@@ -495,17 +493,17 @@ void PlayableEmotion::render() {
 
 void PlayableEmotion::updatePos(Vec2 center) {
 
-    pos = center;
+    centerPos = center;
 
     //update axis aligned bouding box
     AxisAlignedBoundingBox *box = (AxisAlignedBoundingBox *) collisionVolume;
-    box->setLeftTopCorner(pos + center_LT_displacement);
+    box->setLeftTopCorner(centerPos + center_LT_displacement);
 
     //update auxliar collision circles
-    const Vec2 &aux = Vec2::getVec2FromPolar(box->axisAlignedRectangle.h / 4, M_PI_2);
-    auxCollisionVolume[0].setCenter(pos + aux);
-    auxCollisionVolume[1].setCenter(pos);
-    auxCollisionVolume[2].setCenter(pos + aux * (-1.0));
+    const Vec2 &aux = Vec2::getVec2FromPolar(box->axisAlignedRectangle.h / 4, (float)M_PI_2);
+    auxCollisionVolume[0].setCenter(centerPos + aux);
+    auxCollisionVolume[1].setCenter(centerPos);
+    auxCollisionVolume[2].setCenter(centerPos + aux * (-1.0));
 
 }
 

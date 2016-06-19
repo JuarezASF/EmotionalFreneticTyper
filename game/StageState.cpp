@@ -33,16 +33,26 @@ StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_
     }
 
     string buffer;
-    int x, y, w, h,q;
+    int x, y, w, h,q, vx, vy;
 
     //skip description
     is >> buffer;
     is >> x;
     is >> y;
+    cout << "main player at tl:" << Vec2(x,y) << " w,h" << Vec2(w,h) << " speed:" << Vec2(vx,vy) << endl;
     GameObject *mainPlayer = new PlayableEmotion(x, y);
     addObject(mainPlayer);
 
-    Camera::follow(mainPlayer);
+    is >> buffer;
+    is >> x;
+    is >> y;
+    is >> w;
+    is >> h;
+    is >> vx;
+    is >> vy;
+
+    cout << "killing rectangle tl:" << Vec2(x,y) << " w,h" << Vec2(w,h) << " speed:" << Vec2(vx,vy) << endl;
+    addObject(KillingRectangle::getTopLeftAt(Vec2(x, y), w, h, Vec2(vx, vy)));
 
     //skip description
     is >> buffer;
@@ -63,6 +73,8 @@ StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_
         cout.flush();
 
     }
+
+    Camera::follow(mainPlayer);
 
 
 
