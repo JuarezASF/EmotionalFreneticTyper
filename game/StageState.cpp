@@ -18,75 +18,70 @@
 #define TILE_HEIGHT 170
 #define TILE_WIDTH 170
 
-StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
-                           tileMap("map/tileMap.txt", &tileSet), stagePanel(250, 250), usedEmotion(),
-						   startText("font/Call me maybe.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", DARK_YELLOW),
-						   startWait(true), showStartText(true), startTextTimer() {
+StageState::StageState() : bg("img/ParedesPreto.png"),
+                           tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
+                           tileMap("map/tileMap.txt", &tileSet),
+                           stagePanel(250, 250),
+                           startText("font/Call me maybe.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", DARK_YELLOW),
+                           startTextTimer() {
 
-    //config file
+    usedEmotion = "ALL_EMOTIONS_ARE_THE_SAME";
+
+    // load stage configuration
     string filename = "txt/stage1config.txt";
-
     ifstream is(filename);
 
-    if(!is.is_open()){
+    currentState = INITIAL_PAUSED_STATE;
+
+    if (!is.is_open()) {
         cerr << "could not load file:" << filename << endl;
     }
-    else{
+    else {
         cout << "loading stage 1 from" << filename << endl;
     }
 
+    //used to read the file, parameter by parameter
     string buffer;
-    int x, y, w, h,q, vx, vy;
+    int x, y, w, h, q, vx, vy;
 
     //skip description
-    is >> buffer;
-    is >> x;
-    is >> y;
-    cout << "main player at tl:" << Vec2(x,y) << " w,h" << Vec2(w,h) << " speed:" << Vec2(vx,vy) << endl;
-    mainPlayerStart = new PlayableEmotion(x, y);
+    is >> buffer >> x >> y;
+    cout << "main player at tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << " speed:" << Vec2(vx, vy) << endl;
+    mainPlayerPtr = new PlayableEmotion(x, y);
 
-    is >> buffer;
-    is >> x;
-    is >> y;
-    is >> w;
-    is >> h;
-    is >> vx;
-    is >> vy;
+    is >> buffer >> x >> y >> w >> h >> vx >> vy;
 
-    cout << "killing rectangle tl:" << Vec2(x,y) << " w,h" << Vec2(w,h) << " speed:" << Vec2(vx,vy) << endl;
+    cout << "killing rectangle tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << " speed:" << Vec2(vx, vy) << endl;
     addObject(KillingRectangle::getTopLeftAt(Vec2(x, y), w, h, Vec2(vx, vy)));
 
     //skip description
-    is >> buffer;
-    //read qtd rectangles
-    is >> q;
+    is >> buffer >> q;
 
     cout << "reading: " << q << " simple rectangles" << endl;
 
-    for(int k = 0; k < q; k++){
-        is >> x;
-        is >> y;
-        is >> w;
-        is >> h;
-        cout << "adding rectanble at " << Vec2(x,y) << " w,h:" << Vec2(w,h) << endl;
+    for (int k = 0; k < q; k++) {
+        is >> x >> y >> w >> h;
+        cout << "adding rectanble at " << Vec2(x, y) << " w,h:" << Vec2(w, h) << endl;
 
-        addObject(CollidableAABBGameObject::getTopLeftAt(Vec2(x, y ), w, h));
+        addObject(CollidableAABBGameObject::getTopLeftAt(Vec2(x, y), w, h));
 
         cout.flush();
 
     }
 
-    Camera::follow(mainPlayerStart);
 
-    startText.setPos(Game::getInstance().getScreenDimensions().x/2,Game::getInstance().getScreenDimensions().y/2,true,true);
+    startText.setPos(Game::getInstance().getScreenDimensions().x / 2, Game::getInstance().getScreenDimensions().y / 2,
+                     true, true);
+
+    showText = false;
 
 
 }
 
 StageState::~StageState() {
     objectArray.clear();
-    if(mainPlayerStart)
-    	delete mainPlayerStart;
+    if (mainPlayerPtr)
+        delete mainPlayerPtr;
 }
 
 Sprite StageState::getBg() {
@@ -95,60 +90,97 @@ Sprite StageState::getBg() {
 
 
 void StageState::update(float dt) {
-    TyperInput &im = TyperInput::getInstance();
+    static TyperInput &im = TyperInput::getInstance();
+    static vector<pair<unsigned, unsigned>> collidingPairs = vector<pair<unsigned, unsigned>>();
+    static std::vector<int> toBeDeleted;
 
-    if (im.getQuitRequested())
-    	quitRequested = true;
-        //popRequested = true;
+    if (im.getQuitRequested()) {
+        quitRequested = true;
+    }
 
     Camera::update(dt);
 
-    /*
->> Problema similar ao ocorrido no TitleState.cpp (dê uma olhada lá). Favor verificar como
-adicionar a palavra start, de forma que ela somente funcione nesse contexto,
-e não durante o jogo...
-    TyperInput::TypingEvent e = im.getTypingEvent();
-	if (e == TyperInput::TypingEvent::START) {
-		startWait(false);
-		showStartText(false);
-		startTextTimer.restart();
-		addObject(mainPlayerStart);
-    	mainPlayerStart = nullptr;
-	}*/
+    switch (currentState) {
+        case GameState::INITIAL_PAUSED_STATE: {
+            //check if we need to switch state of game
+            if (im.hasTypintEvent() && im.peakTypingEvent() == TyperInput::TypingEvent::START) {
+                im.getTypingEvent();//effectively consume event
+                startTextTimer.restart();
 
-    if(!startWait) {
-		// unless told the opposite, no one is supported
-		for(unsigned k = 0; k < objectArray.size(); k++)
-			objectArray[k]->clearSupported();
+                addObject(mainPlayerPtr);
+                Camera::follow(mainPlayerPtr);
+                showText = false;
+                currentState = PLAYING;
+            }
 
-		auto collidingPairs = checkForCollision();
+            startTextTimer.update(dt);
+            if (startTextTimer.get() > 0.7) {
+                showText = !showText;
+                startTextTimer.restart();
+            }
 
-		updateArray(dt);
+        }
+            break;
+        case GameState::PLAYING: {
+            //check if we need to switch state of game
+            if (im.hasTypintEvent() && im.peakTypingEvent() == TyperInput::TypingEvent::PAUSE) {
+                im.getTypingEvent();//effectively consume event
+                startTextTimer.restart();
+                showText = true;
 
-		for(auto it : collidingPairs){
-			objectArray[it.first]->notifyCollision(*objectArray[it.second]);
-			objectArray[it.second]->notifyCollision(*objectArray[it.first]);
-		}
+                currentState = PAUSED;
+            }
 
-		std::vector<int> toBeDeleted;
-		//collect index to all objects that need to be deleted
-		for (unsigned int i = 0; i < objectArray.size(); i++)
-			if (objectArray[i]->isDead())
-				toBeDeleted.push_back(i);
-		//delete them
-		auto objArrayBegin = objectArray.begin();
-		for (auto it = toBeDeleted.rbegin(); it != toBeDeleted.rend(); ++it)
-			objectArray.erase(objArrayBegin + *it);
-    } else {
-		if(!startTextTimer.get()) {
-			showStartText = !showStartText;
-			startTextTimer.update(dt);
-		} else {
-			startTextTimer.update(dt);
-			if(startTextTimer.get() >= .7)
-				startTextTimer.restart();
-		}
+            collidingPairs.clear();
+            collidingPairs = checkForCollision();
+
+            updateArray(dt);
+
+            for (pair<unsigned, unsigned> it : collidingPairs) {
+                objectArray[it.first]->notifyCollision(*objectArray[it.second]);
+                objectArray[it.second]->notifyCollision(*objectArray[it.first]);
+            }
+
+            toBeDeleted.clear();
+            //collect index to all objects that need to be deleted
+            for (unsigned int i = 0; i < objectArray.size(); i++)
+                if (objectArray[i]->isDead())
+                    toBeDeleted.push_back(i);
+            //delete them
+            std::vector<std::unique_ptr<GameObject>>::iterator objArrayBegin = objectArray.begin();
+            for (auto it = toBeDeleted.rbegin(); it != toBeDeleted.rend(); ++it)
+                objectArray.erase(objArrayBegin + *it);
+
+
+        }
+            break;
+
+        case GameState::PAUSED: {
+            if (im.hasTypintEvent() && im.peakTypingEvent() == TyperInput::TypingEvent::START) {
+                im.getTypingEvent();//effectively consume event
+                startTextTimer.restart();
+                showText = false;
+
+                Camera::follow(mainPlayerPtr);
+
+                currentState = PLAYING;
+            }
+
+            startTextTimer.update(dt);
+            if (startTextTimer.get() > 0.7) {
+                showText = !showText;
+                startTextTimer.restart();
+            }
+
+        }
+            break;
+
+        default:
+            break;
+
     }
+
+
     stagePanel.update(dt);
 }
 
@@ -183,8 +215,8 @@ void StageState::render() {
 
     stagePanel.render();
 
-    if(showStartText)
-    	startText.render();
+    if (showText)
+        startText.render();
 }
 
 void StageState::pause() {
@@ -199,4 +231,4 @@ void StageState::resume() {
 //    return StageState::StateInfo();
 //}
 
-Panel& StageState::getPanel() { return stagePanel; }
+Panel &StageState::getPanel() { return stagePanel; }

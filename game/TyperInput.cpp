@@ -20,6 +20,9 @@ std::map<std::string, TyperInput::TypingEvent> TyperInput::eventStringMap =
                 {"DASH", TypingEvent::DASH},
                 {"UP", TypingEvent::UP},
                 {"DOWN", TypingEvent::DOWN},
+                {"SKIP", TypingEvent::SKIP},
+                {"START", TypingEvent::START},
+                {"PAUSE", TypingEvent::PAUSE},
 
         };
 
@@ -31,7 +34,10 @@ std::map<TyperInput::TypingEvent, std::string> TyperInput::eventToStringMap = {
         {TypingEvent::JUMP, "JUMP"},
         {TypingEvent::DASH, "DASH"},
         {TypingEvent::UP, "UP"},
-        {TypingEvent::DOWN, "DOWN"}
+        {TypingEvent::DOWN, "DOWN"},
+        {TypingEvent::SKIP, "SKIP"},
+        {TypingEvent::START, "START"},
+        {TypingEvent::PAUSE, "PAUSE"}
 };
 
 void TyperInput::loadDictionary(std::string filename) {
@@ -232,6 +238,9 @@ TyperInput::TypingEvent TyperInput::getTypingEvent() {
     TypingEvent out(typedCommands.front());
     typedCommands.pop_front();
     return out;
+}
 
-
+TyperInput::TypingEvent TyperInput::peakTypingEvent() {
+    TypingEvent out(typedCommands.front());
+    return out;
 }

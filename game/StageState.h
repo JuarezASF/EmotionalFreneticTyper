@@ -22,15 +22,25 @@
 #include "Timer.h"
 
 class StageState : public State {
+
+public:
+    typedef enum GameState {
+        INITIAL_PAUSED_STATE, PLAYING, PAUSED
+    } GameState;
+
 protected:
     Sprite bg;
     TileSet tileSet;
     TileMap tileMap;
     Panel stagePanel;
     Text startText;
-    bool startWait, showStartText;
+    GameObject *mainPlayerPtr;
+
+    //used to show blinking msg
+    bool showText;
     Timer startTextTimer;
-    GameObject *mainPlayerStart;
+
+    GameState currentState;
 
 public:
     StageState();
@@ -38,20 +48,26 @@ public:
     virtual ~StageState();
 
     void update(float dt);
+
     void render();
+
     void pause();
+
     void resume();
+
 
     Sprite getBg();
 
     //StateInfo getStateInfo();
 
-    Panel& getPanel();
+    Panel &getPanel();
 
     vector<string> recentlyUsedWords;
     string usedEmotion;
 
     vector<pair<unsigned, unsigned>> checkForCollision() const;
+
+    inline bool isPaused() { return currentState == PAUSED || currentState == INITIAL_PAUSED_STATE; }
 };
 
 
