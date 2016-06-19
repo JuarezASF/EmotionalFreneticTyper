@@ -38,6 +38,7 @@ private:
     std::unordered_map<int, bool> keyState;
 
     std::deque<TypingEvent> typedCommands;
+    std::vector<std::string> typedValidWords;
 
     bool quitRequested;
 
@@ -71,6 +72,10 @@ public:
     TypingEvent peakTypingEvent();
 
     inline void addEventOnFront(TypingEvent e){typedCommands.push_front(e);}
+
+    std::vector<std::string> &getRecentlyTypedWord(){return typedValidWords;}
+
+    void flushTypedValidWords();
 
 
 };

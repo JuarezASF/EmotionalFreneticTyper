@@ -5,14 +5,14 @@
 #include "Animation.h"
 #include "Camera.h"
 
-Animation::Animation(float x, float y, float rotation, string sprite, float timeLimit, bool ends, int frameCount,
+Animation::Animation(float centerX, float centerY, float rotation, string sprite, float timeLimit, bool ends, int frameCount,
                      float frameTime)
         : timeLimit(timeLimit), oneTimeOnly(ends), sp(sprite, frameCount, frameTime) {
 
     this->rotation = rotation;
     endTimer.restart();
 
-    centerPos = Vec2(x, y);
+    centerPos = Vec2(centerX, centerY);
 
     int width = sp.getWidth() / frameCount;
     int height = sp.getHeight();

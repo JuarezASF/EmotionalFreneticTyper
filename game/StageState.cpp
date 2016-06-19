@@ -5,7 +5,6 @@
 #include <fstream>
 #include "Game.h"
 #include "Util.h"
-#include "InputManager.h"
 #include "Camera.h"
 #include "Collision.h"
 #include "StageState.h"
@@ -45,7 +44,7 @@ StageState::StageState() : bg("img/ParedesPreto.png"),
 
     //skip description
     is >> buffer >> x >> y;
-    cout << "main player at tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << endl;
+    cout << "main player at tl:" << Vec2(x, y)<< endl;
     mainPlayerPtr = new PlayableEmotion(x, y);
 
     is >> buffer >> x >> y >> w >> h >> vx >> vy;
@@ -109,8 +108,7 @@ void StageState::update(float dt) {
     switch (currentState) {
         case GameState::INITIAL_PAUSED_STATE: {
             //check if we need to switch state of game
-            if (im.hasTypintEvent() && im.peakTypingEvent() == TyperInput::TypingEvent::START) {
-                im.getTypingEvent();//effectively consume event
+            if (im.hasTypintEvent() && im.getTypingEvent() == TyperInput::TypingEvent::START) {
                 startTextTimer.restart();
 
                 addObject(mainPlayerPtr);

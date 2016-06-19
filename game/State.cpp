@@ -3,7 +3,6 @@
 //
 
 #include "State.h"
-#include "InputManager.h"
 #include "Camera.h"
 #include "defines.h"
 #include "Collision.h"

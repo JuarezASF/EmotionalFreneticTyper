@@ -13,7 +13,6 @@
 #include "Game.h"
 #include "GameException.h"
 #include "Resources.h"
-#include "InputManager.h"
 #include "Camera.h"
 #include "Logger.h"
 #include "TyperInput.h"
@@ -170,7 +169,6 @@ void Game::run() {
 
     while (!stateStack.empty() && !stateStack.top()->getQuitRequested() && !gameQuitRequested) {
 
-
         calculateDeltaTime();
 
         im.update();
@@ -214,9 +212,7 @@ Vec2 Game::getScreenDimensions() {
 }
 
 void Game::push(State *state) {
-
     storedState = state;
-
 }
 
 void Game::requestQuit() {

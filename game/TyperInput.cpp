@@ -229,7 +229,7 @@ void TyperInput::checkForKnownWord() {
         if (pos != string::npos){
             std::cout << "recognized:" << it.first << std::endl;
             typedCommands.push_back(it.second);
-            ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords.push_back(it.first);
+            typedValidWords.push_back(it.first);
             buffer.erase(0, pos + it.first.length());
         }
     }
@@ -245,4 +245,9 @@ TyperInput::TypingEvent TyperInput::getTypingEvent() {
 TyperInput::TypingEvent TyperInput::peakTypingEvent() {
     TypingEvent out(typedCommands.front());
     return out;
+}
+
+void TyperInput::flushTypedValidWords() {
+    typedValidWords.clear();
+
 }

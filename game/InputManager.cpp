@@ -2,7 +2,6 @@
 // Created by jasf on 3/25/16.
 //
 
-#include "InputManager.h"
 #include "defines.h"
 #include "Logger.h"
 #include "Camera.h"

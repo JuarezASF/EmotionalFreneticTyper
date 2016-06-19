@@ -418,7 +418,7 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
         Game::getInstance().push(new EndState({true}));
 
     }
-    if (other.is("DestroyableRectangle")) {
+    if (isSmashing && other.is("DestroyableRectangle")) {
         ((DestroyableRectangle&) other).smashThis();
     }
     else if (other.is("CollidableAABBGameObject")) {

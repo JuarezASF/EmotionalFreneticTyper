@@ -4,6 +4,8 @@
 
 #include "CollidableAABBGameObject.h"
 #include "AxisAlignedBoundingBox.h"
+#include "Game.h"
+#include "Animation.h"
 
 void CollidableAABBGameObject::construct(Vec2 leftTop, Vec2 bottomRight) {
     this->centerPos = (leftTop + bottomRight) * 0.5;
@@ -134,11 +136,21 @@ void DestroyableRectangle::render() {
 DestroyableRectangle::DestroyableRectangle(Vec2 topLeft, Vec2 bottomRight) :
         CollidableAABBGameObject(topLeft, bottomRight) {
 
-    ((AxisAlignedBoundingBox *)collisionVolume)->setColor(0,255,0,255);
+    ((AxisAlignedBoundingBox *) collisionVolume)->setColor(0, 255, 0, 255);
 
 }
 
 void DestroyableRectangle::smashThis() {
     alive = false;
+
+    //add explosion when destroying block
+    static float step = 0.33;
+    static int frameCount = 4;
+    static int repeat = 3;
+
+    Game::getInstance().getCurrentState().addObject(
+            new Animation(centerPos.x, centerPos.y, 0, "img/sprite_block_being_destroyed.png",
+                          repeat * step * frameCount, true, frameCount, step)
+    );
 
 }

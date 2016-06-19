@@ -23,7 +23,7 @@ public:
 
     virtual void notifyCollision(GameObject &other);
 
-    Animation(float x, float y, float rotation, string sprite, float timeLimit, bool ends, int frameCount,
+    Animation(float centerX, float centerY, float rotation, string sprite, float timeLimit, bool ends, int frameCount,
               float frameTime);
 
     void update(float dt);

@@ -15,6 +15,9 @@ TitleState::TitleState() : fadeTimer(),
                                     DARK_YELLOW),
                            skipTextTimer() {
 
+
+    //we'll use this to paint the screen balck on fade in/ou effects
+    SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
     string configFileName = "txt/openingConfig.txt";
 
     ifstream ifs(configFileName);
@@ -163,7 +166,6 @@ void TitleState::update(float dt) {
 void TitleState::render() {
     if (currentImgIdx < imageStack.size()) {
         SDL_Renderer *renderer = Game::getInstance().getRenderer();
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         unique_ptr<Sprite> &currentImgPtr = imageStack[currentImgIdx];
         const Vec2 &screenDimensions = Game::getInstance().getScreenDimensions();

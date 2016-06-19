@@ -58,11 +58,8 @@ public:
 
     Sprite getBg();
 
-    //StateInfo getStateInfo();
-
     Panel &getPanel();
 
-    vector<string> recentlyUsedWords;
     string usedEmotion;
 
     vector<pair<unsigned, unsigned>> checkForCollision() const;

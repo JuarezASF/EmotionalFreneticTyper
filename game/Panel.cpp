@@ -26,9 +26,9 @@ void Panel::update(float dt) {
 		wordc.setText(TyperInput::getInstance().getBuffer());
 		printc = true;
 	}
-	vector<string> recentlyUsedWords = ((StageState&) Game::getInstance().getCurrentState()).recentlyUsedWords;
+	vector<string> recentlyUsedWords = TyperInput::getInstance().getRecentlyTypedWord();
 	if(!recentlyUsedWords.empty()) {
-    	int i = recentlyUsedWords.size();
+		auto i = recentlyUsedWords.size();
     	if(!recentlyUsedWords[i-1].empty()) {
 			wordb.setText(recentlyUsedWords[i-1]);
 			printb = true;
@@ -39,7 +39,12 @@ void Panel::update(float dt) {
 				printa = true;
     		}
     	}
+
+		if(recentlyUsedWords.size() > 20){
+			TyperInput::getInstance().flushTypedValidWords();
+		}
     }
+
 }
 
 void Panel::render() {

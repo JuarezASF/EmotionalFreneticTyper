@@ -5,7 +5,6 @@
 #include "defines.h"
 #include "Camera.h"
 #include "Game.h"
-#include "InputManager.h"
 #include "Logger.h"
 #include "StageState.h"
 
@@ -48,18 +47,18 @@ void Camera::update(float dt) {
 
         speed = Vec2(0, 0);
 
-        if (InputManager::getInstance().isKeyDown(LEFT_ARROW_KEY)) {
-            speed -= Vec2::getVec2FromPolar(camera_sensitivity, 0);
-        }
-        if (InputManager::getInstance().isKeyDown(RIGHT_ARROW_KEY)) {
-            speed -= Vec2::getVec2FromPolar(camera_sensitivity, -1 * M_PI);
-        }
-        if (InputManager::getInstance().isKeyDown(UP_ARROW_KEY)) {
-            speed -= Vec2::getVec2FromPolar(camera_sensitivity, M_PI_2);
-        }
-        if (InputManager::getInstance().isKeyDown(DOWN_ARROW_KEY)) {
-            speed -= Vec2::getVec2FromPolar(camera_sensitivity, -1 * M_PI_2);
-        }
+//        if (InputManager::getInstance().isKeyDown(LEFT_ARROW_KEY)) {
+//            speed -= Vec2::getVec2FromPolar(camera_sensitivity, 0);
+//        }
+//        if (InputManager::getInstance().isKeyDown(RIGHT_ARROW_KEY)) {
+//            speed -= Vec2::getVec2FromPolar(camera_sensitivity, -1 * M_PI);
+//        }
+//        if (InputManager::getInstance().isKeyDown(UP_ARROW_KEY)) {
+//            speed -= Vec2::getVec2FromPolar(camera_sensitivity, M_PI_2);
+//        }
+//        if (InputManager::getInstance().isKeyDown(DOWN_ARROW_KEY)) {
+//            speed -= Vec2::getVec2FromPolar(camera_sensitivity, -1 * M_PI_2);
+//        }
 
         for (unsigned int k = 0; k < paralax_pos.size(); k++)
             paralax_pos[k] = paralax_pos[k] + paralax_sinsitivity[k] * dt * speed;
