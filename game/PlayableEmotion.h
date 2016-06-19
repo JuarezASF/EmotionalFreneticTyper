@@ -8,6 +8,10 @@
 
 #define SECONDS_PER_FRAME 0.0833f
 
+static double DASH_TIME = 2.0;
+
+static int DASH_VELOCITY = 20;
+
 #include "GameObject.h"
 #include "Sprite.h"
 #include "Timer.h"
