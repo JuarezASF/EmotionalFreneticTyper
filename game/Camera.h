@@ -20,9 +20,9 @@ private:
 
 public:
 
-    static uint BACKGROUND_VIEW;
-    static uint PLAYER_GROUND_VIEW;
-    static uint TOPGROUND_VIEW;
+    static unsigned BACKGROUND_VIEW;
+    static unsigned PLAYER_GROUND_VIEW;
+    static unsigned TOPGROUND_VIEW;
 
     static void setLvsOfParalax(unsigned int k, std::vector<float>);
 

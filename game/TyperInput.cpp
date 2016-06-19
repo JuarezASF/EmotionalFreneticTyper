@@ -183,7 +183,7 @@ void TyperInput::printDictionary() {
     std::cout << "-----------------------------------------------" << std::endl;
     for (auto it : eventPossibleStringsMap) {
         std::cout << eventToStringMap[it.first] << ":|";
-        for (uint k = 0; k < it.second.size(); k++) {
+        for (unsigned k = 0; k < it.second.size(); k++) {
             std::cout << it.second[k] << "|";
         }
         std::cout << std::endl;

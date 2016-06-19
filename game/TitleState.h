@@ -8,17 +8,27 @@
 
 #include "State.h"
 #include "Sprite.h"
-#include "Text.h"
 #include "Timer.h"
+#include "Music.h"
+#include "Text.h"
+#include <memory>
+#include <stack>
 
 class TitleState : public State {
 
 private:
-    Sprite bg;
-    Text infoText;
-
-    bool shouldDisplayInfoText;
-    Timer timer;
+    std::stack<std::unique_ptr<Sprite>> imageStack;
+    unsigned char alpha;
+    unsigned char fadeSpeed;
+    bool isFadingIn;
+    float opaqueTime;
+    Timer opaqueTimer;
+    Music music;
+    unsigned char startsMusicAt;
+    unsigned char imageNumber;
+    Text skipText;
+	bool showSkipText;
+	Timer skipTextTimer;
 
 public:
 

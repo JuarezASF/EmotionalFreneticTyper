@@ -68,6 +68,8 @@ public:
 
     void setScaleY(float scale);
 
+    void setAlpha(unsigned char alpha);
+
     void update(float dt);
     void setFrame(int frame);
     void incFrame();

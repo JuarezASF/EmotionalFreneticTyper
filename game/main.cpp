@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     clp.parseCommandLine(argc, argv);
 
     GameConfig::setDebugMode(clp.getBoolVal("debug"));
-    GameConfig::setPrintHitBot(clp.getBoolVal("printHitBox"));
+    GameConfig::setPrintHitBot(true);//clp.getBoolVal("printHitBox")
     SettingsLoad::getInstance()->load("txt/settings.txt");
 
     try {
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 
         Game g = Game("Emotional Typing", 1366, 768);
 
-        g.push(new StageState());
+        g.push(new TitleState());
         g.run();
 
     }catch(GameException e){

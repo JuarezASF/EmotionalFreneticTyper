@@ -487,7 +487,7 @@ void PlayableEmotion::render() {
 
     }
 
-    for (uint k = 0; k < 3; k++)
+    for (unsigned k = 0; k < 3; k++)
         auxCollisionVolume[k].render();
 }
 

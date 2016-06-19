@@ -17,15 +17,12 @@ AxisAlignedBoundingBox::AxisAlignedBoundingBox(Vec2 topLeft, int width, int heig
 
 }
 
-//MARCOS, add this somewhere
-typedef unsigned int uint;
-
 void AxisAlignedBoundingBox::render() {
     auto corners = axisAlignedRectangle.getCorners();
     auto center = axisAlignedRectangle.getCenter();
     const Vec2 &cameraDisplacement = Camera::getPos(Camera::PLAYER_GROUND_VIEW);
     Vec2 a, b;
-    for (uint i = 0; i < corners.size(); i++) {
+    for (unsigned i = 0; i < corners.size(); i++) {
         a = corners[i] - cameraDisplacement;
         b = corners[(i + 1) % corners.size()] - cameraDisplacement;
         SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), colorR, colorG, colorB, colorA);
@@ -35,7 +32,7 @@ void AxisAlignedBoundingBox::render() {
 
     }
     auto normals = getNormals();
-    uint k = 0;
+    unsigned k = 0;
     for (auto v : normals) {
         a = center - cameraDisplacement;
         float q = 0.5f * ((((k++) % 2) == 0) ? axisAlignedRectangle.w : axisAlignedRectangle.h);
@@ -77,7 +74,7 @@ vector<Vec2> AxisAlignedBoundingBox::getNormals() {
 
     //compute all normals
 
-    for (uint i = 0; i < corners.size(); i++) {
+    for (unsigned i = 0; i < corners.size(); i++) {
         normals.push_back((corners[(i + 1) % corners.size()] - corners[i]).getNormalizedVector().rotated(M_PI_2));
     }
     return normals;

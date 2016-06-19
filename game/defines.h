@@ -22,4 +22,35 @@
 
 #define SPACE_BAR SDLK_SPACE
 
+#define ALPHA_OPAQUE SDL_ALPHA_OPAQUE
+
+#define BLACK				(SDL_Color){0,0,0}
+#define WHITE				(SDL_Color){255,255,255}
+#define RED					(SDL_Color){255,0,0}
+#define GREEN				(SDL_Color){0,255,0}
+#define BLUE				(SDL_Color){0,0,255}
+#define YELLOW				(SDL_Color){255,255,0}
+#define PINK				(SDL_Color){255,0,255}
+#define LIGHT_BLUE			(SDL_Color){0,255,255}
+#define DARK_RED			(SDL_Color){127,0,0}
+#define DARK_GREEN			(SDL_Color){0,127,0}
+#define DARK_BLUE			(SDL_Color){0,0,127}
+#define DARK_YELLOW			(SDL_Color){127,127,0}
+#define DARK_PINK			(SDL_Color){127,0,127}
+#define TURQUOISE			(SDL_Color){0,127,127}
+#define GREY				(SDL_Color){127,127,127}
+#define LIGHT_ORANGE		(SDL_Color){255,127,127}
+#define LIGHT_GREEN			(SDL_Color){127,255,127}
+#define LILAC				(SDL_Color){127,127,255}
+#define LIGHT_YELLOW		(SDL_Color){255,255,127}
+#define LIGHT_PINK			(SDL_Color){255,127,255}
+#define ULTRA_LIGHT_BLUE	(SDL_Color){127,255,255}
+#define LIGHT_RED			(SDL_Color){255,64,64}
+#define ORANGE_YELLOW		(SDL_Color){255,127,0}
+#define PINK_ORANGE			(SDL_Color){255,0,127}
+#define SOFT_BLUE			(SDL_Color){0,127,255}
+#define PURPLE				(SDL_Color){127,0,255}
+#define ORANGE				(SDL_Color){255,64,0}
+#define BROWN				(SDL_Color){127,64,0}
+
 #endif //IDJ201601T1_DEFINES_H
