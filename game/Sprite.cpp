@@ -101,6 +101,10 @@ void Sprite::setScaleY(float scale) {
 
 }
 
+void Sprite::setAlpha(unsigned char alpha) {
+	SDL_SetTextureAlphaMod(texture, alpha);
+}
+
 void Sprite::construct(int frameCount, float frameTime) {
     texture = nullptr;
     scaleX = 1.0;

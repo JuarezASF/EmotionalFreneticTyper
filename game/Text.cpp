@@ -39,9 +39,17 @@ void Text::render(int cameraX, int cameraY) {
 }
 
 void Text::setPos(int x, int y, bool centerX, bool centerY) {
+	if(centerX)
+		box.leftTopX = x - box.w/2;
+	else
+		box.leftTopX = x;
+	if(centerY)
+		box.leftTopY = y - box.h/2;
+	else
+		box.leftTopY = y;
 
-    box.leftTopX = (centerX) ? Game::getInstance().getScreenDimensions().x / 2 : x;
-    box.leftTopY = (centerY) ? Game::getInstance().getScreenDimensions().y / 2 : y;
+    //box.leftTopX = (centerX) ? Game::getInstance().getScreenDimensions().x / 2 : x;
+    //box.leftTopY = (centerY) ? Game::getInstance().getScreenDimensions().y / 2 : y;
 
 }
 

@@ -13,12 +13,15 @@
 #include "TyperInput.h"
 #include "CollidableAABBGameObject.h"
 #include "KillingRectangle.h"
+#include "defines.h"
 
 #define TILE_HEIGHT 170
 #define TILE_WIDTH 170
 
 StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
-                           tileMap("map/tileMap.txt", &tileSet), stagePanel(250, 250), usedEmotion() {
+                           tileMap("map/tileMap.txt", &tileSet), stagePanel(250, 250), usedEmotion(),
+						   startText("font/Call me maybe.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", DARK_YELLOW),
+						   startWait(true), showStartText(true), startTextTimer() {
 
     //config file
     string filename = "txt/stage1config.txt";
@@ -40,8 +43,7 @@ StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_
     is >> x;
     is >> y;
     cout << "main player at tl:" << Vec2(x,y) << " w,h" << Vec2(w,h) << " speed:" << Vec2(vx,vy) << endl;
-    GameObject *mainPlayer = new PlayableEmotion(x, y);
-    addObject(mainPlayer);
+    mainPlayerStart = new PlayableEmotion(x, y);
 
     is >> buffer;
     is >> x;
@@ -74,17 +76,17 @@ StageState::StageState() : bg("img/ParedesPreto.png"), tileSet(TILE_WIDTH, TILE_
 
     }
 
-    Camera::follow(mainPlayer);
+    Camera::follow(mainPlayerStart);
 
-
-
+    startText.setPos(Game::getInstance().getScreenDimensions().x/2,Game::getInstance().getScreenDimensions().y/2,true,true);
 
 
 }
 
 StageState::~StageState() {
     objectArray.clear();
-
+    if(mainPlayerStart)
+    	delete mainPlayerStart;
 }
 
 Sprite StageState::getBg() {
@@ -101,38 +103,57 @@ void StageState::update(float dt) {
 
     Camera::update(dt);
 
-    // unless told the opposite, no one is supported
-    for(uint k = 0; k < objectArray.size(); k++)
-        objectArray[k]->clearSupported();
+    /*
+>> Problema similar ao ocorrido no TitleState.cpp (dê uma olhada lá). Favor verificar como
+adicionar a palavra start, de forma que ela somente funcione nesse contexto,
+e não durante o jogo...
+    TyperInput::TypingEvent e = im.getTypingEvent();
+	if (e == TyperInput::TypingEvent::START) {
+		startWait(false);
+		showStartText(false);
+		startTextTimer.restart();
+		addObject(mainPlayerStart);
+    	mainPlayerStart = nullptr;
+	}*/
 
-    auto collidingPairs = checkForCollision();
+    if(!startWait) {
+		// unless told the opposite, no one is supported
+		for(unsigned k = 0; k < objectArray.size(); k++)
+			objectArray[k]->clearSupported();
 
-    updateArray(dt);
+		auto collidingPairs = checkForCollision();
 
-    for(auto it : collidingPairs){
-        objectArray[it.first]->notifyCollision(*objectArray[it.second]);
-        objectArray[it.second]->notifyCollision(*objectArray[it.first]);
+		updateArray(dt);
+
+		for(auto it : collidingPairs){
+			objectArray[it.first]->notifyCollision(*objectArray[it.second]);
+			objectArray[it.second]->notifyCollision(*objectArray[it.first]);
+		}
+
+		std::vector<int> toBeDeleted;
+		//collect index to all objects that need to be deleted
+		for (unsigned int i = 0; i < objectArray.size(); i++)
+			if (objectArray[i]->isDead())
+				toBeDeleted.push_back(i);
+		//delete them
+		auto objArrayBegin = objectArray.begin();
+		for (auto it = toBeDeleted.rbegin(); it != toBeDeleted.rend(); ++it)
+			objectArray.erase(objArrayBegin + *it);
+    } else {
+		if(!startTextTimer.get()) {
+			showStartText = !showStartText;
+			startTextTimer.update(dt);
+		} else {
+			startTextTimer.update(dt);
+			if(startTextTimer.get() >= .7)
+				startTextTimer.restart();
+		}
     }
-
-
-
-    std::vector<int> toBeDeleted;
-    //collect index to all objects that need to be deleted
-    for (unsigned int i = 0; i < objectArray.size(); i++)
-        if (objectArray[i]->isDead())
-            toBeDeleted.push_back(i);
-    //delete them
-    auto objArrayBegin = objectArray.begin();
-    for (auto it = toBeDeleted.rbegin(); it != toBeDeleted.rend(); ++it)
-        objectArray.erase(objArrayBegin + *it);
-
     stagePanel.update(dt);
 }
 
-typedef unsigned long ulong;
-
-vector<pair<uint, uint>> StageState::checkForCollision() const {//test for collision
-    vector<pair<uint, uint>> collidingPairs;
+vector<pair<unsigned, unsigned>> StageState::checkForCollision() const {//test for collision
+    vector<pair<unsigned, unsigned>> collidingPairs;
 
     for (long i = objectArray.size() - 1; i >= 0; i--) {
         if (objectArray[i]->is("Animation"))
@@ -161,6 +182,9 @@ void StageState::render() {
     renderArray();
 
     stagePanel.render();
+
+    if(showStartText)
+    	startText.render();
 }
 
 void StageState::pause() {

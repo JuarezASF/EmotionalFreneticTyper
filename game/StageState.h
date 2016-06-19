@@ -18,6 +18,8 @@
 #include "State.h"
 #include "Music.h"
 #include "Panel.h"
+#include "Text.h"
+#include "Timer.h"
 
 class StageState : public State {
 protected:
@@ -25,6 +27,10 @@ protected:
     TileSet tileSet;
     TileMap tileMap;
     Panel stagePanel;
+    Text startText;
+    bool startWait, showStartText;
+    Timer startTextTimer;
+    GameObject *mainPlayerStart;
 
 public:
     StageState();
@@ -45,7 +51,7 @@ public:
     vector<string> recentlyUsedWords;
     string usedEmotion;
 
-    vector<pair<uint, uint>> checkForCollision() const;
+    vector<pair<unsigned, unsigned>> checkForCollision() const;
 };
 
 
