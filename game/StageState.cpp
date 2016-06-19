@@ -59,10 +59,17 @@ StageState::StageState() : bg("img/ParedesPreto.png"),
     cout << "reading: " << q << " simple rectangles" << endl;
 
     for (int k = 0; k < q; k++) {
-        is >> x >> y >> w >> h;
-        cout << "adding rectanble at " << Vec2(x, y) << " w,h:" << Vec2(w, h) << endl;
+        is >> buffer >> x >> y >> w >> h;
+        cout << "adding rectanble of type:" << buffer << " at " << Vec2(x, y) << " w,h:" << Vec2(w, h) << endl;
 
-        addObject(CollidableAABBGameObject::getTopLeftAt(Vec2(x, y), w, h));
+        if(buffer.compare("block") == 0){
+            addObject(CollidableAABBGameObject::getTopLeftAt(Vec2(x, y), w, h));
+        }else if(buffer.compare("smashable") == 0){
+            addObject(DestroyableRectangle::getTopLeftAt(Vec2(x, y), w, h));
+        }else{
+            cerr << "Unreconizable type of rectangle:" << buffer << endl;
+        }
+
 
         cout.flush();
 

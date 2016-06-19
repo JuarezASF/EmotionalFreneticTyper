@@ -124,7 +124,7 @@ void DestroyableRectangle::update(float dt) {
 }
 
 bool DestroyableRectangle::is(std::string type) {
-    return CollidableAABBGameObject::is(type);
+    return CollidableAABBGameObject::is(type) || type == "DestroyableRectangle";
 }
 
 void DestroyableRectangle::render() {
@@ -133,6 +133,8 @@ void DestroyableRectangle::render() {
 
 DestroyableRectangle::DestroyableRectangle(Vec2 topLeft, Vec2 bottomRight) :
         CollidableAABBGameObject(topLeft, bottomRight) {
+
+    ((AxisAlignedBoundingBox *)collisionVolume)->setColor(0,255,0,255);
 
 }
 
