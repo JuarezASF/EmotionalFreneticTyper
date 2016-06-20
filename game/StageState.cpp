@@ -50,9 +50,8 @@ StageState::StageState() : bg("img/ParedesPreto.png"),
     is >> buffer >> x >> y >> w >> h >> vx >> vy;
 
     cout << "killing rectangle tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << " speed:" << Vec2(vx, vy) << endl;
-    addObject(KillingRectangle::getTopLeftAt(Vec2(x, y), w, h, Vec2(vx, vy)));
+    addObject(KillingRectangle::getTopLeftAt(Vec2(x, y), "img/sprite_fumaca_border.png", "img/sprite_fumaca_body.jpg", Vec2(vx, vy)));
 
-    //skip description
     is >> buffer >> q;
 
     cout << "reading: " << q << " simple rectangles" << endl;

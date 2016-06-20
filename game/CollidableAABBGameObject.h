@@ -7,13 +7,14 @@
 
 
 #include "GameObject.h"
+#include "Sprite.h"
 
 /**
  * Collidable Axis Aligned Game Object
  */
 class CollidableAABBGameObject : public GameObject {
 
-private:
+protected:
 
     void construct(Vec2 leftTop, Vec2 bottomRight);
 
@@ -53,13 +54,15 @@ public:
 class KillingRectangle : public CollidableAABBGameObject {
 private:
     Vec2 constSpeed;
+    Sprite borderSp, bodySp;
+    Vec2 borderDimensions;
 
 protected:
-    KillingRectangle(Vec2 topLeft, Vec2 bottomRight, Vec2 speed);
+    KillingRectangle(Vec2 topLeft, std::string smokeBorderFileName, std::string smokeBodyFileName, Vec2 speed);
 
 public:
-    static KillingRectangle *getTopLeftAt(Vec2 topLeft, int width, int heigth, Vec2 speed);
-    static KillingRectangle *getCenteredAt(Vec2 center, int width, int height, Vec2 speed);
+    static KillingRectangle *getTopLeftAt(Vec2 topLeft, std::string smokeBorderFN,
+                                             std::string smokeBodyFN, Vec2 speed);
     virtual void update(float dt);
     virtual bool is(std::string type);
 
