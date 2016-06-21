@@ -17,7 +17,9 @@ class EndState : public State{
 private:
     Sprite bg;
     Music music;
-    Text instruction = Text("font/goodfoot.ttf", 40, Text::TextStyle::BLENDED, "Press space to restart and ESC to title screen", WHITE, 0, 0);
+    Text instruction = Text("font/goodfoot.ttf", 40, Text::TextStyle::BLENDED, "Type again to restart and quit to leave", WHITE, 0, 0);
+    Timer timer;
+    bool show;
 
 public:
 

@@ -45,6 +45,8 @@ class VictoryRectangle : public CollidableAABBGameObject {
 public:
     VictoryRectangle(Vec2 leftTop, Vec2 bottomRight);
 
+    static VictoryRectangle *getTopLeftAt(Vec2 topLeft, int w, int h);
+
     virtual bool is(std::string type);
 
     virtual void render();

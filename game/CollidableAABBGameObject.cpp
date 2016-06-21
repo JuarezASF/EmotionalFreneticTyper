@@ -70,6 +70,7 @@ CollidableAABBGameObject *CollidableAABBGameObject::getTopLeftAt(Vec2 topLeft, i
 }
 
 VictoryRectangle::VictoryRectangle(Vec2 leftTop, Vec2 bottomRight) : CollidableAABBGameObject(leftTop, bottomRight) {
+    ((AxisAlignedBoundingBox *) collisionVolume)->setColor(255, 255, 255, 255);
 
 }
 
@@ -184,3 +185,6 @@ void DestroyableRectangle::smashThis() {
 
 }
 
+VictoryRectangle *VictoryRectangle::getTopLeftAt(Vec2 topLeft, int w, int h) {
+    return new VictoryRectangle(topLeft, topLeft + Vec2(w, h));
+}

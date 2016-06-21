@@ -1,4 +1,4 @@
-10
+12
 MOVE 1 move
 STOP 1 stop
 JUMP 1 jump
@@ -9,3 +9,5 @@ START 1 start
 SKIP 1 skip
 PAUSE 1 pause
 SMASH 1 smash
+QUIT 1 quit
+CONTINUE 2 again continue

@@ -414,7 +414,7 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
         defeated = true;
     }
     if (other.is("VictoryRectangle")) {
-//        Game::getInstance().getCurrentState().requestPop();
+        Game::getInstance().getCurrentState().requestPop();
         Game::getInstance().push(new EndState({true}));
 
     }

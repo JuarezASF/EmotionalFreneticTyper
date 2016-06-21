@@ -13,10 +13,10 @@
 #include "CollidableAABBGameObject.h"
 #include "defines.h"
 
-#define TILE_HEIGHT 170
-#define TILE_WIDTH 170
+#define TILE_HEIGHT 306
+#define TILE_WIDTH 680
 
-StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
+StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
                            tileMap("map/tileMap.txt", &tileSet),
                            stagePanel(340, 340),
                            startText("font/goodfoot.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", WHITE),
@@ -65,6 +65,8 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png")
             addObject(CollidableAABBGameObject::getTopLeftAt(Vec2(x, y), w, h));
         }else if(buffer.compare("smashable") == 0){
             addObject(DestroyableRectangle::getTopLeftAt(Vec2(x, y), w, h));
+        }else if(buffer.compare("victory") == 0){
+            addObject(VictoryRectangle::getTopLeftAt(Vec2(x, y), w, h));
         }else{
             cerr << "Unreconizable type of rectangle:" << buffer << endl;
         }
@@ -202,7 +204,7 @@ void StageState::render() {
 	SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
     SDL_RenderClear(Game::getInstance().getRenderer());
 
-    tileMap.renderLayer(0, Camera::getPos(Camera::PLAYER_GROUND_VIEW));
+    tileMap.renderLayer(Camera::BACKGROUND_VIEW, Camera::getPos(Camera::PLAYER_GROUND_VIEW));
 
     renderArray();
 
