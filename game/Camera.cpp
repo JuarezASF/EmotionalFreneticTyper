@@ -94,7 +94,7 @@ Vec2 Camera::getPos(unsigned int k) {
     if (k > paralax_pos.size())
         Logger::err("Invalid paralax lv!");
 
-    return paralax_pos[k] + Vec2(-1 * ((StageState&) Game::getInstance().getCurrentState()).getPanel().GetLeftWidth(),0);
+    return paralax_pos[k];// + Vec2(-1 * ((StageState&) Game::getInstance().getCurrentState()).getPanel().GetLeftWidth(),0);
 }
 
 GameObject *Camera::getPlayer() {

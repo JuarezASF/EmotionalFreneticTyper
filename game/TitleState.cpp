@@ -11,8 +11,8 @@
 
 TitleState::TitleState() : fadeTimer(),
                            music("audio/Title Screen.ogg"),
-                           skipText("font/Call me maybe.ttf", 20, Text::TextStyle::BLENDED, "PRESS ENTER TO SKIP >>",
-                                    DARK_YELLOW),
+                           skipText("font/goodfoot.ttf", 24, Text::TextStyle::BLENDED, "TYPE SKIP >>",
+                                    WHITE),
                            skipTextTimer() {
 
 

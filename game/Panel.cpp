@@ -6,58 +6,122 @@
 #include "Game.h"
 #include "StageState.h"
 #include "TyperInput.h"
+#include "defines.h"
 
 Panel::Panel(int leftWidth, int rightWidth)
-: bg("img/panel.png"), leftWidth(leftWidth), rightWidth(rightWidth),
-  worda("font/Call me maybe.ttf", 40, Text::TextStyle::BLENDED, "inicioA", SDL_Color{255, 0, 0, 255}, 0, 0),
-  wordb("font/Call me maybe.ttf", 40, Text::TextStyle::BLENDED, "inicioB", SDL_Color{255, 0, 0, 255}, 0, 0),
-  wordc("font/Call me maybe.ttf", 40, Text::TextStyle::BLENDED, "inicioC", SDL_Color{0, 0, 0, 255}, 0, 0),
-  printa(true), printb(true), printc(true){
-	Vec2 windowSize = Game::getInstance().getScreenDimensions();
-	worda.setPos(windowSize.x - rightWidth + 20, windowSize.y/2 - 300, false, false);
-	wordb.setPos(windowSize.x - rightWidth + 20, windowSize.y/2 - 150, false, false);
-	wordc.setPos(windowSize.x - rightWidth + 20, windowSize.y/2, false, false);
+: panelL("img/panelL.jpg"),panelR("img/panelR.jpg"), iconL1("img/iconL1.jpg"), iconL2("img/iconL2.jpg"),
+  iconL3("img/iconL3.jpg"), iconL4("img/iconL4.jpg"), iconR1("img/iconR1.jpg"), iconR2("img/iconR2.jpg"),
+  iconR3("img/iconR3.jpg"), iconR4("img/iconR4.jpg"), leftWidth(leftWidth), rightWidth(rightWidth),
+  typingWord("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "typingWord", WHITE),
+  typedWord("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "typedWord", ORANGE_YELLOW),
+  iconTextR1("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "dash", WHITE, 165, 280),
+  iconTextR2("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "skill1", WHITE, 165, 350),
+  iconTextR3("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "skill2", WHITE, 165, 420),
+  iconTextR4("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "skill3", WHITE, 165, 490),
+  iconTextL1("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "stop", WHITE, 1150, 280),
+  iconTextL2("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "run", WHITE, 1150, 350),
+  iconTextL3("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "jump", WHITE, 1150, 420),
+  iconTextL4("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "turn", WHITE, 1150, 490),
+  previousRecentlyTypedWordSize(),lastTypingWord(),printTypingWord(),printTypedWord(),
+  printIconTextR1(),printIconTextR2(),printIconTextR3(),printIconTextR4(),printIconTextL1(),
+  printIconTextL2(),printIconTextL3(),printIconTextL4(),typedWordAlpha(){
+	panelL.setClip(0,0,leftWidth,panelL.getHeight());
+	panelR.setClip(0,0,rightWidth,panelR.getHeight());
+	panelRxPosition = Game::getInstance().getScreenDimensions().x - rightWidth;
+	iconL1.setAlpha(50);
+	iconL2.setAlpha(50);
+	iconL3.setAlpha(50);
+	iconL4.setAlpha(50);
+	iconR1.setAlpha(50);
+	iconR2.setAlpha(50);
+	iconR3.setAlpha(50);
+	iconR4.setAlpha(50);
 }
 
 void Panel::update(float dt) {
-	printa = printb = printc = false;
-	std::string inputBuf = TyperInput::getInstance().getBuffer();
-	if(!inputBuf.empty()) {
-		wordc.setText(TyperInput::getInstance().getBuffer());
-		printc = true;
-	}
-	vector<string> recentlyUsedWords = TyperInput::getInstance().getRecentlyTypedWord();
-	if(!recentlyUsedWords.empty()) {
-		auto i = recentlyUsedWords.size();
-    	if(!recentlyUsedWords[i-1].empty()) {
-			wordb.setText(recentlyUsedWords[i-1]);
-			printb = true;
-    	}
-    	if(i > 1) {
-    		if(!recentlyUsedWords[i-2].empty()) {
-    			worda.setText(recentlyUsedWords[i-2]);
-				printa = true;
-    		}
-    	}
-
-		if(recentlyUsedWords.size() > 20){
-			TyperInput::getInstance().flushTypedValidWords();
+	printTypingWord = false;
+	if(!TyperInput::getInstance().getBuffer().empty()) {
+		if(lastTypingWord != TyperInput::getInstance().getBuffer()) {
+			lastTypingWord = TyperInput::getInstance().getBuffer();
+			typingWord.setText(lastTypingWord);
+			typingWord.setPos(Game::getInstance().getScreenDimensions().x/2,50,true,false);
 		}
-    }
-
+		printTypingWord = true;
+	}
+	if(!TyperInput::getInstance().getRecentlyTypedWord().empty() &&
+			(TyperInput::getInstance().getRecentlyTypedWord().size() > previousRecentlyTypedWordSize)) {
+		typedWord.setText(TyperInput::getInstance().getRecentlyTypedWord().back());
+		typedWord.setPos(Game::getInstance().getScreenDimensions().x/2,50, true, false);
+		typedWordAlpha = 255;
+		printTypedWord = true;
+		switch(TyperInput::getInstance().peakTypingEvent()) {
+			case TyperInput::DASH:
+				iconL1.setAlpha(ALPHA_OPAQUE);
+				printIconTextR1 = true;
+				break;
+			case TyperInput::STOP:
+				iconR1.setAlpha(ALPHA_OPAQUE);
+				printIconTextL1 = true;
+				break;
+			case TyperInput::RUN:
+				iconR2.setAlpha(ALPHA_OPAQUE);
+				printIconTextL2 = true;
+				break;
+			case TyperInput::JUMP:
+				iconR3.setAlpha(ALPHA_OPAQUE);
+				printIconTextL3 = true;
+				break;
+			case TyperInput::TURN:
+				iconR4.setAlpha(ALPHA_OPAQUE);
+				printIconTextL4 = true;
+				break;
+	        default:
+	            break;
+		}
+		if(TyperInput::getInstance().getRecentlyTypedWord().size() > 10)
+			TyperInput::getInstance().flushTypedValidWords();
+		previousRecentlyTypedWordSize = TyperInput::getInstance().getRecentlyTypedWord().size();
+	}
+	if(printTypedWord) {
+		typedWordAlpha -= 7;
+		if (typedWordAlpha > 7)
+			typedWord.setAlpha(typedWordAlpha);
+		else
+			printTypedWord = false;
+	}
 }
 
 void Panel::render() {
-	bg.setClip(0,0,rightWidth,bg.getHeight());
-	bg.render(0, 0, 0, (SDL_FLIP_NONE));
-	bg.setClip(bg.getWidth() - rightWidth,0,rightWidth,bg.getHeight());
-	bg.render(Game::getInstance().getScreenDimensions().x - rightWidth, 0, 0, (SDL_FLIP_NONE));
-	if(printa)
-		worda.render();
-	if(printb)
-		wordb.render();
-	if(printc)
-		wordc.render();
+	panelL.render(0, 0, 0, (SDL_FLIP_NONE));
+	panelR.render(panelRxPosition, 0, 0, (SDL_FLIP_NONE));
+	iconL1.render(230, 260, 0, (SDL_FLIP_NONE));
+	iconL2.render(230, 330, 0, (SDL_FLIP_NONE));
+	iconL3.render(230, 400, 0, (SDL_FLIP_NONE));
+	iconL4.render(230, 470, 0, (SDL_FLIP_NONE));
+	iconR1.render(1083, 260, 0, (SDL_FLIP_NONE));
+	iconR2.render(1083, 330, 0, (SDL_FLIP_NONE));
+	iconR3.render(1083, 400, 0, (SDL_FLIP_NONE));
+	iconR4.render(1083, 470, 0, (SDL_FLIP_NONE));
+	if(printIconTextR1)
+		iconTextR1.render();
+	if(printIconTextR2)
+		iconTextR2.render();
+	if(printIconTextR3)
+		iconTextR3.render();
+	if(printIconTextR4)
+		iconTextR4.render();
+	if(printIconTextL1)
+		iconTextL1.render();
+	if(printIconTextL2)
+		iconTextL2.render();
+	if(printIconTextL3)
+		iconTextL3.render();
+	if(printIconTextL4)
+		iconTextL4.render();
+	if(printTypedWord)
+		typedWord.render();
+	if(printTypingWord)
+		typingWord.render();
 }
 
 int Panel::GetLeftWidth() { return leftWidth; }

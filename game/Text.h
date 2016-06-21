@@ -44,6 +44,8 @@ public:
 
     void setFontSize(int fontSize);
 
+    void setAlpha(unsigned char alpha);
+
 private:
     void remakeTexture();
 

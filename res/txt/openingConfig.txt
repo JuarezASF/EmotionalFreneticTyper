@@ -12,6 +12,6 @@ img/Sprite_Run.png
 img/Jump_End.png
 afterOpeningSong
 3
-img/panel.png
+img/sprite_block_being_destroyed.png
 img/moveJump_Start.png
 img/sprites_falling.png

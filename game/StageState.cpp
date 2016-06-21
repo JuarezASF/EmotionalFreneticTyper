@@ -16,14 +16,15 @@
 #define TILE_HEIGHT 170
 #define TILE_WIDTH 170
 
-StageState::StageState() : bg("img/ParedesPreto.png"),
-                           tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
+StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png"),
                            tileMap("map/tileMap.txt", &tileSet),
-                           stagePanel(250, 250),
-                           startText("font/Call me maybe.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", DARK_YELLOW),
+                           stagePanel(340, 340),
+                           startText("font/goodfoot.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", WHITE),
                            startTextTimer() {
 
-    usedEmotion = "ALL_EMOTIONS_ARE_THE_SAME";
+	SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
+
+	usedEmotion = "ALL_EMOTIONS_ARE_THE_SAME";
 
     // load stage configuration
     string filename = "txt/stage1config.txt";
@@ -88,12 +89,8 @@ StageState::~StageState() {
         delete mainPlayerPtr;
 }
 
-Sprite StageState::getBg() {
-    return bg;
-}
-
-
 void StageState::update(float dt) {
+	stagePanel.update(dt);
     static TyperInput &im = TyperInput::getInstance();
     static vector<pair<unsigned, unsigned>> collidingPairs = vector<pair<unsigned, unsigned>>();
     static std::vector<int> toBeDeleted;
@@ -180,11 +177,7 @@ void StageState::update(float dt) {
 
         default:
             break;
-
     }
-
-
-    stagePanel.update(dt);
 }
 
 vector<pair<unsigned, unsigned>> StageState::checkForCollision() const {//test for collision
@@ -210,7 +203,8 @@ vector<pair<unsigned, unsigned>> StageState::checkForCollision() const {//test f
 }
 
 void StageState::render() {
-    bg.render(0, 0, 0, (SDL_FLIP_NONE));
+	SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
+    SDL_RenderClear(Game::getInstance().getRenderer());
 
     tileMap.renderLayer(0, Camera::getPos(Camera::PLAYER_GROUND_VIEW));
 
@@ -229,9 +223,5 @@ void StageState::pause() {
 void StageState::resume() {
 
 }
-
-//StageState::StateInfo StageState::getStateInfo() {
-//    return StageState::StateInfo();
-//}
 
 Panel &StageState::getPanel() { return stagePanel; }

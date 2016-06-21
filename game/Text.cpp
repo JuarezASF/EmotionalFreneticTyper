@@ -79,6 +79,10 @@ void Text::setFontSize(int fontSize) {
 
 }
 
+void Text::setAlpha(unsigned char alpha) {
+	SDL_SetTextureAlphaMod(texture, alpha);
+}
+
 void Text::remakeTexture() {
 
     if (texture) {

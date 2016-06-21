@@ -29,7 +29,6 @@ public:
     } GameState;
 
 protected:
-    Sprite bg;
     TileSet tileSet;
     TileMap tileMap;
     Panel stagePanel;
@@ -54,9 +53,6 @@ public:
     void pause();
 
     void resume();
-
-
-    Sprite getBg();
 
     Panel &getPanel();
 
