@@ -85,8 +85,6 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/TileBrick.png")
 
 StageState::~StageState() {
     objectArray.clear();
-    if (mainPlayerPtr)
-        delete mainPlayerPtr;
 }
 
 void StageState::update(float dt) {
@@ -95,9 +93,7 @@ void StageState::update(float dt) {
     static vector<pair<unsigned, unsigned>> collidingPairs = vector<pair<unsigned, unsigned>>();
     static std::vector<int> toBeDeleted;
 
-    if (im.getQuitRequested()) {
-        quitRequested = true;
-    }
+    quitRequested = im.getQuitRequested();
 
     Camera::update(dt);
 
