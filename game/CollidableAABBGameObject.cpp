@@ -163,6 +163,8 @@ void DestroyableRectangle::render() {
 DestroyableRectangle::DestroyableRectangle(Vec2 topLeft, Vec2 bottomRight) :
         CollidableAABBGameObject(topLeft, bottomRight) {
 
+    alive = true;
+
     ((AxisAlignedBoundingBox *) collisionVolume)->setColor(0, 255, 0, 255);
 
 }
