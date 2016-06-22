@@ -1,5 +1,7 @@
 initialPos 20 500
 killingBlock 0 700 4000 50 0 -10
+leftLimit 340
+rightLimit 1024
 qtdSimpleRectangles 7
 block 0 600 300 60
 smashable 320 500 300 60

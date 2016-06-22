@@ -22,9 +22,9 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
                            startText("font/goodfoot.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", WHITE),
                            startTextTimer() {
 
-	SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
 
-	usedEmotion = "ALL_EMOTIONS_ARE_THE_SAME";
+    usedEmotion = "ALL_EMOTIONS_ARE_THE_SAME";
 
     // load stage configuration
     string filename = "txt/stage1config.txt";
@@ -45,18 +45,30 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
 
     //skip description
     is >> buffer >> x >> y;
-    cout << "main player at tl:" << Vec2(x, y)<< endl;
+    cout << "main player at tl:" << Vec2(x, y) << endl;
     mainPlayerPtr = new PlayableEmotion(x, y);
 
     is >> buffer >> x >> y >> w >> h >> vx >> vy;
 
     cout << "killing rectangle tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << " speed:" << Vec2(vx, vy) << endl;
-    KillingRectangle *smokeObject = KillingRectangle::getTopLeftAt(Vec2(x, y), "img/sprite_fumaca_border.png", "img/sprite_fumaca_body.jpg", Vec2(vx, vy));
+    KillingRectangle *smokeObject = KillingRectangle::getTopLeftAt(Vec2(x, y), "img/sprite_fumaca_border.png",
+                                                                   "img/sprite_fumaca_body.jpg", Vec2(vx, vy));
     addObject(smokeObject);
 
-    trackThis = new TrackerObject(smokeObject, Vec2(0, -1* Game::getInstance().getScreenDimensions().y/2 + 20));
+    trackThis = new TrackerObject(smokeObject, Vec2(0, -1 * Game::getInstance().getScreenDimensions().y / 2 + 20));
     addObject(trackThis);
+    //read left and right limits
+    is >> buffer >> x;
+    int leftLimit = x;
+    is >> buffer >> x;
+    int rightLimit = x;
 
+    //add block to enforce limits
+    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(leftLimit - stagePanel.GetLeftWidth() - 18, 0), 20, 2000));
+    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(rightLimit - stagePanel.GetLeftWidth() + 10, 0), 20, 2000));
+
+
+    //read qtd of blocks on stage
     is >> buffer >> q;
 
     cout << "reading: " << q << " simple rectangles" << endl;
@@ -65,13 +77,13 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
         is >> buffer >> x >> y >> w >> h;
         cout << "adding rectanble of type:" << buffer << " at " << Vec2(x, y) << " w,h:" << Vec2(w, h) << endl;
 
-        if(buffer.compare("block") == 0){
+        if (buffer.compare("block") == 0) {
             addObject(CollidableAABBGameObject::getTopLeftAt(Vec2(x, y), w, h));
-        }else if(buffer.compare("smashable") == 0){
+        } else if (buffer.compare("smashable") == 0) {
             addObject(DestroyableRectangle::getTopLeftAt(Vec2(x, y), w, h));
-        }else if(buffer.compare("victory") == 0){
+        } else if (buffer.compare("victory") == 0) {
             addObject(VictoryRectangle::getTopLeftAt(Vec2(x, y), w, h));
-        }else{
+        } else {
             cerr << "Unreconizable type of rectangle:" << buffer << endl;
         }
 
@@ -94,7 +106,7 @@ StageState::~StageState() {
 }
 
 void StageState::update(float dt) {
-	stagePanel.update(dt);
+    stagePanel.update(dt);
     static TyperInput &im = TyperInput::getInstance();
     static vector<pair<unsigned, unsigned>> collidingPairs = vector<pair<unsigned, unsigned>>();
     static std::vector<int> toBeDeleted;
@@ -205,7 +217,7 @@ vector<pair<unsigned, unsigned>> StageState::checkForCollision() const {//test f
 }
 
 void StageState::render() {
-	SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
     SDL_RenderClear(Game::getInstance().getRenderer());
 
     tileMap.renderLayer(Camera::BACKGROUND_VIEW, Camera::getPos(Camera::PLAYER_GROUND_VIEW));
