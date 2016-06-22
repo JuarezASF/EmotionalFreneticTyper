@@ -78,8 +78,6 @@ public:
 
 class DestroyableRectangle : public CollidableAABBGameObject {
 private:
-    Vec2 constSpeed;
-
     bool alive;
 
 protected:
@@ -117,6 +115,24 @@ public:
     virtual void notifyCollision(GameObject &other);
 
     virtual bool is(std::string type);
+};
+
+class GrabableSquare : public CollidableAABBGameObject {
+private:
+
+protected:
+    GrabableSquare(Vec2 topLeft, int length);
+
+public:
+    static GrabableSquare *getTopLeftAt(Vec2 topLeft, int width);
+
+    virtual void update(float dt);
+
+    virtual bool is(std::string type);
+
+    virtual bool isDead() override;
+
+    virtual void render() override;
 };
 
 #endif //IDJ201601T1_COLLIDABLERECTANGLE_H

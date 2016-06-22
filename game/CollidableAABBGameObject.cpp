@@ -212,3 +212,31 @@ void TrackerObject::notifyCollision(GameObject &other) {
 bool TrackerObject::is(std::string type) {
     return type == "TrackerObject";
 }
+
+GrabableSquare *GrabableSquare::getTopLeftAt(Vec2 topLeft, int width) {
+    return new GrabableSquare(topLeft, width);
+}
+
+void GrabableSquare::update(float dt) {
+    CollidableAABBGameObject::update(dt);
+}
+
+bool GrabableSquare::is(std::string type) {
+    return CollidableAABBGameObject::is(type) || type == "GrabableSquare";
+}
+
+bool GrabableSquare::isDead() {
+    return false;
+}
+
+void GrabableSquare::render() {
+    CollidableAABBGameObject::render();
+}
+
+GrabableSquare::GrabableSquare(Vec2 topLeft, int length) : CollidableAABBGameObject(topLeft, topLeft + Vec2(length, length)) {
+    //paint it yellow
+    ((AxisAlignedBoundingBox *) collisionVolume)->setColor(255, 255, 0, 255);
+
+
+
+}

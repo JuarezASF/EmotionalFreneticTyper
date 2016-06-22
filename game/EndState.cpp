@@ -14,6 +14,8 @@ EndState::EndState(StateData stateData)
 
     if (stateData.playerVictory) {
         bg.open("img/win.png");
+    }else{
+        bg.open("img/loose.png");
     }
 
     instruction.setPos(300, 500, false, false);
