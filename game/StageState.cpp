@@ -51,7 +51,11 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
     is >> buffer >> x >> y >> w >> h >> vx >> vy;
 
     cout << "killing rectangle tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << " speed:" << Vec2(vx, vy) << endl;
-    addObject(KillingRectangle::getTopLeftAt(Vec2(x, y), "img/sprite_fumaca_border.png", "img/sprite_fumaca_body.jpg", Vec2(vx, vy)));
+    KillingRectangle *smokeObject = KillingRectangle::getTopLeftAt(Vec2(x, y), "img/sprite_fumaca_border.png", "img/sprite_fumaca_body.jpg", Vec2(vx, vy));
+    addObject(smokeObject);
+
+    trackThis = new TrackerObject(smokeObject, Vec2(0, -1* Game::getInstance().getScreenDimensions().y/2 + 20));
+    addObject(trackThis);
 
     is >> buffer >> q;
 
@@ -106,7 +110,7 @@ void StageState::update(float dt) {
                 startTextTimer.restart();
 
                 addObject(mainPlayerPtr);
-                Camera::follow(mainPlayerPtr);
+                Camera::follow(trackThis);
                 showText = false;
                 currentState = PLAYING;
             }
@@ -159,7 +163,7 @@ void StageState::update(float dt) {
                 startTextTimer.restart();
                 showText = false;
 
-                Camera::follow(mainPlayerPtr);
+                Camera::follow(trackThis);
 
                 currentState = PLAYING;
             }

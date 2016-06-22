@@ -50,6 +50,8 @@ public:
 
     void setColor(uchar r, uchar g, uchar b, uchar a);
 
+    virtual void applyScale(float factor);
+
     inline void setShouldFill(bool t){shouldFill = t;}
 
 

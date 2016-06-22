@@ -199,3 +199,8 @@ Sprite::Sprite(const Sprite &sp) {
 bool Sprite::isThistLastFrame() {
     return currentFrame == (frameCount - 1);
 }
+
+void Sprite::setScale(Vec2 scale) {
+    setScaleX(scale.x);
+    setScaleY(scale.y);
+}

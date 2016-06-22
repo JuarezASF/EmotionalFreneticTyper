@@ -122,3 +122,11 @@ Vec2 Rect::getClosestPointTo(const Vec2 &testPoint) {
 
     return Vec2(x, y);
 }
+
+void Rect::applyScale(float factor) {
+    w *= factor;
+    h *= factor;
+
+    hasBeenUpdated = true;
+
+}

@@ -30,10 +30,13 @@ private:
     static int RUNNING_VELOCITY;
     static int IDLE_JUMP_INITIAL_UPWARD_VELOCITY;
     static int RUNNING_JUMP_UPWARD_INITIAL_VELOCITY;
+    static float SCALE_FACTOR_ON_MAIN_CHAR;
 
     Sprite spriteRunning, spriteGettingToRun, spriteStopingRun, spriteTurning, spriteIdle;
     Sprite spriteIdleJumpStart, spriteIdleJumpJumping, spriteRunningJumpJumping, spriteRunningJumpStartJump, spriteJumpEnd;
     Sprite spriteTurnRunning, spriteDashing, spriteFalling, spriteSmashingForward, spriteSmashingUpward;
+
+    vector<Sprite *> allSprites;
     PlayableState currentState;
     PlayableFacing currentlyFacing;
     Vec2 speed, acceleration;
@@ -80,6 +83,7 @@ public:
 
     void loadSettings();
 
+    virtual void applyScaleFactor(float f) override;
 };
 
 

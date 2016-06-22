@@ -18,6 +18,10 @@ protected:
     float rotation;
     bool supported;
 
+    bool skipCollision;
+
+    float currentScaleFactor;
+
     // pos + LT_center_displacemente = LEFT_TOP corner
     Vec2 center_LT_displacement;
 
@@ -47,6 +51,8 @@ public:
     virtual void clearSupported();
 
     virtual bool is(std::string type) = 0;
+
+    virtual void applyScaleFactor(float f);
 
 };
 

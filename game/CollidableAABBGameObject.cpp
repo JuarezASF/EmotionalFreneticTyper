@@ -188,3 +188,27 @@ void DestroyableRectangle::smashThis() {
 VictoryRectangle *VictoryRectangle::getTopLeftAt(Vec2 topLeft, int w, int h) {
     return new VictoryRectangle(topLeft, topLeft + Vec2(w, h));
 }
+
+TrackerObject::TrackerObject(GameObject *target, Vec2 offset) : GameObject(), target(target), offset(offset) {
+    skipCollision = true;
+    centerPos = target->getCenterPos() + offset;
+}
+
+void TrackerObject::update(float dt) {
+
+    centerPos = target->getCenterPos() + offset;
+
+
+}
+
+bool TrackerObject::isDead() {
+    return false;
+}
+
+void TrackerObject::notifyCollision(GameObject &other) {
+
+}
+
+bool TrackerObject::is(std::string type) {
+    return type == "TrackerObject";
+}

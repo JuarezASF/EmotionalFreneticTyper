@@ -13,7 +13,7 @@ class CollidableCircle : public Collidable {
 
 public:
     Vec2 center;
-    float r;
+    float radius;
 
     virtual bool is(string className);
 
@@ -21,15 +21,15 @@ public:
 
     void setCenter(Vec2 p);
 
-    inline void setRadius(float f) { r = f; }
+    inline void setRadius(float f) { radius = f; }
 
     inline const Vec2 &getCenter(){return center;}
 
-    inline float getRadius(){return r;}
+    inline float getRadius(){return radius;}
 
     void moveCenter(Vec2 d){center += d;}
 
-
+    virtual void applyScale(float factor);
 };
 
 

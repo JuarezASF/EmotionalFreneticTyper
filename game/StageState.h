@@ -34,6 +34,7 @@ protected:
     Panel stagePanel;
     Text startText;
     GameObject *mainPlayerPtr;
+    GameObject *trackThis;
 
     //used to show blinking msg
     bool showText;

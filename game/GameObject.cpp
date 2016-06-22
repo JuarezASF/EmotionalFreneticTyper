@@ -24,6 +24,8 @@ void GameObject::construct() {
     center_LT_displacement = Vec2(0,0);
     collisionVolume = nullptr;
     supported = false;
+    currentScaleFactor = 1.0;
+    skipCollision = false;
 
 }
 
@@ -40,4 +42,9 @@ void GameObject::notifySupported() {
 
 void GameObject::clearSupported() {
     supported = false;
+}
+
+void GameObject::applyScaleFactor(float f) {
+    currentScaleFactor *= f;
+    collisionVolume->applyScale(f);
 }

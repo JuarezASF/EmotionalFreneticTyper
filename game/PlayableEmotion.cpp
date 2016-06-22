@@ -15,6 +15,7 @@
 int PlayableEmotion::RUNNING_VELOCITY = 80;
 int PlayableEmotion::IDLE_JUMP_INITIAL_UPWARD_VELOCITY = 150;
 int PlayableEmotion::RUNNING_JUMP_UPWARD_INITIAL_VELOCITY = 180;
+float PlayableEmotion::SCALE_FACTOR_ON_MAIN_CHAR = 0.7;
 
 PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  spriteRunning("img/Sprite_Run.png", 15, SECONDS_PER_FRAME),
@@ -32,10 +33,31 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  spriteTurnRunning("img/sprite_MoveTurn.png", 11, SECONDS_PER_FRAME),
                                                  spriteDashing("img/sprite_Dash.png", 4, SECONDS_PER_FRAME),
                                                  spriteFalling("img/sprites_falling.png", 2, SECONDS_PER_FRAME),
-                                                 spriteSmashingForward("img/sprite_smash_forward.png", 4, SECONDS_PER_FRAME),
-                                                 spriteSmashingUpward("img/sprite_smash_upward.png", 4, SECONDS_PER_FRAME) {
+                                                 spriteSmashingForward("img/sprite_smash_forward.png", 4,
+                                                                       SECONDS_PER_FRAME),
+                                                 spriteSmashingUpward("img/sprite_smash_upward.png", 4,
+                                                                      SECONDS_PER_FRAME) {
+
+    allSprites.push_back(&spriteRunning);
+    allSprites.push_back(&spriteGettingToRun);
+    allSprites.push_back(&spriteStopingRun);
+    allSprites.push_back(&spriteTurning);
+    allSprites.push_back(&spriteIdle);
+    allSprites.push_back(&spriteIdleJumpStart);
+    allSprites.push_back(&spriteIdleJumpJumping);
+    allSprites.push_back(&spriteRunningJumpJumping);
+    allSprites.push_back(&spriteRunningJumpStartJump);
+    allSprites.push_back(&spriteJumpEnd);
+    allSprites.push_back(&spriteTurnRunning);
+    allSprites.push_back(&spriteDashing);
+    allSprites.push_back(&spriteFalling);
+    allSprites.push_back(&spriteSmashingForward);
+    allSprites.push_back(&spriteSmashingUpward);
 
     loadSettings();
+
+    spriteIdle.setScaleX(0.5);
+    spriteIdle.setScaleY(0.5);
 
     defeated = false;
 
@@ -80,6 +102,8 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     iterationsSinceLastHorizontalSupportNodification = 0;
     iterationsSinceLastVerticalSupportNodification = 0;
     isSmashing = false;
+
+    applyScaleFactor(0.8);
 
 
 }
@@ -365,7 +389,7 @@ void PlayableEmotion::update(float dt) {
             spriteSmashingUpward.update(dt);
             acceleration -= ForceField::getInstance()->getForceAt(centerPos);
             speed.x = 0;
-            speed.y = -1*DASH_VELOCITY;
+            speed.y = -1 * DASH_VELOCITY;
             if (activeActionTimer.get() > DASH_TIME) {
                 currentState = PlayableState::FALLING;
                 spriteFalling.setFrame(0);
@@ -419,7 +443,7 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 
     }
     if (isSmashing && other.is("DestroyableRectangle")) {
-        ((DestroyableRectangle&) other).smashThis();
+        ((DestroyableRectangle &) other).smashThis();
     }
     else if (other.is("CollidableAABBGameObject")) {
         Rect collidingRect = ((AxisAlignedBoundingBox *) other.getCollisionVolume())->axisAlignedRectangle;
@@ -594,6 +618,27 @@ void PlayableEmotion::loadSettings() {
     RUNNING_JUMP_UPWARD_INITIAL_VELOCITY = (int) settings->get("RUNNING_JUMP_UPWARD_INITIAL_VELOCITY", 180);
     DASH_TIME = 1.0 * settings->get("DASH_TIME_TENS_OF_SECONDS", 20) / 10.0;
     DASH_VELOCITY = (int) settings->get("DASH_VELOCITY", 200);
+    SCALE_FACTOR_ON_MAIN_CHAR = (float) (settings->get("SCALE_ON_MAIN_CHAR", 70)/100.0f);
 
 
+}
+
+void PlayableEmotion::applyScaleFactor(float f) {
+    GameObject::applyScaleFactor(f);
+
+    for (int i = 0; i < 3; i++) {
+        auxCollisionVolume[i].applyScale(f);
+    }
+
+    for(int i = 0; i < allSprites.size(); i++){
+        allSprites[i]->setScale(Vec2(f,f));
+    }
+    int width = spriteRunning.getWidth() / 15;
+    int height = spriteRunning.getHeight();
+
+    center_LT_displacement = -0.5 * Vec2(width, height);
+
+    auxCollisionVolume[0].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float) M_PI_2));
+    auxCollisionVolume[1].setCenter(centerPos + Vec2::getVec2FromPolar(0, -1.0f * (float) M_PI_2));
+    auxCollisionVolume[2].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float) (-1 * M_PI_2)));
 }

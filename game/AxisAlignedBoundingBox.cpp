@@ -113,3 +113,7 @@ AxisAlignedBoundingBox AxisAlignedBoundingBox::getAABBTopLeftAt(Vec2 c, int w, i
     return AxisAlignedBoundingBox(c, 0, 0);
 }
 
+void AxisAlignedBoundingBox::applyScale(float factor) {
+    axisAlignedRectangle.applyScale(factor);
+
+}

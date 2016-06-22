@@ -68,6 +68,8 @@ public:
 
     void setScaleY(float scale);
 
+    void setScale(Vec2 scale);
+
     void setAlpha(unsigned char alpha);
 
     void update(float dt);

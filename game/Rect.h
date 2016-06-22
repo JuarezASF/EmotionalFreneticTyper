@@ -52,6 +52,8 @@ public:
 
     Vec2 getClosestPointTo(const Vec2 &testPoint);
 
+    void applyScale(float factor);
+
 };
 
 

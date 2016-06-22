@@ -16,6 +16,8 @@ public:
 
     virtual void render() = 0;
 
+    virtual void applyScale(float factor) = 0;
+
 };
 
 
