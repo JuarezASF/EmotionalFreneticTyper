@@ -11,8 +11,8 @@ TileSet::TileSet(int tileWidth, int tileHeight, std::string file) : tileWidth(ti
     tileSet.open(file);
 
     //TODO test if open was successfull
-    int totalHeight = tileSet.getHeight();
-    int totalWidth = tileSet.getWidth();
+    int totalHeight = tileSet.getSpriteFullHeight();
+    int totalWidth = tileSet.getSpriteFullWidth();
 
     columns = totalWidth / tileWidth;
     rows = totalHeight / tileHeight;

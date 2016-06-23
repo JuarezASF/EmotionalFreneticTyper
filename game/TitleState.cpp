@@ -169,8 +169,8 @@ void TitleState::render() {
         SDL_RenderClear(renderer);
         unique_ptr<Sprite> &currentImgPtr = imageStack[currentImgIdx];
         const Vec2 &screenDimensions = Game::getInstance().getScreenDimensions();
-        currentImgPtr->render((int) (screenDimensions.x / 2 - currentImgPtr->getWidth() / 2),
-                              (int) (screenDimensions.y / 2 - currentImgPtr->getHeight() / 2),
+        currentImgPtr->render((int) (screenDimensions.x / 2 - currentImgPtr->getSpriteFullWidth() / 2),
+                              (int) (screenDimensions.y / 2 - currentImgPtr->getSpriteFullHeight() / 2),
                               0, SDL_FLIP_NONE);
         if (showSkipText)
             skipText.render();

@@ -14,8 +14,8 @@ Animation::Animation(float centerX, float centerY, float rotation, string sprite
 
     centerPos = Vec2(centerX, centerY);
 
-    int width = sp.getWidth() / frameCount;
-    int height = sp.getHeight();
+    int width = sp.getSpriteFullWidth() / frameCount;
+    int height = sp.getSpriteFullHeight();
 
     center_LT_displacement = -1 * Vec2(width * 0.5f, height * 0.5f);
 

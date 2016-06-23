@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "Animation.h"
 #include "Camera.h"
+#include "defines.h"
 
 void CollidableAABBGameObject::construct(Vec2 leftTop, Vec2 bottomRight) {
     this->centerPos = (leftTop + bottomRight) * 0.5;
@@ -89,41 +90,23 @@ bool KillingRectangle::is(std::string type) {
     return CollidableAABBGameObject::is(type) || type == "KillingRectangle";
 }
 
-KillingRectangle::KillingRectangle(Vec2 topLeft, std::string smokeBorderFileName, std::string smokeBodyFileName,
-                                   Vec2 speed)
-        : borderSp(smokeBorderFileName),
-          bodySp(smokeBodyFileName) {
+KillingRectangle::KillingRectangle(Vec2 topLeft, std::string smokeBorderFileName, Vec2 speed, int qtdRows,
+                                   int qtdCols)
+        : spritSmoke(smokeBorderFileName, qtdRows, qtdCols, SECONDS_PER_FRAME ){
 
-    const int qtdFramesOnBorderSp = 1;
-    const int qtdFramesOnBodySp = 1;
-
-    int borderWidth = borderSp.getWidth()/qtdFramesOnBorderSp;
-    int borderHeight = borderSp.getHeight();
-
-    borderDimensions = Vec2(borderWidth, borderHeight);
-
-    int bodyWidth = bodySp.getWidth()/qtdFramesOnBodySp;
-    int bodyHeight = bodySp.getHeight();
-
-    if(bodyWidth != borderWidth){
-        cerr << "Smoke body and border differ in width!" << endl;
-    }
-
-    int width = max(bodyWidth, borderWidth);
-    int height = bodyHeight + borderHeight;
 
     constSpeed = speed;
 
-    construct(topLeft, topLeft + Vec2(width, height));
+    construct(topLeft, topLeft + Vec2(spritSmoke.getFrameWidth(), spritSmoke.getFrameHeight()));
     ((AxisAlignedBoundingBox *) collisionVolume)->setShouldFill(false);
     ((AxisAlignedBoundingBox *) collisionVolume)->setColor(0, 0, 255, 255);
 
 }
 
 
-KillingRectangle *KillingRectangle::getTopLeftAt(Vec2 topLeft, std::string smokeBorderFN,
-                                                std::string smokeBodyFN, Vec2 speed) {
-    return new KillingRectangle(topLeft, smokeBorderFN, smokeBodyFN, speed);
+KillingRectangle *KillingRectangle::getTopLeftAt(Vec2 topLeft, std::string smokeBorderFN, Vec2 speed,
+                                                int qtdRows, int qtdCols) {
+    return new KillingRectangle(topLeft, smokeBorderFN, speed, qtdRows, qtdCols);
 
 }
 
@@ -133,8 +116,7 @@ void KillingRectangle::render() {
     CollidableAABBGameObject::render();
 
     Vec2 pos = getCenterPos() + center_LT_displacement - Camera::getPos(1);
-    borderSp.render(pos.x, pos.y, 0);
-    bodySp.render(pos.x, pos.y + borderDimensions.y, 0);
+    spritSmoke.render(pos.x, pos.y, 0);
 }
 
 bool DestroyableRectangle::isDead() {

@@ -6,7 +6,6 @@
 #define IDJ201601T1_PLAYBLEEMOTION_H
 
 
-#define SECONDS_PER_FRAME 0.0833f
 
 static double DASH_TIME = 2.0;
 
@@ -31,10 +30,12 @@ private:
     static int IDLE_JUMP_INITIAL_UPWARD_VELOCITY;
     static int RUNNING_JUMP_UPWARD_INITIAL_VELOCITY;
     static float SCALE_FACTOR_ON_MAIN_CHAR;
+    static int CIRCLE_VERTICAL_SPACING, CIRCLE_RADIUS;
 
-    Sprite spriteRunning, spriteGettingToRun, spriteStopingRun, spriteTurning, spriteIdle;
+    Sprite spriteRunning, spriteGettingToRun, spriteStopingRun, spriteTurning;
     Sprite spriteIdleJumpStart, spriteIdleJumpJumping, spriteRunningJumpJumping, spriteRunningJumpStartJump, spriteJumpEnd;
     Sprite spriteTurnRunning, spriteDashing, spriteFalling, spriteSmashingForward, spriteSmashingUpward;
+    MatrixSprite spriteIdle;
 
     vector<Sprite *> allSprites;
     PlayableState currentState;

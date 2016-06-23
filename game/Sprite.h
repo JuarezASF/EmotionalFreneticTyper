@@ -20,7 +20,7 @@ class Sprite {
 
 protected:
 
-    int width, height;
+    int spriteFullWidth, spriteFullHeight;
     //clipping rectangle: determine part of the image that is rendered
     SDL_Rect clipRect, dst_rect;
     //the image itself
@@ -31,7 +31,7 @@ protected:
 
     int frameCount, currentFrame;
     float timeElapsed, frameTime;
-    int frameWidth, frameHeight;
+    int originalFrameWidth, originalframeHeight;
 
 
     void construct(int frameCount, float frameTime);
@@ -56,9 +56,9 @@ public:
 
     bool isOpen();
 
-    int getWidth() const;
+    int getSpriteFullWidth() const;
 
-    int getHeight() const;
+    int getSpriteFullHeight() const;
 
     Vec2 getDimensions() const;
 
@@ -72,7 +72,7 @@ public:
 
     void setAlpha(unsigned char alpha);
 
-    void update(float dt);
+    virtual void update(float dt);
     void setFrame(int frame);
     void incFrame();
 
@@ -81,11 +81,24 @@ public:
     void setFrameTime(float frameTime);
 
     int getFrameWidth();
+    int getFrameHeight();
 
     bool isThistLastFrame();
 
+    virtual void updateSourceOfFrame();
 
+};
 
+class MatrixSprite : public Sprite {
+private:
+    int qtdRows, qtdColumns;
+    int currentRow, currentColumns;
+
+public:
+    MatrixSprite(std::string filename, int qtdRows, int qtdColumns, float frameTime);
+
+private:
+    virtual void updateSourceOfFrame() override;
 };
 
 

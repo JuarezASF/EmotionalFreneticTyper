@@ -52,10 +52,10 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
 
     cout << "killing rectangle tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << " speed:" << Vec2(vx, vy) << endl;
     KillingRectangle *smokeObject = KillingRectangle::getTopLeftAt(Vec2(x, y), "img/sprite_fumaca_border.png",
-                                                                   "img/sprite_fumaca_body.jpg", Vec2(vx, vy));
+                                                                   Vec2(vx, vy), 1, 1);
     addObject(smokeObject);
 
-    trackThis = new TrackerObject(smokeObject, Vec2(0, -1 * Game::getInstance().getScreenDimensions().y / 2 + 20));
+    trackThis = new TrackerObject(smokeObject, Vec2(0, -1 * Game::getInstance().getScreenDimensions().y / 2 + 75));
     addObject(trackThis);
     //read left and right limits
     is >> buffer >> x;

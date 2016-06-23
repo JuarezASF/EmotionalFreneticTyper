@@ -53,4 +53,6 @@
 #define ORANGE				(SDL_Color){255,64,0}
 #define BROWN				(SDL_Color){127,64,0}
 
+#define SECONDS_PER_FRAME 0.0833f
+
 #endif //IDJ201601T1_DEFINES_H

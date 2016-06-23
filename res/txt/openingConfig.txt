@@ -1,5 +1,5 @@
 tensOfSecondsPerImage
-25
+40
 percentageIn
 60
 percentageHold
@@ -8,10 +8,10 @@ percentageOut
 20
 beforeOpeningSong
 2
-img/Sprite_Run.png
-img/Jump_End.png
+img/intro/unb.png
+img/intro/idj2016.png
 afterOpeningSong
 3
-img/sprite_block_being_destroyed.png
-img/moveJump_Start.png
-img/sprites_falling.png
+img/intro/quote1.png
+img/intro/quote2.png
+img/intro/quote3.png

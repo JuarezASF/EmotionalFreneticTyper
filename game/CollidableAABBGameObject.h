@@ -58,15 +58,15 @@ public:
 class KillingRectangle : public CollidableAABBGameObject {
 private:
     Vec2 constSpeed;
-    Sprite borderSp, bodySp;
-    Vec2 borderDimensions;
+    MatrixSprite spritSmoke;
 
 protected:
-    KillingRectangle(Vec2 topLeft, std::string smokeBorderFileName, std::string smokeBodyFileName, Vec2 speed);
+    KillingRectangle(Vec2 topLeft, std::string smokeBorderFileName, Vec2 speed, int qtdRows,
+                         int qtdCols);
 
 public:
-    static KillingRectangle *getTopLeftAt(Vec2 topLeft, std::string smokeBorderFN,
-                                          std::string smokeBodyFN, Vec2 speed);
+    static KillingRectangle *getTopLeftAt(Vec2 topLeft, std::string smokeBorderFN, Vec2 speed,
+                                             int qtdRows, int qtdCols);
 
     virtual void update(float dt);
 

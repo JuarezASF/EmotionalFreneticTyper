@@ -25,8 +25,8 @@ Panel::Panel(int leftWidth, int rightWidth)
   previousRecentlyTypedWordSize(),lastTypingWord(),printTypingWord(),printTypedWord(),
   printIconTextR1(),printIconTextR2(),printIconTextR3(),printIconTextR4(),printIconTextL1(),
   printIconTextL2(),printIconTextL3(),printIconTextL4(),typedWordAlpha(){
-	panelL.setClip(0,0,leftWidth,panelL.getHeight());
-	panelR.setClip(0,0,rightWidth,panelR.getHeight());
+	panelL.setClip(0,0,leftWidth, panelL.getSpriteFullHeight());
+	panelR.setClip(0,0,rightWidth, panelR.getSpriteFullHeight());
 	panelRxPosition = Game::getInstance().getScreenDimensions().x - rightWidth;
 	iconL1.setAlpha(50);
 	iconL2.setAlpha(50);

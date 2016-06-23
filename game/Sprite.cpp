@@ -9,12 +9,12 @@
 #include "Sprite.h"
 #include "GameConfig.h"
 
-int Sprite::getWidth() const {
-    return width * scaleX;
+int Sprite::getSpriteFullWidth() const {
+    return spriteFullWidth * scaleX;
 }
 
-int Sprite::getHeight() const {
-    return height * scaleY;
+int Sprite::getSpriteFullHeight() const {
+    return spriteFullHeight * scaleY;
 }
 
 SDL_Texture *Sprite::getTexture() {
@@ -47,15 +47,15 @@ void Sprite::open(string filename) {
 
 
     int attempts_left = 5;
-    while ((SDL_QueryTexture(texture, nullptr, nullptr, &width, &height) < 0) && attempts_left > 0) {
+    while ((SDL_QueryTexture(texture, nullptr, nullptr, &spriteFullWidth, &spriteFullHeight) < 0) && attempts_left > 0) {
         std::cerr << SDL_GetError() << std::endl;
         attempts_left--;
     }
 
-    frameWidth = width / this->frameCount;
-    frameHeight = height;
+    originalFrameWidth = spriteFullWidth / this->frameCount;
+    originalframeHeight = spriteFullHeight;
 
-    setClip(0, 0, frameWidth, height);
+    setClip(0, 0, originalFrameWidth, spriteFullHeight);
     setAlpha(255);
 }
 
@@ -126,7 +126,7 @@ void Sprite::update(float dt) {
         timeElapsed = 0.0;
         currentFrame = (currentFrame + 1) % frameCount;
 
-        setClip(currentFrame * frameWidth, 0, frameWidth, frameHeight);
+        updateSourceOfFrame();
 
     }
 
@@ -139,7 +139,7 @@ void Sprite::setFrame(int frame) {
 
     currentFrame = (frame) % frameCount;
 
-    setClip(currentFrame * frameWidth, 0, frameWidth, frameHeight);
+    setClip(currentFrame * originalFrameWidth, 0, originalFrameWidth, originalframeHeight);
 
 }
 
@@ -158,11 +158,11 @@ void Sprite::setFrameTime(float frameTime) {
 }
 
 int Sprite::getFrameWidth() {
-    return frameWidth;
+    return originalFrameWidth*scaleY;
 }
 
 Vec2 Sprite::getDimensions() const {
-    return Vec2(width, height);
+    return Vec2(spriteFullWidth, spriteFullHeight);
 }
 
 void Sprite::setCenter(Vec2 c) {
@@ -188,10 +188,10 @@ Sprite::Sprite(const Sprite &sp) {
 
     this->center = sp.center;
 
-    frameWidth = sp.width;
-    frameHeight = sp.height;
+    originalFrameWidth = sp.spriteFullWidth;
+    originalframeHeight = sp.spriteFullHeight;
 
-    setClip(0, 0, frameWidth, height);
+    setClip(0, 0, originalFrameWidth, spriteFullHeight);
     setAlpha(255);
 
 }
@@ -203,4 +203,43 @@ bool Sprite::isThistLastFrame() {
 void Sprite::setScale(Vec2 scale) {
     setScaleX(scale.x);
     setScaleY(scale.y);
+}
+
+void Sprite::updateSourceOfFrame() {
+    setClip(currentFrame * originalFrameWidth, 0, originalFrameWidth, originalframeHeight);
+}
+
+
+void MatrixSprite::updateSourceOfFrame() {
+    currentColumns = currentFrame % qtdColumns;
+    currentRow = currentFrame / qtdColumns;
+
+    setClip(currentColumns * originalFrameWidth, currentRow * originalframeHeight, originalFrameWidth, originalframeHeight);
+}
+
+
+MatrixSprite::MatrixSprite(std::string filename, int qtdRows, int qtdColumns, float frameTime) {
+    construct(qtdColumns * qtdRows, frameTime);
+    open(filename);
+
+    currentColumns = 0;
+    currentRow = 0;
+    this->qtdRows = qtdRows;
+    this->qtdColumns = qtdColumns;
+
+    int attempts_left = 5;
+    while ((SDL_QueryTexture(texture, nullptr, nullptr, &spriteFullWidth, &spriteFullHeight) < 0) && attempts_left > 0) {
+        std::cerr << SDL_GetError() << std::endl;
+        attempts_left--;
+    }
+
+    originalFrameWidth = spriteFullWidth / this->qtdColumns;
+    originalframeHeight = spriteFullHeight / this->qtdRows;
+
+    setClip(0, 0, originalFrameWidth, originalframeHeight);
+
+}
+
+int Sprite::getFrameHeight() {
+    return originalframeHeight * scaleY;
 }

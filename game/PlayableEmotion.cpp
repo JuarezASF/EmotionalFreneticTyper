@@ -16,13 +16,15 @@ int PlayableEmotion::RUNNING_VELOCITY = 80;
 int PlayableEmotion::IDLE_JUMP_INITIAL_UPWARD_VELOCITY = 150;
 int PlayableEmotion::RUNNING_JUMP_UPWARD_INITIAL_VELOCITY = 180;
 float PlayableEmotion::SCALE_FACTOR_ON_MAIN_CHAR = 0.7;
+int PlayableEmotion::CIRCLE_VERTICAL_SPACING = 30;
+int PlayableEmotion::CIRCLE_RADIUS = 10;
 
 PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
-                                                 spriteRunning("img/Sprite_Run.png", 15, SECONDS_PER_FRAME),
-                                                 spriteGettingToRun("img/sprite_StartRun.png", 8, SECONDS_PER_FRAME),
-                                                 spriteStopingRun("img/sprite_EndRun.png", 6, SECONDS_PER_FRAME),
-                                                 spriteTurning("img/Sprite_Turn.png", 11, SECONDS_PER_FRAME),
-                                                 spriteIdle("img/Sprite_Idle.png", 5, SECONDS_PER_FRAME),
+                                                 spriteRunning("img/personagem/run_running.png", 12, SECONDS_PER_FRAME),
+                                                 spriteGettingToRun("img/personagem/run_start.png", 6, SECONDS_PER_FRAME),
+                                                 spriteStopingRun("img/personagem/run_end.png", 6, SECONDS_PER_FRAME),
+                                                 spriteTurning("img/personagem/idle_turn.png", 12, SECONDS_PER_FRAME),
+                                                 spriteIdle("img/personagem/idle.png", 7,7, SECONDS_PER_FRAME),
                                                  spriteIdleJumpStart("img/idleJump_start.png", 4, SECONDS_PER_FRAME),
                                                  spriteIdleJumpJumping("img/idleJump_Jump.png", 3, SECONDS_PER_FRAME),
                                                  spriteRunningJumpJumping("img/moveJump_Jump.png", 3,
@@ -30,8 +32,8 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  spriteRunningJumpStartJump("img/moveJump_Start.png", 4,
                                                                             SECONDS_PER_FRAME),
                                                  spriteJumpEnd("img/Jump_End.png", 7, SECONDS_PER_FRAME),
-                                                 spriteTurnRunning("img/sprite_MoveTurn.png", 11, SECONDS_PER_FRAME),
-                                                 spriteDashing("img/sprite_Dash.png", 4, SECONDS_PER_FRAME),
+                                                 spriteTurnRunning("img/personagem/run_turn.png", 12, SECONDS_PER_FRAME),
+                                                 spriteDashing("img/personagem/dash.png", 5, SECONDS_PER_FRAME),
                                                  spriteFalling("img/sprites_falling.png", 2, SECONDS_PER_FRAME),
                                                  spriteSmashingForward("img/sprite_smash_forward.png", 4,
                                                                        SECONDS_PER_FRAME),
@@ -74,8 +76,8 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     speed = Vec2::getVec2FromPolar(speedMagnitude, speedAngle);
     acceleration = Vec2::getVec2FromPolar(accelerationMagnitude, accelerationAngle);
 
-    int width = spriteRunning.getWidth() / 15;
-    int height = spriteRunning.getHeight();
+    int width = spriteRunning.getSpriteFullWidth() / 15;
+    int height = spriteRunning.getSpriteFullHeight();
 
     center_LT_displacement = -0.5 * Vec2(width, height);
 
@@ -83,13 +85,16 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     speed = Vec2(0, 1);
     acceleration = Vec2(0, 0);
 
-    auxCollisionVolume[0].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float) M_PI_2));
-    auxCollisionVolume[1].setCenter(centerPos + Vec2::getVec2FromPolar(0, -1.0f * (float) M_PI_2));
-    auxCollisionVolume[2].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float) (-1 * M_PI_2)));
+    cout << "configured circle spacing is:"  << CIRCLE_VERTICAL_SPACING << endl;
+    cout << "configured circle radius is:"  << CIRCLE_RADIUS << endl;
 
-    auxCollisionVolume[0].setRadius((float) (4.0 / 5.0 * min(width / 2, height / 2)));
-    auxCollisionVolume[1].setRadius((float) (4.0 / 5.0 * min(width / 2, height / 2)));
-    auxCollisionVolume[2].setRadius((float) (4.0 / 5.0 * min(width / 2, height / 2)));
+    auxCollisionVolume[0].setCenter(centerPos + Vec2::getVec2FromPolar(CIRCLE_VERTICAL_SPACING, (float) M_PI_2));
+    auxCollisionVolume[1].setCenter(centerPos + Vec2::getVec2FromPolar(0, -1.0f * (float) M_PI_2));
+    auxCollisionVolume[2].setCenter(centerPos + Vec2::getVec2FromPolar(CIRCLE_VERTICAL_SPACING, (float) (-1 * M_PI_2)));
+
+    auxCollisionVolume[0].setRadius(CIRCLE_RADIUS);
+    auxCollisionVolume[1].setRadius(CIRCLE_RADIUS);
+    auxCollisionVolume[2].setRadius(CIRCLE_RADIUS);
 
     collisionVolume = new AxisAlignedBoundingBox(centerPos + center_LT_displacement, width, height);
 
@@ -146,7 +151,7 @@ void PlayableEmotion::update(float dt) {
                 switch (e) {
                     case TyperInput::TypingEvent::TURN :
                         currentState = PlayableState::TURNING;
-                        spriteIdle.setFrame(0);
+                        spriteTurning.setFrame(0);
                         activeActionTimer.restart();
                         break;
                     case TyperInput::TypingEvent::RUN :
@@ -620,7 +625,9 @@ void PlayableEmotion::loadSettings() {
     RUNNING_JUMP_UPWARD_INITIAL_VELOCITY = (int) settings->get("RUNNING_JUMP_UPWARD_INITIAL_VELOCITY", 180);
     DASH_TIME = 1.0 * settings->get("DASH_TIME_TENS_OF_SECONDS", 20) / 10.0;
     DASH_VELOCITY = (int) settings->get("DASH_VELOCITY", 200);
-    SCALE_FACTOR_ON_MAIN_CHAR = (float) (settings->get("SCALE_ON_MAIN_CHAR", 70)/100.0f);
+    SCALE_FACTOR_ON_MAIN_CHAR = settings->get("SCALE_ON_MAIN_CHAR", 70) / 100.0f;
+    CIRCLE_VERTICAL_SPACING = settings->get("CIRCLES_SPACING", 20);
+    CIRCLE_RADIUS = settings->get("CIRCLES_RADIUS", 10);
 
 
 }
@@ -635,12 +642,8 @@ void PlayableEmotion::applyScaleFactor(float f) {
     for(int i = 0; i < allSprites.size(); i++){
         allSprites[i]->setScale(Vec2(f,f));
     }
-    int width = spriteRunning.getWidth() / 15;
-    int height = spriteRunning.getHeight();
+    int width = spriteRunning.getSpriteFullWidth() / 15;
+    int height = spriteRunning.getSpriteFullHeight();
 
     center_LT_displacement = -0.5 * Vec2(width, height);
-
-    auxCollisionVolume[0].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float) M_PI_2));
-    auxCollisionVolume[1].setCenter(centerPos + Vec2::getVec2FromPolar(0, -1.0f * (float) M_PI_2));
-    auxCollisionVolume[2].setCenter(centerPos + Vec2::getVec2FromPolar(height / 4, (float) (-1 * M_PI_2)));
 }
