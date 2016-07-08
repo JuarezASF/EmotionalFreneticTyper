@@ -30,6 +30,7 @@ public:
 
     bool isOpen();
 
+    bool isPlaying();
 
 };
 

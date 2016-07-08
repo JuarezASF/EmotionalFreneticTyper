@@ -16,8 +16,6 @@ private:
 
     Mix_Music *music;
 
-    bool playing;
-
 public:
 
     Music();
@@ -26,13 +24,21 @@ public:
 
     void play(int times);
 
-    void stop();
-
     void open(std::string fle);
 
     bool isOpen();
 
-    inline bool isPlaying(){return playing;}
+    static void stop();
+
+    static void halt();
+
+    static void pause();
+
+    static void resume();
+
+    static bool isPlaying();
+
+
 
 
 

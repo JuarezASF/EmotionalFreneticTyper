@@ -8,14 +8,17 @@
 #include "TyperInput.h"
 
 EndState::EndState(StateData stateData)
-        : timer(),
+        : winMusic("audio/game_over.ogg"),loseMusic("audio/game_over.ogg"),timer(),
           instruction("font/goodfoot.ttf", 40, Text::TextStyle::BLENDED, "Type again to restart and quit to leave",
                       WHITE, 0, 0) {
 
+	Music::halt();
     if (stateData.playerVictory) {
         bg.open("img/win.png");
+        winMusic.play(0);
     }else{
         bg.open("img/loose.png");
+        loseMusic.play(0);
     }
 
     instruction.setPos(300, 500, false, false);

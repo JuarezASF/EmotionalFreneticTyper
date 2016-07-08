@@ -9,34 +9,21 @@
 #include "Game.h"
 
 Music::Music() : music(nullptr) {
-    playing = false;
-
 }
 
 Music::Music(std::string file) {
-    playing = false;
-
     open(file);
-
 }
 
 void Music::play(int times) {
 
     if (music){
         Mix_PlayMusic(music, times);
-        playing = true;
-
     }
 
     else {
         std::cerr << "Calling play with invalid music" << std::endl;
     }
-
-}
-
-void Music::stop() {
-
-    Mix_FadeOutMusic(500);
 
 }
 
@@ -54,4 +41,24 @@ void Music::open(std::string fle) {
 
 bool Music::isOpen() {
     return music != nullptr;
+}
+
+void Music::stop() {
+    Mix_FadeOutMusic(500);
+}
+
+void Music::halt() {
+	Mix_HaltMusic();
+}
+
+void Music::pause() {
+	Mix_PauseMusic();
+}
+
+void Music::resume() {
+	Mix_ResumeMusic();
+}
+
+bool Music::isPlaying() {
+	return Mix_PlayingMusic();
 }
