@@ -263,8 +263,10 @@ void TitleState::render() {
         if (showSkipText)
             skipText.render();
 
+        if(currentImgIdx >= startsMusicAt)
+            animationsToPlay[currentAnimation]->render();
+
     }
-    animationsToPlay[currentAnimation]->render();
 
 }
 

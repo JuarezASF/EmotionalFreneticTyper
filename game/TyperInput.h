@@ -19,7 +19,7 @@ class TyperInput {
 public:
     typedef enum TypingEvent {
         MOVE, TURN, RUN, STOP, JUMP, DASH, UP, DOWN, COLIDED, HORIZONTAL_SUPPORT_FOUND,
-        VERTICAL_SUPPORT_FOUND, SKIP, START, PAUSE, SMASH, QUIT, CONTINUE
+        VERTICAL_SUPPORT_FOUND, SKIP, START, PAUSE, SMASH, QUIT, CONTINUE, GRAB
     } TypingEvent;
 
     static std::map <std::string, TypingEvent> eventStringMap;

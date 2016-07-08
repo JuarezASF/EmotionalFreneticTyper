@@ -25,7 +25,8 @@ std::map<std::string, TyperInput::TypingEvent> TyperInput::eventStringMap =
                 {"PAUSE", TypingEvent::PAUSE},
                 {"SMASH", TypingEvent::SMASH},
                 {"QUIT", TypingEvent::QUIT},
-                {"CONTINUE", TypingEvent::CONTINUE}
+                {"CONTINUE", TypingEvent::CONTINUE},
+                {"GRAB", TypingEvent::GRAB}
 
         };
 
@@ -43,7 +44,8 @@ std::map<TyperInput::TypingEvent, std::string> TyperInput::eventToStringMap = {
         {TypingEvent::PAUSE, "PAUSE"},
         {TypingEvent::SMASH, "SMASH"},
         {TypingEvent::QUIT, "QUIT"},
-        {TypingEvent::CONTINUE, "CONTINUE"}
+        {TypingEvent::CONTINUE, "CONTINUE"},
+        {TypingEvent::GRAB , "GRAB"}
 };
 
 void TyperInput::loadDictionary(std::string filename) {

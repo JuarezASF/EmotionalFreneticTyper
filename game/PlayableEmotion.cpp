@@ -26,13 +26,16 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  spriteStopingRun("img/personagem/run_end.png", 6, SECONDS_PER_FRAME),
                                                  spriteTurning("img/personagem/idle_turn.png", 12, SECONDS_PER_FRAME),
                                                  spriteIdle("img/personagem/idle.png", 7, 7, SECONDS_PER_FRAME),
-                                                 spriteIdleJumpStart("img/personagem/idle_jump_start.png", 11, SECONDS_PER_FRAME),
-                                                 spriteIdleJumpJumping("img/personagem/idle_jump_going_up.png", 7, SECONDS_PER_FRAME),
+                                                 spriteIdleJumpStart("img/personagem/idle_jump_start.png", 11,
+                                                                     SECONDS_PER_FRAME * 0.6),
+                                                 spriteIdleJumpJumping("img/personagem/idle_jump_going_up.png", 7,
+                                                                       SECONDS_PER_FRAME),
                                                  spriteRunningJumpJumping("img/personagem/run_jump_going_up.png", 7,
                                                                           SECONDS_PER_FRAME),
                                                  spriteRunningJumpStartJump("img/personagem/run_jump_start.png", 7,
                                                                             SECONDS_PER_FRAME),
-                                                 spriteJumpEnd("img/personagem/idle_jump_end.png", 18, SECONDS_PER_FRAME),
+                                                 spriteJumpEnd("img/personagem/idle_jump_end.png", 18,
+                                                               SECONDS_PER_FRAME),
                                                  spriteTurnRunning("img/personagem/run_turn.png", 12,
                                                                    SECONDS_PER_FRAME),
                                                  spriteDashing("img/personagem/dash.png", 5, SECONDS_PER_FRAME),
@@ -42,7 +45,9 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  spriteSmashingUpward("img/sprite_smash_upward.png", 4,
                                                                       SECONDS_PER_FRAME),
                                                  spriteWinning("img/animation/winAnim.png", 6, 9, SECONDS_PER_FRAME),
-                                                 spriteLosing("img/animation/death.png", 1, 21, SECONDS_PER_FRAME) {
+                                                 spriteLosing("img/animation/death.png", 1, 21, SECONDS_PER_FRAME),
+                                                 soundJump("audio/dash2.wav"),
+                                                 soundDash("audio/dash2.wav") {
 
     allSprites.push_back(&spriteRunning);
     allSprites.push_back(&spriteGettingToRun);
@@ -167,15 +172,35 @@ void PlayableEmotion::update(float dt) {
                         wasRunning = true;
                         break;
                     case TyperInput::TypingEvent::JUMP :
+                        soundJump.play(0);
                         currentState = PlayableState::IDLE_JUMP_START;
                         spriteIdleJumpStart.setFrame(0);
                         activeActionTimer.restart();
                         break;
                     case TyperInput::TypingEvent::SMASH :
+                        soundDash.play(1);
                         currentState = PlayableState::SMASHING_UPWARD;
                         isSmashing = true;
                         spriteSmashingForward.setFrame(0);
                         activeActionTimer.restart();
+                        break;
+                    case TyperInput::TypingEvent::GRAB:
+                        if (canGrabLeft) {
+                            if (grabableToTheLeft) {
+                                Vec2 c = grabableToTheLeft->getCenterPos();
+                                centerPos = c + Vec2(0, -20);
+                            }
+
+                        }
+                        else if (canGrabRight) {
+                            if (grabableToTheRight) {
+                                Vec2 c = grabableToTheRight->getCenterPos();
+                                centerPos = c + Vec2(0, -20);
+                            }
+
+                        } else {
+
+                        }
                         break;
                     default:
                         break;
@@ -203,10 +228,12 @@ void PlayableEmotion::update(float dt) {
                         wasRunning = false;
                         break;
                     case TyperInput::TypingEvent::JUMP :
+                        soundJump.play(1);
                         currentState = PlayableState::RUNNING_JUMP_START;
                         spriteRunningJumpStartJump.setFrame(0);
                         break;
                     case TyperInput::TypingEvent::SMASH :
+                        soundDash.play(1);
                         currentState = PlayableState::SMASHING_FORWARD;
                         activeActionTimer.restart();
                         isSmashing = true;
@@ -241,6 +268,7 @@ void PlayableEmotion::update(float dt) {
                         break;
                     case TyperInput::TypingEvent::DASH: {
                         currentState = PlayableState::DASHING;
+                        soundDash.play(1);
                         spriteDashing.setFrame(0);
                         activeActionTimer.restart();
                         break;
@@ -259,6 +287,10 @@ void PlayableEmotion::update(float dt) {
                         spriteFalling.setFrame(0);
                         activeActionTimer.restart();
                         break;
+                    case TyperInput::TypingEvent::STOP:
+                        currentState = FALLING;
+                        spriteFalling.setFrame(0);
+                        activeActionTimer.restart();
                     default:
                         break;
                 }
@@ -420,6 +452,9 @@ void PlayableEmotion::update(float dt) {
             break;
         case PlayableState::WINNING :
             spriteWinning.update(dt);
+            speed.x = 0;
+            speed.y = -5;
+            acceleration -= ForceField::getInstance()->getForceAt(centerPos);
             if (spriteWinning.isThistLastFrame()) {
                 Game::getInstance().getCurrentState().requestPop();
                 Game::getInstance().push(new EndState({true}));
@@ -446,8 +481,18 @@ void PlayableEmotion::update(float dt) {
     //integrate time equation
     speed += dt * acceleration;
 
+    //speed maginute must be limited
+    static const int maxSpeed = 800;
+
+    if (speed.magnitude() > maxSpeed) {
+        speed = Vec2::getVec2FromPolar(maxSpeed, speed.ang_rad());
+
+    }
+
     updatePos(centerPos + dt * speed);
 
+    canGrabLeft = false;
+    canGrabRight = false;
 
 }
 
@@ -462,19 +507,18 @@ bool PlayableEmotion::isDead() {
 }
 
 void PlayableEmotion::notifyCollision(GameObject &other) {
-    if(currentState == LOSING || currentState == WINNING)
+    if (currentState == LOSING || currentState == WINNING)
         return;
-
-    if (other.is("KillingRectangle")) {
+    else if (other.is("KillingRectangle")) {
         currentState = PlayableState::LOSING;
         spriteLosing.setFrame(0);
     }
-    if (other.is("VictoryRectangle")) {
-        currentState = PlayableState:: WINNING;
+    else if (other.is("VictoryRectangle")) {
+        currentState = PlayableState::WINNING;
         spriteWinning.setFrame(0);
 
     }
-    if (isSmashing && other.is("DestroyableRectangle")) {
+    else if (isSmashing && other.is("DestroyableRectangle")) {
         ((DestroyableRectangle &) other).smashThis();
     }
     else if (other.is("CollidableAABBGameObject")) {
@@ -495,6 +539,21 @@ void PlayableEmotion::notifyCollision(GameObject &other) {
 
         const Vec2 closestInnerCircle = auxCollisionVolume[min_k].getCenter();
         const Vec2 closestPointOnRectangle = collidingRect.getClosestPointTo(closestInnerCircle);
+
+        float grab_angle = (closestPointOnRectangle - centerPos).ang_rad();
+
+        if(grab_angle >= -M_PI_2 && grab_angle <= M_PI_2){
+            canGrabLeft = true;
+            canGrabRight = false;
+            grabableToTheLeft = &other;
+            grabableToTheRight = nullptr;
+        }else{
+            canGrabLeft = false;
+            canGrabRight = true;
+            grabableToTheLeft = nullptr;
+            grabableToTheRight = &other;
+
+        }
 
         double overlap = auxCollisionVolume[min_k].getRadius() - distanceBetweenCircleAndRectangle;
 

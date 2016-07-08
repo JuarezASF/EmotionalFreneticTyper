@@ -63,6 +63,12 @@ private:
     unsigned long iterationsSinceLastHorizontalSupportNodification;
     unsigned long iterationsSinceLastVerticalSupportNodification;
 
+    Sound soundJump, soundDash;
+
+    GameObject *grabableToTheLeft;
+    GameObject *grabableToTheRight;
+    bool canGrabLeft, canGrabRight;
+
 public:
 
     PlayableEmotion(int x, int y);

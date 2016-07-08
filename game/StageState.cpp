@@ -12,10 +12,10 @@
 #include "TyperInput.h"
 #include "defines.h"
 
-#define TILE_HEIGHT 306
+#define TILE_HEIGHT 356
 #define TILE_WIDTH 680
 
-StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
+StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.png"),
                            tileMap("map/tileMap.txt", &tileSet),
                            stagePanel(340, 340),
                            startText("font/goodfoot.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", WHITE),
@@ -246,7 +246,7 @@ void StageState::render() {
 
     renderArray();
 
-    lightEffetct.render(342, 0, 0);
+//    lightEffetct.render(342, 0, 0);
 
 
     stagePanel.render();

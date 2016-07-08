@@ -11,7 +11,8 @@ beforeOpeningSong
 img/intro/unb.png
 img/intro/idj2016.png
 afterOpeningSong
-3
+4
+img/intro/quote01.jpg
 img/intro/quote1.png
 img/intro/quote2.png
 img/intro/quote3.png
