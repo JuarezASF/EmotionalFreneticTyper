@@ -19,10 +19,16 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
                            tileMap("map/tileMap.txt", &tileSet),
                            stagePanel(340, 340),
                            startText("font/goodfoot.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", WHITE),
-                           startTextTimer(),
+						   startEffect("audio/start.wav"), startEffectTimer(),
+						   gameplayIntroMusic("audio/gameplay_intro.ogg"),
+						   gameplayLoopMusic("audio/gameplay_loop.ogg"),
+                           startTextTimer(), currentMusicState(MUSIC_INITIAL_WAIT), musicWasPaused(false),
                            lightEffetct("img/vignetting.png") {
 
     SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
+
+    if(Music::isPlaying())
+    	Music::stop();
 
     plataformasManager = PlataformasManager::getInstance();
 
@@ -144,6 +150,9 @@ void StageState::update(float dt) {
                 Camera::follow(trackThis);
                 showText = false;
                 currentState = PLAYING;
+                startEffect.play(0);
+                startEffectTimer.restart();
+                currentMusicState = MUSIC_START_EFFECT;
             }
 
             startTextTimer.update(dt);
@@ -162,6 +171,10 @@ void StageState::update(float dt) {
                 showText = true;
 
                 currentState = PAUSED;
+                Music::pause();
+                musicStateBeforePause = currentMusicState;
+                currentMusicState = MUSIC_PAUSED;
+                startEffect.play(0);
             }
 
             collidingPairs.clear();
@@ -200,6 +213,11 @@ void StageState::update(float dt) {
                 Camera::follow(trackThis);
 
                 currentState = PLAYING;
+
+                musicWasPaused = true;
+                startEffect.play(0);
+                startEffectTimer.restart();
+                currentMusicState = MUSIC_START_EFFECT;
             }
 
             startTextTimer.update(dt);
@@ -208,12 +226,38 @@ void StageState::update(float dt) {
                 startTextTimer.restart();
             }
 
+
         }
             break;
 
         default:
             break;
     }
+
+    switch (currentMusicState) {
+		case MUSIC_START_EFFECT: {
+			if(startEffectTimer.get() > 0.3) {
+				if(musicWasPaused) {
+					Music::resume();
+					currentMusicState = musicStateBeforePause;
+					musicWasPaused = false;
+				} else {
+					gameplayIntroMusic.play(0);
+					currentMusicState = MUSIC_GAMEPLAY_INTRO;
+				}
+				startEffectTimer.restart();
+			}
+			startEffectTimer.update(dt);
+		}
+		break;
+		case MUSIC_GAMEPLAY_INTRO: {
+			if(!Music::isPlaying()) {
+				gameplayLoopMusic.play(-1);
+				currentMusicState = MUSIC_GAMEPLAY_LOOP;
+			}
+		}
+		break;
+	}
 }
 
 vector<pair<unsigned, unsigned>> StageState::checkForCollision() const {//test for collision

@@ -9,7 +9,7 @@
 #include "StageState.h"
 
 TitleState::TitleState() : fadeTimer(),
-                           music("audio/Title Screen.ogg"),
+                           music("audio/title_screen.ogg"),
                            skipText("font/goodfoot.ttf", 24, Text::TextStyle::BLENDED, "TYPE SKIP >>",
                                     WHITE),
                            skipTextTimer() {
@@ -136,7 +136,7 @@ TitleState::TitleState() : fadeTimer(),
 
     currentImgIdx = 0;
     if (startsMusicAt == currentImgIdx)
-        music.play(-1);
+        music.play(0);
 
     alpha = 0.0;
     currentFadeState = FADING_IN;
@@ -213,8 +213,8 @@ void TitleState::update(float dt) {
                 fadeTimer.restart();
 
                 currentImgIdx++;
-                if (startsMusicAt == currentImgIdx) {
-                    music.play(-1);
+                if (startsMusicAt == currentImgIdx){
+                    music.play(0);
 
                 }
 
@@ -241,14 +241,12 @@ void TitleState::update(float dt) {
     if (im.hasTypintEvent()) {
         TyperInput::TypingEvent e = im.getTypingEvent();
         if (e == TyperInput::TypingEvent::SKIP) {
-            if (!music.isPlaying())
-                music.play(-1);
+            //if (!music.isPlaying())
+                //music.play(-1);
             Game::getInstance().push(new StageState());
         }
 
     }
-
-
 }
 
 void TitleState::render() {
@@ -262,7 +260,6 @@ void TitleState::render() {
                               0, SDL_FLIP_NONE);
         if (showSkipText)
             skipText.render();
-
     }
     animationsToPlay[currentAnimation]->render();
 

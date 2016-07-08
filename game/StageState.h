@@ -17,6 +17,7 @@
 #include "TileMap.h"
 #include "State.h"
 #include "Music.h"
+#include "Sound.h"
 #include "Panel.h"
 #include "Text.h"
 #include "Timer.h"
@@ -28,6 +29,10 @@ public:
     typedef enum GameState {
         INITIAL_PAUSED_STATE, PLAYING, PAUSED
     } GameState;
+
+    typedef enum MusicState {
+		MUSIC_INITIAL_WAIT, MUSIC_START_EFFECT, MUSIC_GAMEPLAY_INTRO, MUSIC_GAMEPLAY_LOOP, MUSIC_PAUSED
+	} MusicState;
 
 protected:
     TileSet tileSet;
@@ -41,10 +46,18 @@ protected:
     Sprite lightEffetct;
 
     //used to show blinking msg
+    Sound startEffect;
+    Timer startEffectTimer;
+    Music gameplayIntroMusic;
+    Music gameplayLoopMusic;
     bool showText;
     Timer startTextTimer;
 
     GameState currentState;
+
+    MusicState currentMusicState;
+    MusicState musicStateBeforePause;
+    bool musicWasPaused;
 
 public:
     StageState();

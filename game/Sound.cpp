@@ -44,3 +44,7 @@ void Sound::open(std::string file) {
 bool Sound::isOpen() {
     return false;
 }
+
+bool Sound::isPlaying() {
+	return Mix_Playing(channel);
+}
