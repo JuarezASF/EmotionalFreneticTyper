@@ -38,6 +38,8 @@ protected:
     GameObject *trackThis;
     PlataformasManager *plataformasManager;
 
+    Sprite lightEffetct;
+
     //used to show blinking msg
     bool showText;
     Timer startTextTimer;

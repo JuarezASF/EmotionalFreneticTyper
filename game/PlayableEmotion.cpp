@@ -21,10 +21,11 @@ int PlayableEmotion::CIRCLE_RADIUS = 10;
 
 PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  spriteRunning("img/personagem/run_running.png", 12, SECONDS_PER_FRAME),
-                                                 spriteGettingToRun("img/personagem/run_start.png", 6, SECONDS_PER_FRAME),
+                                                 spriteGettingToRun("img/personagem/run_start.png", 6,
+                                                                    SECONDS_PER_FRAME),
                                                  spriteStopingRun("img/personagem/run_end.png", 6, SECONDS_PER_FRAME),
                                                  spriteTurning("img/personagem/idle_turn.png", 12, SECONDS_PER_FRAME),
-                                                 spriteIdle("img/personagem/idle.png", 7,7, SECONDS_PER_FRAME),
+                                                 spriteIdle("img/personagem/idle.png", 7, 7, SECONDS_PER_FRAME),
                                                  spriteIdleJumpStart("img/idleJump_start.png", 4, SECONDS_PER_FRAME),
                                                  spriteIdleJumpJumping("img/idleJump_Jump.png", 3, SECONDS_PER_FRAME),
                                                  spriteRunningJumpJumping("img/moveJump_Jump.png", 3,
@@ -32,13 +33,16 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
                                                  spriteRunningJumpStartJump("img/moveJump_Start.png", 4,
                                                                             SECONDS_PER_FRAME),
                                                  spriteJumpEnd("img/Jump_End.png", 7, SECONDS_PER_FRAME),
-                                                 spriteTurnRunning("img/personagem/run_turn.png", 12, SECONDS_PER_FRAME),
+                                                 spriteTurnRunning("img/personagem/run_turn.png", 12,
+                                                                   SECONDS_PER_FRAME),
                                                  spriteDashing("img/personagem/dash.png", 5, SECONDS_PER_FRAME),
                                                  spriteFalling("img/sprites_falling.png", 2, SECONDS_PER_FRAME),
                                                  spriteSmashingForward("img/sprite_smash_forward.png", 4,
                                                                        SECONDS_PER_FRAME),
                                                  spriteSmashingUpward("img/sprite_smash_upward.png", 4,
-                                                                      SECONDS_PER_FRAME) {
+                                                                      SECONDS_PER_FRAME),
+                                                 spriteWinning("img/animation/winAnim.png", 6, 9, SECONDS_PER_FRAME),
+                                                 spriteLosing("img/animation/death.png", 1, 21, SECONDS_PER_FRAME) {
 
     allSprites.push_back(&spriteRunning);
     allSprites.push_back(&spriteGettingToRun);
@@ -55,6 +59,8 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     allSprites.push_back(&spriteFalling);
     allSprites.push_back(&spriteSmashingForward);
     allSprites.push_back(&spriteSmashingUpward);
+    allSprites.push_back(&spriteWinning);
+    allSprites.push_back(&spriteLosing);
 
     loadSettings();
 
@@ -85,8 +91,8 @@ PlayableEmotion::PlayableEmotion(int x, int y) : GameObject(),
     speed = Vec2(0, 1);
     acceleration = Vec2(0, 0);
 
-    cout << "configured circle spacing is:"  << CIRCLE_VERTICAL_SPACING << endl;
-    cout << "configured circle radius is:"  << CIRCLE_RADIUS << endl;
+    cout << "configured circle spacing is:" << CIRCLE_VERTICAL_SPACING << endl;
+    cout << "configured circle radius is:" << CIRCLE_RADIUS << endl;
 
     auxCollisionVolume[0].setCenter(centerPos + Vec2::getVec2FromPolar(CIRCLE_VERTICAL_SPACING, (float) M_PI_2));
     auxCollisionVolume[1].setCenter(centerPos + Vec2::getVec2FromPolar(0, -1.0f * (float) M_PI_2));
@@ -412,6 +418,24 @@ void PlayableEmotion::update(float dt) {
                 isSmashing = false;
             }
             break;
+        case PlayableState::WINNING :
+            spriteWinning.update(dt);
+            if (spriteWinning.isThistLastFrame()) {
+                Game::getInstance().getCurrentState().requestPop();
+                Game::getInstance().push(new EndState({true}));
+            }
+            break;
+        case PlayableState::LOSING :
+            spriteLosing.update(dt);
+            speed.x = 0;
+            speed.y = 0;
+            acceleration -= ForceField::getInstance()->getForceAt(centerPos);
+            if (spriteLosing.isThistLastFrame()) {
+                defeated = true;
+                Game::getInstance().getCurrentState().requestPop();
+                Game::getInstance().push(new EndState({false}));
+            }
+            break;
         default:
             break;
 
@@ -438,15 +462,16 @@ bool PlayableEmotion::isDead() {
 }
 
 void PlayableEmotion::notifyCollision(GameObject &other) {
+    if(currentState == LOSING || currentState == WINNING)
+        return;
 
     if (other.is("KillingRectangle")) {
-        defeated = true;
-        Game::getInstance().getCurrentState().requestPop();
-        Game::getInstance().push(new EndState({false}));
+        currentState = PlayableState::LOSING;
+        spriteLosing.setFrame(0);
     }
     if (other.is("VictoryRectangle")) {
-        Game::getInstance().getCurrentState().requestPop();
-        Game::getInstance().push(new EndState({true}));
+        currentState = PlayableState:: WINNING;
+        spriteWinning.setFrame(0);
 
     }
     if (isSmashing && other.is("DestroyableRectangle")) {
@@ -591,6 +616,16 @@ void PlayableEmotion::render() {
                                         (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
                                                                                   : SDL_FLIP_NONE);
             break;
+        case PlayableState::WINNING:
+            spriteWinning.render((int) pos.x, (int) pos.y, rotation,
+                                 (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
+                                                                           : SDL_FLIP_NONE);
+            break;
+        case PlayableState::LOSING:
+            spriteLosing.render((int) pos.x, (int) pos.y, rotation,
+                                (currentlyFacing == PlayableFacing::LEFT) ? SDL_FLIP_HORIZONTAL
+                                                                          : SDL_FLIP_NONE);
+            break;
 
         default:
             break;
@@ -639,8 +674,8 @@ void PlayableEmotion::applyScaleFactor(float f) {
         auxCollisionVolume[i].applyScale(f);
     }
 
-    for(int i = 0; i < allSprites.size(); i++){
-        allSprites[i]->setScale(Vec2(f,f));
+    for (int i = 0; i < allSprites.size(); i++) {
+        allSprites[i]->setScale(Vec2(f, f));
     }
     int width = spriteRunning.getSpriteFullWidth() / 15;
     int height = spriteRunning.getSpriteFullHeight();

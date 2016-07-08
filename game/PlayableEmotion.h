@@ -21,7 +21,7 @@ class PlayableEmotion : public GameObject{
 public:
     enum PlayableState{IDLE, RUNNING, TURNING, GETTING_TO_RUN, STOPING_RUN, RUNNING_JUMP_START, RUNNING_JUMP_JUMPING,
         RUNNING_JUMP_END, IDLE_JUMP_START, IDLE_JUMP_JUMPING, JUMP_END, TURN_RUN, DASHING, FALLING, SMASHING_FORWARD,
-        SMASHING_UPWARD};
+        SMASHING_UPWARD, WINNING, LOSING};
 
     enum PlayableFacing{LEFT, RIGHT};
 
@@ -36,6 +36,7 @@ private:
     Sprite spriteIdleJumpStart, spriteIdleJumpJumping, spriteRunningJumpJumping, spriteRunningJumpStartJump, spriteJumpEnd;
     Sprite spriteTurnRunning, spriteDashing, spriteFalling, spriteSmashingForward, spriteSmashingUpward;
     MatrixSprite spriteIdle;
+    MatrixSprite spriteWinning, spriteLosing;
 
     vector<Sprite *> allSprites;
     PlayableState currentState;

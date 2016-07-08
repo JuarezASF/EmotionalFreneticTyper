@@ -19,7 +19,8 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
                            tileMap("map/tileMap.txt", &tileSet),
                            stagePanel(340, 340),
                            startText("font/goodfoot.ttf", 70, Text::TextStyle::BLENDED, "TYPE START", WHITE),
-                           startTextTimer() {
+                           startTextTimer(),
+                           lightEffetct("img/vignetting.png") {
 
     SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
 
@@ -243,6 +244,9 @@ void StageState::render() {
     tileMap.renderLayer(Camera::BACKGROUND_VIEW, Camera::getPos(Camera::PLAYER_GROUND_VIEW));
 
     renderArray();
+
+    lightEffetct.render(342, 0, 0);
+
 
     stagePanel.render();
 
