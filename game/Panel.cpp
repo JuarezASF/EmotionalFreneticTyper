@@ -9,9 +9,9 @@
 #include "defines.h"
 
 Panel::Panel(int leftWidth, int rightWidth)
-: panelL("img/panelL.jpg"),panelR("img/panelR.jpg"), iconL1("img/iconL1.jpg"), iconL2("img/iconL2.jpg"),
-  iconL3("img/iconL3.jpg"), iconL4("img/iconL4.jpg"), iconR1("img/iconR1.jpg"), iconR2("img/iconR2.jpg"),
-  iconR3("img/iconR3.jpg"), iconR4("img/iconR4.jpg"), leftWidth(leftWidth), rightWidth(rightWidth),
+: panelL("img/panelL.jpg"),panelR("img/panelR.jpg"), iconL1("img/iconDash.png"), iconL2("img/iconL2.jpg"),
+  iconL3("img/iconL3.jpg"), iconL4("img/iconL4.jpg"), iconR1("img/iconStop.png"), iconR2("img/iconWalk.png"),
+  iconR3("img/iconJump.png"), iconR4("img/iconTurn.png"), leftWidth(leftWidth), rightWidth(rightWidth),
   typingWord("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "typingWord", WHITE),
   typedWord("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "typedWord", ORANGE_YELLOW),
   iconTextR1("font/goodfoot.ttf", 30, Text::TextStyle::BLENDED, "dash", WHITE, 165, 280),
