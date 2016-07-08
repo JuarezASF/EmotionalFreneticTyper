@@ -10,7 +10,6 @@
 #include "StageState.h"
 #include "PlayableEmotion.h"
 #include "TyperInput.h"
-#include "CollidableAABBGameObject.h"
 #include "defines.h"
 
 #define TILE_HEIGHT 306
@@ -53,8 +52,8 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
     is >> buffer >> x >> y >> w >> h >> vx >> vy;
 
     cout << "killing rectangle tl:" << Vec2(x, y) << " w,h" << Vec2(w, h) << " speed:" << Vec2(vx, vy) << endl;
-    KillingRectangle *smokeObject = KillingRectangle::getTopLeftAt(Vec2(x, y), "img/sprite_fumaca_border.png",
-                                                                   Vec2(vx, vy), 1, 1);
+    KillingRectangle *smokeObject = KillingRectangle::getTopLeftAt(Vec2(x, y), "img/darknessFinal.png",
+                                                                   Vec2(vx, vy), 10, 3);
     addObject(smokeObject);
 
     trackThis = new TrackerObject(smokeObject, Vec2(0, -1 * Game::getInstance().getScreenDimensions().y / 2 + 75));
@@ -74,20 +73,18 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
     is >> buffer >> q;
 
     cout << "reading: " << q << " simple rectangles" << endl;
-    string filenameForeground, filenameBackground;
+    string filenameForeground, filenameBackground, platformName;
 
     for (int k = 0; k < q; k++) {
         is >> buffer;
 
         if (buffer.compare("plataforma") == 0) {
-            is >> x >> y >> filenameForeground >> filenameBackground;
-            cout << "adding rectanble of type:" << buffer << " at " << Vec2(x, y) << " fore:" << filenameForeground <<
-            " back:" << filenameBackground << endl;
+            is >> x >> y >> platformName;
+            cout << "adding platform of type:" << platformName << " at " << Vec2(x, y) << endl;
 
-            auto plataforma = new Platform(filenameForeground, filenameBackground, Vec2(x,y));
-            addObject(plataforma);
-            cenarioArray.emplace_back(plataforma);
-
+            auto plataforma = plataformasManager->getPlatformCenteredAt(Vec2(x, y), platformName);
+            if (plataforma != nullptr)
+                addObject(plataforma);
 
 
         }
@@ -180,10 +177,13 @@ void StageState::update(float dt) {
             for (unsigned int i = 0; i < objectArray.size(); i++)
                 if (objectArray[i]->isDead())
                     toBeDeleted.push_back(i);
+
             //delete them
             std::vector<std::unique_ptr<GameObject>>::iterator objArrayBegin = objectArray.begin();
-            for (auto it = toBeDeleted.rbegin(); it != toBeDeleted.rend(); ++it)
+            for (auto it = toBeDeleted.rbegin(); it != toBeDeleted.rend(); ++it) {
                 objectArray.erase(objArrayBegin + *it);
+
+            }
 
 
         }

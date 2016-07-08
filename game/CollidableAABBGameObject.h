@@ -137,17 +137,24 @@ public:
 
 class Platform : public CollidableAABBGameObject{
 private:
-   Sprite spriteForeground, spriteBackground;
+   Sprite spriteBackground, spriteForeground;
     Vec2 renderHere;
 public:
 
-    Platform(string foregroundImg, string brackgroudImg, Vec2 center);
+    Platform(string background, string foreground, const Vec2 &center, const Vec2 &verticalLim,
+             const Vec2 &horizontalLim);
 
     virtual void renderForeground() override;
 
     virtual void renderBackground() override;
 
     virtual void render() override;
+
+    virtual bool isForeground() override;
+
+    virtual bool isBackground() override;
+
+    virtual bool isPlayerGround() override;
 };
 
 #endif //IDJ201601T1_COLLIDABLERECTANGLE_H

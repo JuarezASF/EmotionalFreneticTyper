@@ -57,6 +57,10 @@ public:
     virtual void renderForeground();
     virtual void renderBackground();
 
+    virtual bool isForeground();
+    virtual bool isBackground();
+    virtual bool isPlayerGround();
+
 };
 
 

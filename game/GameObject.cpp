@@ -56,3 +56,17 @@ void GameObject::renderForeground() {
 void GameObject::renderBackground() {
 
 }
+
+bool GameObject::isForeground() {
+    return false;
+
+}
+
+bool GameObject::isBackground() {
+    return false;
+
+}
+
+bool GameObject::isPlayerGround() {
+    return true;
+}

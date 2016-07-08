@@ -43,6 +43,11 @@ Sprite::~Sprite() {
 }
 
 void Sprite::open(string filename) {
+    if(filename.length() == 0){
+        doNotRender = true;
+        return;
+
+    }
     texture = Resources::getImage(filename);
 
 
@@ -67,6 +72,9 @@ void Sprite::setClip(int x, int y, int w, int h) {
 }
 
 void Sprite::render(int topLeftX, int topLeftY, float angle, SDL_RendererFlip flip) {
+    if(doNotRender){
+
+    }
     dst_rect.x = topLeftX;
     dst_rect.y = topLeftY;
     dst_rect.w = (int)(clipRect.w * scaleX);
@@ -103,6 +111,7 @@ void Sprite::setAlpha(unsigned char alpha) {
 }
 
 void Sprite::construct(int frameCount, float frameTime) {
+    doNotRender = false;
     texture = nullptr;
     scaleX = 1.0;
     scaleY = 1.0;

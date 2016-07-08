@@ -1,13 +1,7 @@
 initialPos 20 500
-killingBlock 0 700 4000 50 0 -10
+killingBlock 0 700 4000 50 0 -0
 leftLimit 340
 rightLimit 1024
-qtdSimpleRectangles 7
+qtdSimpleRectangles 2
 block 0 600 300 60
-plataforma 320 500 img/plataformas/laneA/PlataformaA1back.png img/plataformas/laneA/PlataformaA1front.png 
-smashable 320 500 300 60
-block 640 400 300 60
-block 960 300 300 60
-smashable 1280 200 300 60
-block 0 200 500 60
-victory 0 150 50 50
+plataforma 320 500 A4

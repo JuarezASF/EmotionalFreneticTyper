@@ -228,17 +228,23 @@ void Platform::render() {
 
 }
 
-Platform::Platform(string foregroundImg, string brackgroudImg, Vec2 center) :
-        spriteForeground(foregroundImg), spriteBackground(brackgroudImg) {
-
-    Vec2 dimensions = spriteBackground.getDimensions();
+Platform::Platform(string background, string foreground, const Vec2 &center, const Vec2 &verticalLim,
+                   const Vec2 &horizontalLim) :
+        spriteBackground(background), spriteForeground(foreground) {
+    Vec2 dimensions = Vec2(spriteBackground.getFrameWidth(), spriteBackground.getFrameHeight());
 
     Vec2 leftTop = center - 0.5 * dimensions;
-    Vec2 rightBottom = center + 0.5 * dimensions;
+    leftTop += Vec2(horizontalLim.x, verticalLim.x);
+
+    Vec2 rightBottom = center - 0.5 * dimensions;
+    rightBottom += Vec2(horizontalLim.y, verticalLim.y);
 
     construct(leftTop, rightBottom);
+    center_LT_displacement = (-0.5) * dimensions;
     renderHere = getCenterPos() + center_LT_displacement;
+
 }
+
 
 void Platform::renderForeground() {
     GameObject::renderForeground();
@@ -253,4 +259,16 @@ void Platform::renderBackground() {
     Vec2 pos = renderHere - Camera::getPos(1);
 
     spriteBackground.render((int) pos.x, (int) pos.y, 0);
+}
+
+bool Platform::isForeground() {
+    return true;
+}
+
+bool Platform::isBackground() {
+    return true;
+}
+
+bool Platform::isPlayerGround() {
+    return true;
 }

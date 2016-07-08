@@ -49,7 +49,8 @@ PlataformasManager::PlataformasManager() {
 
         config.insert(make_pair(name, make_tuple(imgA, imgB, up, down, left, right)));
 
-        sprintf(msg, "name: %s fileA: %s fileB: %s config: %d %d %d %d",name.c_str(), imgA.c_str(), imgB.c_str(), up, down, left, right);
+        sprintf(msg, "name: %s fileA: %s fileB: %s config: %d %d %d %d", name.c_str(), imgA.c_str(), imgB.c_str(), up,
+                down, left, right);
 
         cout << string(msg) << endl;
 
@@ -63,12 +64,22 @@ PlataformasManager *PlataformasManager::getInstance() {
 }
 
 Platform *PlataformasManager::getPlatformCenteredAt(Vec2 center, string name) {
-    if(config.find(name) == config.end()){
-        cerr << "invalid platfoem name:" << name << endl;
+    if (config.find(name) == config.end()) {
+        cerr << "invalid platform name:" << name << endl;
         return nullptr;
     }
     const tuple<string, string, int, int, int, int> &c = config[name];
 
-    Platform *out = new Platform(get<0>(c), get<1>(c), center);
+    int top = (int)get<2>(config[name]);
+    int bot = (int)get<3>(config[name]);
+    int left = (int)get<4>(config[name]);
+    int right = (int)get<5>(config[name]);
+
+    Vec2 verticalLimist(top, bot);
+    Vec2 horizontalLimits(left, right);
+
+    Platform *out = new Platform(get<0>(c), get<1>(c), center, verticalLimist, horizontalLimits);
+
+    return out;
 
 }

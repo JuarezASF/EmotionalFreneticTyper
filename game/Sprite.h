@@ -36,6 +36,8 @@ protected:
 
     void construct(int frameCount, float frameTime);
 
+    bool doNotRender;
+
 public:
 
     Sprite();

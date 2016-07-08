@@ -31,14 +31,18 @@ void State::updateArray(float dt) {
 }
 
 void State::renderArray() {
-    for (auto it = cenarioArray.begin(); it != cenarioArray.end(); ++it)
-        (*it)->renderBackground();
+    for (auto it = objectArray.begin(); it != objectArray.end(); ++it)
+        if((*it)->isBackground())
+            (*it)->renderBackground();
 
     for (auto it = objectArray.begin(); it != objectArray.end(); ++it)
-        (*it)->render();
+        if((*it)->isPlayerGround())
+            (*it)->render();
 
-    for (auto it = cenarioArray.begin(); it != cenarioArray.end(); ++it)
-        (*it)->renderForeground();
+    for (auto it = objectArray.begin(); it != objectArray.end(); ++it)
+        if((*it)->isForeground())
+            (*it)->renderForeground();
+
 }
 
 void State::addObject(GameObject *obj) {
