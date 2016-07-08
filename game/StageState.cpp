@@ -49,6 +49,7 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
     is >> buffer >> x >> y;
     cout << "main player at tl:" << Vec2(x, y) << endl;
     mainPlayerPtr = new PlayableEmotion(x, y);
+    int playerY0 = y;
 
     is >> buffer >> x >> y >> w >> h >> vx >> vy;
 
@@ -66,8 +67,8 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
     int rightLimit = x;
 
     //add block to enforce limits
-    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(leftLimit - stagePanel.GetLeftWidth() - 18, 0), 20, 2000));
-    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(rightLimit - stagePanel.GetLeftWidth() + 10, 0), 20, 2000));
+    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(leftLimit - stagePanel.GetLeftWidth() - 18, playerY0), 20, 6000));
+    addObject(CollidableAABBGameObject::getCenteredAt(Vec2(rightLimit - stagePanel.GetLeftWidth() + 10, playerY0), 20, 6000));
 
 
     //read qtd of blocks on stage

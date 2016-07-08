@@ -1,8 +1,9 @@
 initialPos 64 3050
-killingBlock 0 3500 4000 50 0 -30
+killingBlock 0 3500 4000 50 0 -0
 leftLimit 340
 rightLimit 1024
-qtdSimpleRectangles 15
+qtdSimpleRectangles 16
+block 64 3100 600 20
 plataforma 64 3191 A5
 plataforma 494 2932 E4
 plataforma 334 2710 C3
