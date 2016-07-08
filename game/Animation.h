@@ -11,7 +11,7 @@
 #include "GameObject.h"
 
 class Animation : public GameObject {
-private:
+protected:
     Timer endTimer;
     float timeLimit;
     bool oneTimeOnly;
@@ -21,14 +21,17 @@ public:
 
 public:
 
+    Animation() { }
+
     virtual void notifyCollision(GameObject &other);
 
     Animation(float centerX, float centerY, float rotation, string sprite, float timeLimit, bool ends, int frameCount,
               float frameTime);
+    Animation(float centerX, float centerY, float rotation, float timeLimit, bool ends);
 
-    void update(float dt);
+    virtual void update(float dt);
 
-    void render();
+    virtual void render();
 
     bool isDead();
 
@@ -36,7 +39,27 @@ public:
 
     bool is(std::string type);
 
+    virtual void restart();
 
+
+};
+
+class MatrixAnimation : public Animation {
+
+public:
+    MatrixSprite matrixSprite;
+
+    MatrixAnimation(float centerX, float centerY, float rotation, string sprite, float timeLimit, bool ends, int qtdRows,
+              int qtdCols, float frameTime);
+
+
+    virtual void restart() override;
+
+    bool isDead();
+
+    virtual void render() override;
+
+    virtual void update(float dt) override;
 };
 
 

@@ -7,23 +7,50 @@
 #include "TyperInput.h"
 #include "defines.h"
 #include "StageState.h"
-#include "Game.h"
 
 TitleState::TitleState() : fadeTimer(),
                            music("audio/Title Screen.ogg"),
                            skipText("font/goodfoot.ttf", 24, Text::TextStyle::BLENDED, "TYPE SKIP >>",
                                     WHITE),
                            skipTextTimer() {
+    currentAnimation = 0;
+    int xc, yc;
+    Vec2 c = 0.5 * Game::getInstance().getScreenDimensions();
+    xc = c.x;
+    yc = c.y;
+
+    animationsToPlay.push_back(
+            new MatrixAnimation(xc, yc, 0, "img/intro/animation0.png", 4.0f, false, 7, 7, SECONDS_PER_FRAME));
+    animationsToPlay.push_back(
+            new MatrixAnimation(xc, yc, 0, "img/intro/animation1.png", 4.0f, false, 1, 6, SECONDS_PER_FRAME));
+    animationsToPlay.push_back(
+            new MatrixAnimation(xc, yc, 0, "img/intro/animation2.png", 4.0f, false, 1, 12, SECONDS_PER_FRAME));
+    animationsToPlay.push_back(
+            new MatrixAnimation(xc, yc, 0, "img/intro/animation3.png", 4.0f, false, 1, 6, SECONDS_PER_FRAME));
+    for (auto p : animationsToPlay)
+        p->restart();
 
 
-    //we'll use this to paint the screen balck on fade in/ou effects
-    SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
+
+//we'll use this to paint the screen balck on fade in/ou effects
+    SDL_SetRenderDrawColor(Game::getInstance()
+
+                                   .
+
+                                           getRenderer(),
+
+                           0, 0, 0, 255);
     string configFileName = "txt/openingConfig.txt";
 
     ifstream ifs(configFileName);
 
-    if (!ifs.is_open()) {
-        cerr << "Cannot load opening config from " << configFileName << endl;
+    if (!ifs.
+
+            is_open()
+
+            ) {
+        cerr << "Cannot load opening config from " << configFileName <<
+        endl;
     }
 
     string buffer;
@@ -32,17 +59,25 @@ TitleState::TitleState() : fadeTimer(),
     float percentageOfTimeOnHold;
     float percentageOfTimeOut;
 
-    ifs >> buffer;
-    ifs >> val;
+    ifs >>
+    buffer;
+    ifs >>
+    val;
     secondsPerImage = val / 10.0f;
-    ifs >> buffer;
-    ifs >> val;
+    ifs >>
+    buffer;
+    ifs >>
+    val;
     percentageOfTimeIn = val / 100.0f;
-    ifs >> buffer;
-    ifs >> val;
+    ifs >>
+    buffer;
+    ifs >>
+    val;
     percentageOfTimeOnHold = val / 100.0f;
-    ifs >> buffer;
-    ifs >> val;
+    ifs >>
+    buffer;
+    ifs >>
+    val;
     percentageOfTimeOut = val / 100.0f;
 
 
@@ -53,29 +88,49 @@ TitleState::TitleState() : fadeTimer(),
     fadeInSpeed = 255.0f / timeOnFadeIn;
     fadeOutSpeed = 255.0f / timeOnFadeOut;
 
-    cout << "configured" << endl;
-    cout << "\tseconds per image:" << secondsPerImage << endl;
-    cout << "\tseconds on fade in:" << timeOnFadeIn << endl;
-    cout << "\tseconds on fade hold:" << timeOnHold << endl;
-    cout << "\tseconds on fade out:" << timeOnFadeOut << endl;
+    cout << "configured" <<
+    endl;
+    cout << "\tseconds per image:" << secondsPerImage <<
+    endl;
+    cout << "\tseconds on fade in:" << timeOnFadeIn <<
+    endl;
+    cout << "\tseconds on fade hold:" << timeOnHold <<
+    endl;
+    cout << "\tseconds on fade out:" << timeOnFadeOut <<
+    endl;
 
-    ifs >> buffer;
-    ifs >> val;
+    ifs >>
+    buffer;
+    ifs >>
+    val;
     int qtdImgsBeforeMusic = val;
     startsMusicAt = val;
 
-    for (int i = 0; i < qtdImgsBeforeMusic; i++) {
-        ifs >> buffer;
-        cout << "adding img: " << buffer << " before music starts" << endl;
+    for (
+            int i = 0;
+            i < qtdImgsBeforeMusic;
+            i++) {
+        ifs >>
+        buffer;
+        cout << "adding img: " << buffer << " before music starts" <<
+        endl;
         imageStack.emplace_back(new Sprite(buffer));
     }
 
-    ifs >> buffer >> val;
+    ifs >> buffer >>
+    val;
     int qtdImgsAfterMusic = val;
-    for (int i = 0; i < qtdImgsAfterMusic; i++) {
-        ifs >> buffer;
-        cout << "adding img: " << buffer << " after music starts" << endl;
-        imageStack.emplace_back(new Sprite(buffer));
+    for (
+            int i = 0;
+            i < qtdImgsAfterMusic;
+            i++) {
+        ifs >>
+        buffer;
+        cout << "adding img: " << buffer << " after music starts" <<
+        endl;
+        imageStack.emplace_back(new
+                                        Sprite(buffer)
+        );
     }
 
 
@@ -86,17 +141,48 @@ TitleState::TitleState() : fadeTimer(),
     alpha = 0.0;
     currentFadeState = FADING_IN;
 
-    skipText.setPos((int) (Game::getInstance().getScreenDimensions().x - 200),
-                    (int) (Game::getInstance().getScreenDimensions().y - 80),
+    skipText.setPos((
+                            int) (
+
+                                    Game::getInstance()
+
+                                            .
+
+                                                    getScreenDimensions()
+
+                                            .x - 200),
+                    (int) (
+
+                            Game::getInstance()
+
+                                    .
+
+                                            getScreenDimensions()
+
+                                    .y - 80),
                     true, true);
     showSkipText = true;
 
-    cout.flush();
+    cout.
+
+            flush();
+
 
 }
 
 void TitleState::update(float dt) {
     static TyperInput &im = TyperInput::getInstance();
+
+    animationsToPlay[currentAnimation]->update(dt);
+    if (animationsToPlay[currentAnimation]->isDead()) {
+        currentAnimation = (currentAnimation + 1) % animationsToPlay.size();
+        animationsToPlay[currentAnimation]->restart();
+    }
+
+//    if (animationsToPlay.isDead()) {
+//        animationsToPlay.restart();
+//
+//    }
 
     quitRequested = im.getQuitRequested();
 
@@ -127,7 +213,7 @@ void TitleState::update(float dt) {
                 fadeTimer.restart();
 
                 currentImgIdx++;
-                if (startsMusicAt == currentImgIdx){
+                if (startsMusicAt == currentImgIdx) {
                     music.play(-1);
 
                 }
@@ -142,7 +228,7 @@ void TitleState::update(float dt) {
             break;
     }
 
-    if(currentImgIdx < imageStack.size())
+    if (currentImgIdx < imageStack.size())
         imageStack[currentImgIdx]->setAlpha(alpha);
 
     skipTextTimer.update(dt);
@@ -161,6 +247,8 @@ void TitleState::update(float dt) {
         }
 
     }
+
+
 }
 
 void TitleState::render() {
@@ -174,7 +262,10 @@ void TitleState::render() {
                               0, SDL_FLIP_NONE);
         if (showSkipText)
             skipText.render();
+
     }
+    animationsToPlay[currentAnimation]->render();
+
 }
 
 void TitleState::pause() { }

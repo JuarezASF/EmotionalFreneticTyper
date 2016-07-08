@@ -13,6 +13,7 @@ static const double PRESS_SKIP_TEST_BLINK_TIME = 0.7;
 #include "Timer.h"
 #include "Music.h"
 #include "Text.h"
+#include "Animation.h"
 #include <memory>
 #include <stack>
 
@@ -47,6 +48,9 @@ private:
     Timer skipTextTimer;
     bool showSkipText;
 
+    int currentAnimation;
+    vector<MatrixAnimation*> animationsToPlay;
+
 public:
 
     TitleState();
@@ -58,6 +62,7 @@ public:
     void pause();
 
     void resume();
+
 
 
 };
