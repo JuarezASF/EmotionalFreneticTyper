@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     clp.parseCommandLine(argc, argv);
 
     GameConfig::setDebugMode(clp.getBoolVal("debug"));
-    GameConfig::setPrintHitBot(true);//clp.getBoolVal("printHitBox")
+    GameConfig::setPrintHitBot(clp.getBoolVal("printHitBox"));
     SettingsLoad::getInstance()->load("txt/settings.txt");
 
     try {
