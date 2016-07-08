@@ -4,6 +4,7 @@ leftLimit 340
 rightLimit 1024
 qtdSimpleRectangles 7
 block 0 600 300 60
+plataforma 320 500 img/plataformas/laneA/PlataformaA1back.png img/plataformas/laneA/PlataformaA1front.png 
 smashable 320 500 300 60
 block 640 400 300 60
 block 960 300 300 60

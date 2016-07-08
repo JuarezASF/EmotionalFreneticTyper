@@ -31,8 +31,14 @@ void State::updateArray(float dt) {
 }
 
 void State::renderArray() {
+    for (auto it = cenarioArray.begin(); it != cenarioArray.end(); ++it)
+        (*it)->renderBackground();
+
     for (auto it = objectArray.begin(); it != objectArray.end(); ++it)
         (*it)->render();
+
+    for (auto it = cenarioArray.begin(); it != cenarioArray.end(); ++it)
+        (*it)->renderForeground();
 }
 
 void State::addObject(GameObject *obj) {

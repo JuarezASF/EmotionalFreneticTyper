@@ -48,3 +48,11 @@ void GameObject::applyScaleFactor(float f) {
     currentScaleFactor *= f;
     collisionVolume->applyScale(f);
 }
+
+void GameObject::renderForeground() {
+
+}
+
+void GameObject::renderBackground() {
+
+}

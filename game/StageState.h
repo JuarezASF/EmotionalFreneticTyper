@@ -20,6 +20,7 @@
 #include "Panel.h"
 #include "Text.h"
 #include "Timer.h"
+#include "PlataformasManager.h"
 
 class StageState : public State {
 
@@ -35,6 +36,7 @@ protected:
     Text startText;
     GameObject *mainPlayerPtr;
     GameObject *trackThis;
+    PlataformasManager *plataformasManager;
 
     //used to show blinking msg
     bool showText;

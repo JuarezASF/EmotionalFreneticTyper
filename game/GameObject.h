@@ -54,6 +54,9 @@ public:
 
     virtual void applyScaleFactor(float f);
 
+    virtual void renderForeground();
+    virtual void renderBackground();
+
 };
 
 

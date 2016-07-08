@@ -24,6 +24,8 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
 
     SDL_SetRenderDrawColor(Game::getInstance().getRenderer(), 0, 0, 0, 255);
 
+    plataformasManager = PlataformasManager::getInstance();
+
     usedEmotion = "ALL_EMOTIONS_ARE_THE_SAME";
 
     // load stage configuration
@@ -72,16 +74,34 @@ StageState::StageState() : tileSet(TILE_WIDTH, TILE_HEIGHT, "img/tileSet.jpg"),
     is >> buffer >> q;
 
     cout << "reading: " << q << " simple rectangles" << endl;
+    string filenameForeground, filenameBackground;
 
     for (int k = 0; k < q; k++) {
-        is >> buffer >> x >> y >> w >> h;
-        cout << "adding rectanble of type:" << buffer << " at " << Vec2(x, y) << " w,h:" << Vec2(w, h) << endl;
+        is >> buffer;
 
-        if (buffer.compare("block") == 0) {
+        if (buffer.compare("plataforma") == 0) {
+            is >> x >> y >> filenameForeground >> filenameBackground;
+            cout << "adding rectanble of type:" << buffer << " at " << Vec2(x, y) << " fore:" << filenameForeground <<
+            " back:" << filenameBackground << endl;
+
+            auto plataforma = new Platform(filenameForeground, filenameBackground, Vec2(x,y));
+            addObject(plataforma);
+            cenarioArray.emplace_back(plataforma);
+
+
+
+        }
+        else if (buffer.compare("block") == 0) {
+            is >> x >> y >> w >> h;
+            cout << "adding rectanble of type:" << buffer << " at " << Vec2(x, y) << " w,h:" << Vec2(w, h) << endl;
             addObject(CollidableAABBGameObject::getTopLeftAt(Vec2(x, y), w, h));
         } else if (buffer.compare("smashable") == 0) {
+            is >> x >> y >> w >> h;
+            cout << "adding rectanble of type:" << buffer << " at " << Vec2(x, y) << " w,h:" << Vec2(w, h) << endl;
             addObject(DestroyableRectangle::getTopLeftAt(Vec2(x, y), w, h));
         } else if (buffer.compare("victory") == 0) {
+            is >> x >> y >> w >> h;
+            cout << "adding rectanble of type:" << buffer << " at " << Vec2(x, y) << " w,h:" << Vec2(w, h) << endl;
             addObject(VictoryRectangle::getTopLeftAt(Vec2(x, y), w, h));
         } else {
             cerr << "Unreconizable type of rectangle:" << buffer << endl;

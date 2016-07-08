@@ -4,7 +4,6 @@
 
 #include "CollidableAABBGameObject.h"
 #include "AxisAlignedBoundingBox.h"
-#include "Game.h"
 #include "Animation.h"
 #include "Camera.h"
 #include "defines.h"
@@ -82,6 +81,8 @@ void KillingRectangle::update(float dt) {
 
     ((AxisAlignedBoundingBox *) collisionVolume)->setLeftTopCorner(centerPos + center_LT_displacement);
 
+    spritSmoke.update(dt);
+
 
 }
 
@@ -92,7 +93,7 @@ bool KillingRectangle::is(std::string type) {
 
 KillingRectangle::KillingRectangle(Vec2 topLeft, std::string smokeBorderFileName, Vec2 speed, int qtdRows,
                                    int qtdCols)
-        : spritSmoke(smokeBorderFileName, qtdRows, qtdCols, SECONDS_PER_FRAME ){
+        : spritSmoke(smokeBorderFileName, qtdRows, qtdCols, 2 * SECONDS_PER_FRAME) {
 
 
     constSpeed = speed;
@@ -105,11 +106,10 @@ KillingRectangle::KillingRectangle(Vec2 topLeft, std::string smokeBorderFileName
 
 
 KillingRectangle *KillingRectangle::getTopLeftAt(Vec2 topLeft, std::string smokeBorderFN, Vec2 speed,
-                                                int qtdRows, int qtdCols) {
+                                                 int qtdRows, int qtdCols) {
     return new KillingRectangle(topLeft, smokeBorderFN, speed, qtdRows, qtdCols);
 
 }
-
 
 
 void KillingRectangle::render() {
@@ -215,10 +215,42 @@ void GrabableSquare::render() {
     CollidableAABBGameObject::render();
 }
 
-GrabableSquare::GrabableSquare(Vec2 topLeft, int length) : CollidableAABBGameObject(topLeft, topLeft + Vec2(length, length)) {
+GrabableSquare::GrabableSquare(Vec2 topLeft, int length) : CollidableAABBGameObject(topLeft,
+                                                                                    topLeft + Vec2(length, length)) {
     //paint it yellow
     ((AxisAlignedBoundingBox *) collisionVolume)->setColor(255, 255, 0, 255);
 
 
+}
 
+void Platform::render() {
+    CollidableAABBGameObject::render();
+
+}
+
+Platform::Platform(string foregroundImg, string brackgroudImg, Vec2 center) :
+        spriteForeground(foregroundImg), spriteBackground(brackgroudImg) {
+
+    Vec2 dimensions = spriteBackground.getDimensions();
+
+    Vec2 leftTop = center - 0.5 * dimensions;
+    Vec2 rightBottom = center + 0.5 * dimensions;
+
+    construct(leftTop, rightBottom);
+    renderHere = getCenterPos() + center_LT_displacement;
+}
+
+void Platform::renderForeground() {
+    GameObject::renderForeground();
+    Vec2 pos = renderHere - Camera::getPos(1);
+
+    spriteForeground.render((int) pos.x, (int) pos.y, 0);
+
+}
+
+void Platform::renderBackground() {
+    GameObject::renderBackground();
+    Vec2 pos = renderHere - Camera::getPos(1);
+
+    spriteBackground.render((int) pos.x, (int) pos.y, 0);
 }

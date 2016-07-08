@@ -135,4 +135,19 @@ public:
     virtual void render() override;
 };
 
+class Platform : public CollidableAABBGameObject{
+private:
+   Sprite spriteForeground, spriteBackground;
+    Vec2 renderHere;
+public:
+
+    Platform(string foregroundImg, string brackgroudImg, Vec2 center);
+
+    virtual void renderForeground() override;
+
+    virtual void renderBackground() override;
+
+    virtual void render() override;
+};
+
 #endif //IDJ201601T1_COLLIDABLERECTANGLE_H

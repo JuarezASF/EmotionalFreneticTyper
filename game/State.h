@@ -19,6 +19,7 @@ protected:
     bool popRequested, quitRequested;
 
     std::vector <std::unique_ptr<GameObject>> objectArray;
+    std::vector <std::unique_ptr<GameObject>> cenarioArray;
 
 public:
 
